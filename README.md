@@ -16,7 +16,7 @@ terraform {
 provider "vibeoncall" {}
 ```
 
-See [`docs/`](docs/) for every resource and attribute.
+Set the API key with the `VIBEONCALL_API_KEY` environment variable, or with `api_key` in the provider block. See [`docs/`](docs/) for every resource and attribute.
 
 ## Development
 
@@ -39,9 +39,11 @@ provider_installation {
 
 ```shell
 export TF_CLI_CONFIG_FILE=/path/to/dev.tfrc
+export VIBEONCALL_API_KEY=...
 terraform plan
 ```
 
-### Regenerating docs
+### Regenerating code
 
-`make generate` regenerates `docs/` from the provider schema and `examples/`.
+- API client: `go generate ./internal/client` regenerates `internal/client/client.gen.go` from `internal/client/openapi.yaml`.
+- Docs: `make generate` regenerates `docs/` from the provider schema and `examples/`.

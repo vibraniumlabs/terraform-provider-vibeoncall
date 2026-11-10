@@ -6,4 +6,5 @@ terraform {
   }
 }
 
+# Reads the API key from VIBEONCALL_API_KEY when api_key is not set.
 provider "vibeoncall" {}
