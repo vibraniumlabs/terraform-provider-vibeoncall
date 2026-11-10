@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/oapi-codegen/nullable"
 	"github.com/oapi-codegen/runtime"
@@ -30,6 +31,48 @@ func (e AssignTeamMemberRequestRole) Valid() bool {
 	case AssignTeamMemberRequestRoleAdmin:
 		return true
 	case AssignTeamMemberRequestRoleMember:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MemberStatus.
+const (
+	MemberStatusActive  MemberStatus = "active"
+	MemberStatusPending MemberStatus = "pending"
+	MemberStatusRevoked MemberStatus = "revoked"
+)
+
+// Valid indicates whether the value is a known member of the MemberStatus enum.
+func (e MemberStatus) Valid() bool {
+	switch e {
+	case MemberStatusActive:
+		return true
+	case MemberStatusPending:
+		return true
+	case MemberStatusRevoked:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MemberRoleBuiltInKey.
+const (
+	MemberRoleBuiltInKeyAdmin    MemberRoleBuiltInKey = "admin"
+	MemberRoleBuiltInKeyMember   MemberRoleBuiltInKey = "member"
+	MemberRoleBuiltInKeyReadOnly MemberRoleBuiltInKey = "read_only"
+)
+
+// Valid indicates whether the value is a known member of the MemberRoleBuiltInKey enum.
+func (e MemberRoleBuiltInKey) Valid() bool {
+	switch e {
+	case MemberRoleBuiltInKeyAdmin:
+		return true
+	case MemberRoleBuiltInKeyMember:
+		return true
+	case MemberRoleBuiltInKeyReadOnly:
 		return true
 	default:
 		return false
@@ -74,19 +117,19 @@ func (e TeamMemberSummaryRole) Valid() bool {
 
 // Defines values for TeamMemberSummaryStatus.
 const (
-	Active  TeamMemberSummaryStatus = "active"
-	Pending TeamMemberSummaryStatus = "pending"
-	Revoked TeamMemberSummaryStatus = "revoked"
+	TeamMemberSummaryStatusActive  TeamMemberSummaryStatus = "active"
+	TeamMemberSummaryStatusPending TeamMemberSummaryStatus = "pending"
+	TeamMemberSummaryStatusRevoked TeamMemberSummaryStatus = "revoked"
 )
 
 // Valid indicates whether the value is a known member of the TeamMemberSummaryStatus enum.
 func (e TeamMemberSummaryStatus) Valid() bool {
 	switch e {
-	case Active:
+	case TeamMemberSummaryStatusActive:
 		return true
-	case Pending:
+	case TeamMemberSummaryStatusPending:
 		return true
-	case Revoked:
+	case TeamMemberSummaryStatusRevoked:
 		return true
 	default:
 		return false
@@ -108,6 +151,27 @@ func (e TeamOnCallResponseResolution) Valid() bool {
 	case None:
 		return true
 	case TeamPolicyFallback:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ListMembersParamsStatus.
+const (
+	ListMembersParamsStatusActive  ListMembersParamsStatus = "active"
+	ListMembersParamsStatusPending ListMembersParamsStatus = "pending"
+	ListMembersParamsStatusRevoked ListMembersParamsStatus = "revoked"
+)
+
+// Valid indicates whether the value is a known member of the ListMembersParamsStatus enum.
+func (e ListMembersParamsStatus) Valid() bool {
+	switch e {
+	case ListMembersParamsStatusActive:
+		return true
+	case ListMembersParamsStatusPending:
+		return true
+	case ListMembersParamsStatusRevoked:
 		return true
 	default:
 		return false
@@ -147,6 +211,73 @@ type CreateTeamRequest struct {
 type ErrorResponse struct {
 	// Message Human-readable error message.
 	Message string `json:"message"`
+}
+
+// Member defines model for Member.
+type Member struct {
+	// CreatedAt ISO 8601 timestamp when the user was created.
+	CreatedAt time.Time `json:"createdAt"`
+
+	// Email Email address of the user.
+	Email string `json:"email"`
+
+	// FullName Full name of the user.
+	FullName nullable.Nullable[string] `json:"fullName"`
+
+	// Id Unique identifier of the user. Use it as `userId` when assigning team members.
+	Id int32 `json:"id"`
+
+	// Labels Labels attached to the user.
+	Labels []MemberLabel `json:"labels"`
+
+	// Role Organization role of the user. This is what `roleIds` filters on, and is distinct from the team membership `role` returned by the team members endpoint.
+	Role nullable.Nullable[MemberRole] `json:"role"`
+
+	// Status Account status of the user in the organization (active, pending, revoked).
+	Status nullable.Nullable[MemberStatus] `json:"status"`
+
+	// UpdatedAt ISO 8601 timestamp when the user was last updated.
+	UpdatedAt time.Time `json:"updatedAt"`
+}
+
+// MemberStatus Account status of the user in the organization (active, pending, revoked).
+type MemberStatus string
+
+// MemberLabel defines model for MemberLabel.
+type MemberLabel struct {
+	// Color Hex color code (e.g. #FF0000).
+	Color string `json:"color"`
+
+	// Id Unique identifier of the label.
+	Id int32 `json:"id"`
+
+	// Name Display name of the label.
+	Name string `json:"name"`
+}
+
+// MemberRole defines model for MemberRole.
+type MemberRole struct {
+	// BuiltInKey Key of the built-in role (admin, member, read_only), or null for a custom role.
+	BuiltInKey nullable.Nullable[MemberRoleBuiltInKey] `json:"builtInKey"`
+
+	// Id Unique identifier of the organization role.
+	Id int32 `json:"id"`
+
+	// Name Name of the organization role.
+	Name string `json:"name"`
+}
+
+// MemberRoleBuiltInKey Key of the built-in role (admin, member, read_only), or null for a custom role.
+type MemberRoleBuiltInKey string
+
+// MembersListResponse defines model for MembersListResponse.
+type MembersListResponse struct {
+	// HasMore Whether there are more members available beyond the current page.
+	HasMore bool     `json:"hasMore"`
+	Members []Member `json:"members"`
+
+	// Total Total number of members matching the filters.
+	Total int32 `json:"total"`
 }
 
 // TeamMemberAssignmentResponse defines model for TeamMemberAssignmentResponse.
@@ -336,6 +467,19 @@ type ValidationErrorResponse struct {
 	} `json:"error"`
 }
 
+// ListMembersParams defines parameters for ListMembers.
+type ListMembersParams struct {
+	Limit    *int32                     `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset   *int32                     `form:"offset,omitempty" json:"offset,omitempty"`
+	Search   *string                    `form:"search,omitempty" json:"search,omitempty"`
+	Status   *[]ListMembersParamsStatus `form:"status,omitempty" json:"status,omitempty"`
+	RoleIds  *[]int                     `form:"roleIds,omitempty" json:"roleIds,omitempty"`
+	LabelIds *[]int                     `form:"labelIds,omitempty" json:"labelIds,omitempty"`
+}
+
+// ListMembersParamsStatus defines parameters for ListMembers.
+type ListMembersParamsStatus string
+
 // ListTeamsParams defines parameters for ListTeams.
 type ListTeamsParams struct {
 	Limit  *int32 `form:"limit,omitempty" json:"limit,omitempty"`
@@ -430,6 +574,20 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 
 // The interface specification for the client above.
 type ClientInterface interface {
+
+	// ListMembers List members of the organization
+	//
+	// Returns a paginated list of every member of the organization associated with the API key, including members who belong to no team. Filters combine with AND; values within one repeatable filter combine with OR. Ordered by creation time, oldest first.
+	//
+	// Corresponds with GET /members (the `ListMembers` operationId).
+	ListMembers(ctx context.Context, params *ListMembersParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetMember Get a member
+	//
+	// Returns one member of the organization associated with the API key.
+	//
+	// Corresponds with GET /members/{userId} (the `GetMember` operationId).
+	GetMember(ctx context.Context, userId int32, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ListTeams List teams for the organization
 	//
@@ -526,6 +684,40 @@ type ClientInterface interface {
 	//
 	// Corresponds with GET /teams/{teamShortId}/on-call (the `GetTeamCurrentOnCall` operationId).
 	GetTeamCurrentOnCall(ctx context.Context, teamShortId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+}
+
+// ListMembers List members of the organization
+//
+// Returns a paginated list of every member of the organization associated with the API key, including members who belong to no team. Filters combine with AND; values within one repeatable filter combine with OR. Ordered by creation time, oldest first.
+//
+// Corresponds with GET /members (the `ListMembers` operationId).
+func (c *Client) ListMembers(ctx context.Context, params *ListMembersParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListMembersRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetMember Get a member
+//
+// Returns one member of the organization associated with the API key.
+//
+// Corresponds with GET /members/{userId} (the `GetMember` operationId).
+func (c *Client) GetMember(ctx context.Context, userId int32, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetMemberRequest(c.Server, userId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
 }
 
 // ListTeams List teams for the organization
@@ -742,6 +934,154 @@ func (c *Client) GetTeamCurrentOnCall(ctx context.Context, teamShortId string, r
 		return nil, err
 	}
 	return c.Client.Do(req)
+}
+
+// NewListMembersRequest constructs an http.Request for the ListMembers method
+func NewListMembersRequest(server string, params *ListMembersParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/members")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "limit", *params.Limit, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: "int32"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Offset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "offset", *params.Offset, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: "int32"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Search != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "search", *params.Search, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Status != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "status", *params.Status, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.RoleIds != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "roleIds", *params.RoleIds, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.LabelIds != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "labelIds", *params.LabelIds, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetMemberRequest constructs an http.Request for the GetMember method
+func NewGetMemberRequest(server string, userId int32) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "userId", userId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/members/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
 }
 
 // NewListTeamsRequest constructs an http.Request for the ListTeams method
@@ -1204,6 +1544,24 @@ func WithBaseURL(baseURL string) ClientOption {
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
 
+	// ListMembersWithResponse List members of the organization
+	//
+	// Returns a paginated list of every member of the organization associated with the API key, including members who belong to no team. Filters combine with AND; values within one repeatable filter combine with OR. Ordered by creation time, oldest first.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /members (the `ListMembers` operationId).
+	ListMembersWithResponse(ctx context.Context, params *ListMembersParams, reqEditors ...RequestEditorFn) (*ListMembersResponse, error)
+
+	// GetMemberWithResponse Get a member
+	//
+	// Returns one member of the organization associated with the API key.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /members/{userId} (the `GetMember` operationId).
+	GetMemberWithResponse(ctx context.Context, userId int32, reqEditors ...RequestEditorFn) (*GetMemberResponse, error)
+
 	// ListTeamsWithResponse List teams for the organization
 	//
 	// Returns a paginated list of teams for the organization associated with the API key.
@@ -1311,6 +1669,137 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with GET /teams/{teamShortId}/on-call (the `GetTeamCurrentOnCall` operationId).
 	GetTeamCurrentOnCallWithResponse(ctx context.Context, teamShortId string, reqEditors ...RequestEditorFn) (*GetTeamCurrentOnCallResponse, error)
+}
+
+type ListMembersResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *MembersListResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationErrorResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r ListMembersResponse) GetJSON200() *MembersListResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r ListMembersResponse) GetJSON400() *ValidationErrorResponse {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r ListMembersResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r ListMembersResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r ListMembersResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r ListMembersResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListMembersResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r ListMembersResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetMemberResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *Member
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationErrorResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetMemberResponse) GetJSON200() *Member {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r GetMemberResponse) GetJSON400() *ValidationErrorResponse {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r GetMemberResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r GetMemberResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r GetMemberResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r GetMemberResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetMemberResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetMemberResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetMemberResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
 }
 
 type ListTeamsResponse struct {
@@ -1976,6 +2465,36 @@ func (r GetTeamCurrentOnCallResponse) ContentType() string {
 	return ""
 }
 
+// ListMembersWithResponse List members of the organization
+//
+// Returns a paginated list of every member of the organization associated with the API key, including members who belong to no team. Filters combine with AND; values within one repeatable filter combine with OR. Ordered by creation time, oldest first.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /members (the `ListMembers` operationId).
+func (c *ClientWithResponses) ListMembersWithResponse(ctx context.Context, params *ListMembersParams, reqEditors ...RequestEditorFn) (*ListMembersResponse, error) {
+	rsp, err := c.ListMembers(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListMembersResponse(rsp)
+}
+
+// GetMemberWithResponse Get a member
+//
+// Returns one member of the organization associated with the API key.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /members/{userId} (the `GetMember` operationId).
+func (c *ClientWithResponses) GetMemberWithResponse(ctx context.Context, userId int32, reqEditors ...RequestEditorFn) (*GetMemberResponse, error) {
+	rsp, err := c.GetMember(ctx, userId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetMemberResponse(rsp)
+}
+
 // ListTeamsWithResponse List teams for the organization
 //
 // Returns a paginated list of teams for the organization associated with the API key.
@@ -2154,6 +2673,107 @@ func (c *ClientWithResponses) GetTeamCurrentOnCallWithResponse(ctx context.Conte
 		return nil, err
 	}
 	return ParseGetTeamCurrentOnCallResponse(rsp)
+}
+
+// ParseListMembersResponse parses an HTTP response from a ListMembersWithResponse call
+func ParseListMembersResponse(rsp *http.Response) (*ListMembersResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListMembersResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest MembersListResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetMemberResponse parses an HTTP response from a GetMemberWithResponse call
+func ParseGetMemberResponse(rsp *http.Response) (*GetMemberResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetMemberResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Member
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
 }
 
 // ParseListTeamsResponse parses an HTTP response from a ListTeamsWithResponse call

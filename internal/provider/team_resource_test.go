@@ -1,114 +1,20 @@
 package provider
 
 import (
-	"encoding/json"
 	"fmt"
-	"net/http"
-	"net/http/httptest"
 	"regexp"
-	"strconv"
 	"strings"
-	"sync"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-framework/providerserver"
-	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 )
 
-type fakeTeam struct {
-	ID          int     `json:"id"`
-	ShortID     string  `json:"shortId"`
-	Name        string  `json:"name"`
-	Description *string `json:"description"`
-}
-
-type fakeTeamAPI struct {
-	mu     sync.Mutex
-	nextID int
-	teams  map[int]*fakeTeam
-}
-
-func newFakeTeamAPI(t *testing.T) (*fakeTeamAPI, *httptest.Server) {
-	api := &fakeTeamAPI{nextID: 1, teams: map[int]*fakeTeam{}}
-	srv := httptest.NewServer(api)
-	t.Cleanup(srv.Close)
-	return api, srv
-}
-
-func (a *fakeTeamAPI) find(ref string) *fakeTeam {
-	for _, team := range a.teams {
-		if strconv.Itoa(team.ID) == ref || team.ShortID == ref {
-			return team
-		}
-	}
-	return nil
-}
-
-func (a *fakeTeamAPI) remove(ref string) {
-	a.mu.Lock()
-	defer a.mu.Unlock()
-	if team := a.find(ref); team != nil {
-		delete(a.teams, team.ID)
-	}
-}
-
-func (a *fakeTeamAPI) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	a.mu.Lock()
-	defer a.mu.Unlock()
-	w.Header().Set("Content-Type", "application/json")
-
-	var body map[string]json.RawMessage
-	if r.Body != nil {
-		_ = json.NewDecoder(r.Body).Decode(&body)
-	}
-
-	if r.URL.Path == "/teams" && r.Method == http.MethodPost {
-		team := &fakeTeam{ID: a.nextID, ShortID: fmt.Sprintf("VP-TEAM-%d", a.nextID)}
-		a.nextID++
-		applyTeamBody(team, body)
-		a.teams[team.ID] = team
-		w.WriteHeader(http.StatusCreated)
-		_ = json.NewEncoder(w).Encode(team)
-		return
-	}
-
-	team := a.find(strings.TrimPrefix(r.URL.Path, "/teams/"))
-	if team == nil {
-		w.WriteHeader(http.StatusNotFound)
-		_, _ = w.Write([]byte(`{"error":"Team not found"}`))
-		return
-	}
-	switch r.Method {
-	case http.MethodGet:
-		_ = json.NewEncoder(w).Encode(team)
-	case http.MethodPatch:
-		applyTeamBody(team, body)
-		_ = json.NewEncoder(w).Encode(team)
-	case http.MethodDelete:
-		delete(a.teams, team.ID)
-		_, _ = w.Write([]byte(`{"success":true}`))
-	default:
-		w.WriteHeader(http.StatusMethodNotAllowed)
-	}
-}
-
-func applyTeamBody(team *fakeTeam, body map[string]json.RawMessage) {
-	if raw, ok := body["name"]; ok {
-		_ = json.Unmarshal(raw, &team.Name)
-	}
-	if raw, ok := body["description"]; ok {
-		team.Description = nil
-		_ = json.Unmarshal(raw, &team.Description)
-	}
-}
-
-func (a *fakeTeamAPI) checkDescription(id string, want *string) resource.TestCheckFunc {
+func (a *fakeAPI) checkDescription(id string, want *string) resource.TestCheckFunc {
 	return func(*terraform.State) error {
 		a.mu.Lock()
 		defer a.mu.Unlock()
-		team := a.find(id)
+		team := a.findTeam(id)
 		if team == nil {
 			return fmt.Errorf("team %s not found", id)
 		}
@@ -119,41 +25,21 @@ func (a *fakeTeamAPI) checkDescription(id string, want *string) resource.TestChe
 	}
 }
 
-func (a *fakeTeamAPI) checkNoTeams(*terraform.State) error {
-	a.mu.Lock()
-	defer a.mu.Unlock()
-	if len(a.teams) > 0 {
-		return fmt.Errorf("%d teams left after destroy", len(a.teams))
-	}
-	return nil
-}
-
-func protoV6ProviderFactories() map[string]func() (tfprotov6.ProviderServer, error) {
-	return map[string]func() (tfprotov6.ProviderServer, error){
-		"vibeoncall": providerserver.NewProtocol6WithError(New("test")()),
-	}
-}
-
 func teamConfig(baseURL, attrs string) string {
-	return fmt.Sprintf(`
-provider "vibeoncall" {
-  api_key  = "test"
-  base_url = %q
-}
-
+	return providerConfig(baseURL) + fmt.Sprintf(`
 resource "vibeoncall_team" "test" {
 %s
 }
-`, baseURL, attrs)
+`, attrs)
 }
 
 func TestTeamResourceLifecycle(t *testing.T) {
-	api, srv := newFakeTeamAPI(t)
+	api, srv := newFakeAPI(t)
 	description := "Owns the payment stack"
 
 	resource.UnitTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: protoV6ProviderFactories(),
-		CheckDestroy:             api.checkNoTeams,
+		CheckDestroy:             api.checkNothingLeft,
 		Steps: []resource.TestStep{
 			{
 				Config: teamConfig(srv.URL, `
@@ -189,7 +75,7 @@ func TestTeamResourceLifecycle(t *testing.T) {
 				ImportStateVerify: true,
 			},
 			{
-				PreConfig:          func() { api.remove("1") },
+				PreConfig:          func() { api.removeTeam("1") },
 				Config:             teamConfig(srv.URL, `  name = "Payments Platform"`),
 				PlanOnly:           true,
 				ExpectNonEmptyPlan: true,
@@ -199,7 +85,7 @@ func TestTeamResourceLifecycle(t *testing.T) {
 }
 
 func TestTeamResourceRejectsValuesTheAPIWouldTrim(t *testing.T) {
-	_, srv := newFakeTeamAPI(t)
+	_, srv := newFakeAPI(t)
 
 	for name, attrs := range map[string]string{
 		"empty name":                 `name = ""`,

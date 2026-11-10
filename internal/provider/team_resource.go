@@ -2,7 +2,6 @@ package provider
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -15,7 +14,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/oapi-codegen/nullable"
 
 	"github.com/vibraniumlabs/terraform-provider-vibeoncall/internal/client"
 )
@@ -79,15 +77,7 @@ func (r *TeamResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 }
 
 func (r *TeamResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	if req.ProviderData == nil {
-		return
-	}
-	c, ok := req.ProviderData.(*client.ClientWithResponses)
-	if !ok {
-		resp.Diagnostics.AddError("Unexpected provider data", fmt.Sprintf("got %T", req.ProviderData))
-		return
-	}
-	r.client = c
+	r.client = clientFromProviderData(req.ProviderData, &resp.Diagnostics)
 }
 
 func (r *TeamResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
@@ -187,23 +177,4 @@ func setTeamState(m *TeamResourceModel, t *client.TeamResponse) {
 	m.ShortID = types.StringValue(t.ShortId)
 	m.Name = types.StringValue(t.Name)
 	m.Description = stringFromNullable(t.Description)
-}
-
-func nullableString(v types.String) nullable.Nullable[string] {
-	if v.IsNull() {
-		return nullable.NewNullNullable[string]()
-	}
-	return nullable.NewNullableWithValue(v.ValueString())
-}
-
-func stringFromNullable(v nullable.Nullable[string]) types.String {
-	s, err := v.Get()
-	if err != nil {
-		return types.StringNull()
-	}
-	return types.StringValue(s)
-}
-
-func apiError(status int, body []byte) string {
-	return fmt.Sprintf("HTTP %d: %s", status, string(body))
 }
