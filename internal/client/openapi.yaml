@@ -3522,7 +3522,7 @@ paths:
         - schema:
             type: string
             minLength: 1
-            description: Short identifier of the team (e.g. VP-TEAM-ABC123).
+            description: Short identifier of the team (e.g. VP-TEAM-ABC123), or its numeric ID.
           required: true
           name: teamShortId
           in: path
@@ -3569,7 +3569,7 @@ paths:
         - schema:
             type: string
             minLength: 1
-            description: Short identifier of the team (e.g. VP-TEAM-ABC123).
+            description: Short identifier of the team (e.g. VP-TEAM-ABC123), or its numeric ID.
           required: true
           name: teamShortId
           in: path
@@ -3633,7 +3633,7 @@ paths:
         - schema:
             type: string
             minLength: 1
-            description: Short identifier of the team (e.g. VP-TEAM-ABC123).
+            description: Short identifier of the team (e.g. VP-TEAM-ABC123), or its numeric ID.
           required: true
           name: teamShortId
           in: path
@@ -3685,7 +3685,7 @@ paths:
       tags:
         - Teams
       summary: List members of a team
-      description: Returns the list of team members for the given team. The team must belong to the organization associated with the API key. Use the team shortId (e.g. VP-TEAM-ABC123) from the list teams response.
+      description: Returns the list of team members for the given team. The team must belong to the organization associated with the API key.
       operationId: listTeamMembers
       security:
         - ApiKeyAuth: []
@@ -3693,7 +3693,7 @@ paths:
         - schema:
             type: string
             minLength: 1
-            description: Short identifier of the team (e.g. VP-TEAM-ABC123).
+            description: Short identifier of the team (e.g. VP-TEAM-ABC123), or its numeric ID.
           required: true
           name: teamShortId
           in: path
@@ -3760,7 +3760,7 @@ paths:
         - schema:
             type: string
             minLength: 1
-            description: Short identifier of the team (e.g. VP-TEAM-ABC123).
+            description: Short identifier of the team (e.g. VP-TEAM-ABC123), or its numeric ID.
           required: true
           name: teamShortId
           in: path
@@ -3819,7 +3819,7 @@ paths:
         - schema:
             type: string
             minLength: 1
-            description: Short identifier of the team (e.g. VP-TEAM-ABC123).
+            description: Short identifier of the team (e.g. VP-TEAM-ABC123), or its numeric ID.
           required: true
           name: teamShortId
           in: path
@@ -3881,7 +3881,7 @@ paths:
         - schema:
             type: string
             minLength: 1
-            description: Short identifier of the team (e.g. VP-TEAM-ABC123).
+            description: Short identifier of the team (e.g. VP-TEAM-ABC123), or its numeric ID.
           required: true
           name: teamShortId
           in: path

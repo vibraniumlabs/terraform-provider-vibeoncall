@@ -490,7 +490,7 @@ type ClientInterface interface {
 
 	// ListTeamMembers List members of a team
 	//
-	// Returns the list of team members for the given team. The team must belong to the organization associated with the API key. Use the team shortId (e.g. VP-TEAM-ABC123) from the list teams response.
+	// Returns the list of team members for the given team. The team must belong to the organization associated with the API key.
 	//
 	// Corresponds with GET /teams/{teamShortId}/members (the `ListTeamMembers` operationId).
 	ListTeamMembers(ctx context.Context, teamShortId string, params *ListTeamMembersParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -657,7 +657,7 @@ func (c *Client) UpdateTeam(ctx context.Context, teamShortId string, body Update
 
 // ListTeamMembers List members of a team
 //
-// Returns the list of team members for the given team. The team must belong to the organization associated with the API key. Use the team shortId (e.g. VP-TEAM-ABC123) from the list teams response.
+// Returns the list of team members for the given team. The team must belong to the organization associated with the API key.
 //
 // Corresponds with GET /teams/{teamShortId}/members (the `ListTeamMembers` operationId).
 func (c *Client) ListTeamMembers(ctx context.Context, teamShortId string, params *ListTeamMembersParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -1269,7 +1269,7 @@ type ClientWithResponsesInterface interface {
 
 	// ListTeamMembersWithResponse List members of a team
 	//
-	// Returns the list of team members for the given team. The team must belong to the organization associated with the API key. Use the team shortId (e.g. VP-TEAM-ABC123) from the list teams response.
+	// Returns the list of team members for the given team. The team must belong to the organization associated with the API key.
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
@@ -2083,7 +2083,7 @@ func (c *ClientWithResponses) UpdateTeamWithResponse(ctx context.Context, teamSh
 
 // ListTeamMembersWithResponse List members of a team
 //
-// Returns the list of team members for the given team. The team must belong to the organization associated with the API key. Use the team shortId (e.g. VP-TEAM-ABC123) from the list teams response.
+// Returns the list of team members for the given team. The team must belong to the organization associated with the API key.
 //
 // Returns a wrapper object for the known response body format(s).
 //

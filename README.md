@@ -14,6 +14,10 @@ terraform {
 }
 
 provider "vibeoncall" {}
+
+resource "vibeoncall_team" "sre" {
+  name = "SRE"
+}
 ```
 
 Set the API key with the `VIBEONCALL_API_KEY` environment variable, or with `api_key` in the provider block. See [`docs/`](docs/) for every resource and attribute.

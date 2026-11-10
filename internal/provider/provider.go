@@ -87,7 +87,9 @@ func (p *VibeOnCallProvider) Configure(ctx context.Context, req provider.Configu
 }
 
 func (p *VibeOnCallProvider) Resources(ctx context.Context) []func() resource.Resource {
-	return nil
+	return []func() resource.Resource{
+		NewTeamResource,
+	}
 }
 
 func (p *VibeOnCallProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
