@@ -93,6 +93,7 @@ func (p *VibeOnCallProvider) Resources(ctx context.Context) []func() resource.Re
 	return []func() resource.Resource{
 		NewTeamResource,
 		NewTeamMembershipResource,
+		NewEscalationPolicyResource,
 	}
 }
 

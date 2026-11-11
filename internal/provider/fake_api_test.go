@@ -42,6 +42,34 @@ type fakeChatChannel struct {
 	Name string `json:"name"`
 }
 
+type fakeScheduleTarget struct {
+	ScheduleID int    `json:"scheduleId"`
+	Mode       string `json:"mode"`
+}
+
+type fakeRotationTarget struct {
+	ScheduleID int    `json:"scheduleId"`
+	RotationID int    `json:"rotationId"`
+	Mode       string `json:"mode"`
+}
+
+type fakeTier struct {
+	ID                           int                  `json:"id"`
+	AcknowledgementTimeThreshold int                  `json:"acknowledgementTimeThreshold"`
+	ScheduleTargets              []fakeScheduleTarget `json:"scheduleTargets"`
+	RotationTargets              []fakeRotationTarget `json:"rotationTargets"`
+	UserIDs                      []int                `json:"userIds"`
+}
+
+type fakePolicy struct {
+	ID          int        `json:"id"`
+	Name        string     `json:"name"`
+	Description string     `json:"description"`
+	TeamID      *int       `json:"teamId"`
+	Tiers       []fakeTier `json:"tiers"`
+	inUse       bool
+}
+
 type fakeAPI struct {
 	mu           sync.Mutex
 	nextTeamID   int
@@ -52,12 +80,19 @@ type fakeAPI struct {
 	chatChannels []fakeChatChannel
 	chatQuery    url.Values
 	afterTeams   func()
+	nextPolicyID int
+	nextTierID   int
+	policies     map[int]*fakePolicy
+	teamDefaults map[int]int
 }
 
 func strPtr(s string) *string { return &s }
 
 func newFakeAPI(t *testing.T, users ...fakeUser) (*fakeAPI, *httptest.Server) {
-	api := &fakeAPI{nextTeamID: 1, teams: map[int]*fakeTeam{}, users: users, memberships: map[int]map[int]string{}}
+	api := &fakeAPI{
+		nextTeamID: 1, teams: map[int]*fakeTeam{}, users: users, memberships: map[int]map[int]string{},
+		nextPolicyID: 1, nextTierID: 1, policies: map[int]*fakePolicy{}, teamDefaults: map[int]int{},
+	}
 	srv := httptest.NewServer(api)
 	t.Cleanup(srv.Close)
 	return api, srv
@@ -130,6 +165,8 @@ func (a *fakeAPI) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		applyTeamBody(team, body)
 		a.teams[team.ID] = team
 		writeJSON(w, http.StatusCreated, team)
+	case parts[0] == "escalation-policies":
+		a.serveEscalationPolicies(w, r, parts[1:], body)
 	case len(parts) >= 2 && parts[0] == "teams":
 		team := a.findTeam(parts[1])
 		if team == nil {
@@ -279,6 +316,9 @@ func (a *fakeAPI) checkNothingLeft(*terraform.State) error {
 	if len(a.teams) > 0 {
 		return fmt.Errorf("%d teams left after destroy", len(a.teams))
 	}
+	if len(a.policies) > 0 {
+		return fmt.Errorf("%d escalation policies left after destroy", len(a.policies))
+	}
 	for teamID, members := range a.memberships {
 		if len(members) > 0 {
 			return fmt.Errorf("team %d still has %d members after destroy", teamID, len(members))
@@ -300,4 +340,136 @@ provider "vibeoncall" {
   base_url = %q
 }
 `, baseURL)
+}
+
+const fakePolicyPageSize = 1
+
+func (a *fakeAPI) policyJSON(p *fakePolicy) map[string]any {
+	isDefault := p.TeamID != nil && a.teamDefaults[*p.TeamID] == p.ID
+	return map[string]any{
+		"id": p.ID, "name": p.Name, "description": p.Description, "teamId": p.TeamID, "isDefault": isDefault,
+		"updatedAt": "2026-01-01T00:00:00Z", "tiers": p.Tiers,
+	}
+}
+
+func (a *fakeAPI) serveEscalationPolicies(w http.ResponseWriter, r *http.Request, rest []string, body map[string]json.RawMessage) {
+	if len(rest) == 0 {
+		switch r.Method {
+		case http.MethodGet:
+			a.listPolicies(w, r)
+		case http.MethodPost:
+			p := &fakePolicy{ID: a.nextPolicyID}
+			a.nextPolicyID++
+			if raw, ok := body["teamId"]; ok {
+				_ = json.Unmarshal(raw, &p.TeamID)
+			}
+			if p.TeamID != nil && a.teams[*p.TeamID] == nil {
+				notFound(w)
+				return
+			}
+			a.applyPolicyBody(p, body)
+			a.policies[p.ID] = p
+			writeJSON(w, http.StatusCreated, a.policyJSON(p))
+		default:
+			w.WriteHeader(http.StatusMethodNotAllowed)
+		}
+		return
+	}
+
+	id, _ := strconv.Atoi(rest[0])
+	p := a.policies[id]
+	if p == nil {
+		notFound(w)
+		return
+	}
+	switch r.Method {
+	case http.MethodGet:
+		writeJSON(w, http.StatusOK, a.policyJSON(p))
+	case http.MethodPatch:
+		if raw, ok := body["isDefault"]; ok {
+			var isDefault bool
+			_ = json.Unmarshal(raw, &isDefault)
+			if isDefault && p.TeamID == nil {
+				writeJSON(w, http.StatusBadRequest, map[string]string{"message": "Only team policies can be default"})
+				return
+			}
+			if isDefault {
+				a.teamDefaults[*p.TeamID] = p.ID
+			} else if p.TeamID != nil && a.teamDefaults[*p.TeamID] == p.ID {
+				delete(a.teamDefaults, *p.TeamID)
+			}
+		}
+		a.applyPolicyBody(p, body)
+		writeJSON(w, http.StatusOK, a.policyJSON(p))
+	case http.MethodDelete:
+		if p.inUse {
+			writeJSON(w, http.StatusConflict, map[string]string{"message": fmt.Sprintf("Escalation policy %d still has 1 reference(s)", p.ID)})
+			return
+		}
+		a.deletePolicyLocked(p)
+		w.WriteHeader(http.StatusNoContent)
+	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
+	}
+}
+
+func (a *fakeAPI) listPolicies(w http.ResponseWriter, r *http.Request) {
+	matched := []map[string]any{}
+	ids := make([]int, 0, len(a.policies))
+	for id := range a.policies {
+		ids = append(ids, id)
+	}
+	sort.Sort(sort.Reverse(sort.IntSlice(ids)))
+	teamID := r.URL.Query().Get("teamId")
+	for _, id := range ids {
+		p := a.policies[id]
+		if teamID == "" || (p.TeamID != nil && strconv.Itoa(*p.TeamID) == teamID) {
+			matched = append(matched, a.policyJSON(p))
+		}
+	}
+	offset, _ := strconv.Atoi(r.URL.Query().Get("offset"))
+	start, end := min(offset, len(matched)), min(offset+fakePolicyPageSize, len(matched))
+	writeJSON(w, http.StatusOK, map[string]any{"policies": matched[start:end], "total": len(matched), "hasMore": end < len(matched)})
+}
+
+func (a *fakeAPI) applyPolicyBody(p *fakePolicy, body map[string]json.RawMessage) {
+	if raw, ok := body["name"]; ok {
+		_ = json.Unmarshal(raw, &p.Name)
+	}
+	if raw, ok := body["description"]; ok {
+		_ = json.Unmarshal(raw, &p.Description)
+	}
+	if raw, ok := body["tiers"]; ok {
+		var tiers []fakeTier
+		_ = json.Unmarshal(raw, &tiers)
+		for i := range tiers {
+			tiers[i].ID = a.nextTierID
+			a.nextTierID++
+			tiers[i].ScheduleTargets = append([]fakeScheduleTarget{}, tiers[i].ScheduleTargets...)
+			tiers[i].RotationTargets = append([]fakeRotationTarget{}, tiers[i].RotationTargets...)
+			tiers[i].UserIDs = append([]int{}, tiers[i].UserIDs...)
+		}
+		p.Tiers = tiers
+	}
+}
+
+func (a *fakeAPI) deletePolicyLocked(p *fakePolicy) {
+	if p.TeamID != nil && a.teamDefaults[*p.TeamID] == p.ID {
+		delete(a.teamDefaults, *p.TeamID)
+	}
+	delete(a.policies, p.ID)
+}
+
+func (a *fakeAPI) removePolicy(id int) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	if p := a.policies[id]; p != nil {
+		a.deletePolicyLocked(p)
+	}
+}
+
+func (a *fakeAPI) setPolicyInUse(id int, inUse bool) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.policies[id].inUse = inUse
 }
