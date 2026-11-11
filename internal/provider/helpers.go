@@ -12,6 +12,8 @@ import (
 	"github.com/vibraniumlabs/terraform-provider-vibeoncall/internal/client"
 )
 
+const listPageSize = 100
+
 var numericIDPattern = regexp.MustCompile(`^[1-9][0-9]*$`)
 
 var numericID = stringvalidator.RegexMatches(numericIDPattern, "must be a numeric ID")

@@ -99,6 +99,7 @@ func (p *VibeOnCallProvider) Resources(ctx context.Context) []func() resource.Re
 func (p *VibeOnCallProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
 		NewMemberDataSource,
+		NewTeamDataSource,
 	}
 }
 
