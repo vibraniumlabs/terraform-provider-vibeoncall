@@ -97,6 +97,90 @@ func (e MemberRoleBuiltInKey) Valid() bool {
 	}
 }
 
+// Defines values for PublicEscalationPolicyRotationTargetInputMode.
+const (
+	PublicEscalationPolicyRotationTargetInputModeCurrent  PublicEscalationPolicyRotationTargetInputMode = "current"
+	PublicEscalationPolicyRotationTargetInputModeNext     PublicEscalationPolicyRotationTargetInputMode = "next"
+	PublicEscalationPolicyRotationTargetInputModePrevious PublicEscalationPolicyRotationTargetInputMode = "previous"
+)
+
+// Valid indicates whether the value is a known member of the PublicEscalationPolicyRotationTargetInputMode enum.
+func (e PublicEscalationPolicyRotationTargetInputMode) Valid() bool {
+	switch e {
+	case PublicEscalationPolicyRotationTargetInputModeCurrent:
+		return true
+	case PublicEscalationPolicyRotationTargetInputModeNext:
+		return true
+	case PublicEscalationPolicyRotationTargetInputModePrevious:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for PublicEscalationPolicyRotationTargetResponseMode.
+const (
+	PublicEscalationPolicyRotationTargetResponseModeCurrent  PublicEscalationPolicyRotationTargetResponseMode = "current"
+	PublicEscalationPolicyRotationTargetResponseModeNext     PublicEscalationPolicyRotationTargetResponseMode = "next"
+	PublicEscalationPolicyRotationTargetResponseModePrevious PublicEscalationPolicyRotationTargetResponseMode = "previous"
+)
+
+// Valid indicates whether the value is a known member of the PublicEscalationPolicyRotationTargetResponseMode enum.
+func (e PublicEscalationPolicyRotationTargetResponseMode) Valid() bool {
+	switch e {
+	case PublicEscalationPolicyRotationTargetResponseModeCurrent:
+		return true
+	case PublicEscalationPolicyRotationTargetResponseModeNext:
+		return true
+	case PublicEscalationPolicyRotationTargetResponseModePrevious:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for PublicEscalationPolicyScheduleTargetInputMode.
+const (
+	PublicEscalationPolicyScheduleTargetInputModeCurrent  PublicEscalationPolicyScheduleTargetInputMode = "current"
+	PublicEscalationPolicyScheduleTargetInputModeNext     PublicEscalationPolicyScheduleTargetInputMode = "next"
+	PublicEscalationPolicyScheduleTargetInputModePrevious PublicEscalationPolicyScheduleTargetInputMode = "previous"
+)
+
+// Valid indicates whether the value is a known member of the PublicEscalationPolicyScheduleTargetInputMode enum.
+func (e PublicEscalationPolicyScheduleTargetInputMode) Valid() bool {
+	switch e {
+	case PublicEscalationPolicyScheduleTargetInputModeCurrent:
+		return true
+	case PublicEscalationPolicyScheduleTargetInputModeNext:
+		return true
+	case PublicEscalationPolicyScheduleTargetInputModePrevious:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for PublicEscalationPolicyTierResponseScheduleTargetsMode.
+const (
+	PublicEscalationPolicyTierResponseScheduleTargetsModeCurrent  PublicEscalationPolicyTierResponseScheduleTargetsMode = "current"
+	PublicEscalationPolicyTierResponseScheduleTargetsModeNext     PublicEscalationPolicyTierResponseScheduleTargetsMode = "next"
+	PublicEscalationPolicyTierResponseScheduleTargetsModePrevious PublicEscalationPolicyTierResponseScheduleTargetsMode = "previous"
+)
+
+// Valid indicates whether the value is a known member of the PublicEscalationPolicyTierResponseScheduleTargetsMode enum.
+func (e PublicEscalationPolicyTierResponseScheduleTargetsMode) Valid() bool {
+	switch e {
+	case PublicEscalationPolicyTierResponseScheduleTargetsModeCurrent:
+		return true
+	case PublicEscalationPolicyTierResponseScheduleTargetsModeNext:
+		return true
+	case PublicEscalationPolicyTierResponseScheduleTargetsModePrevious:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for TeamMemberAssignmentResponseRole.
 const (
 	TeamMemberAssignmentResponseRoleAdmin  TeamMemberAssignmentResponseRole = "admin"
@@ -246,6 +330,17 @@ type ChatChannelsListResponse struct {
 // ChatPlatform The chat platform the organization is connected to: `slack` or `microsoftTeams`.
 type ChatPlatform string
 
+// CreatePublicEscalationPolicyRequest defines model for CreatePublicEscalationPolicyRequest.
+type CreatePublicEscalationPolicyRequest struct {
+	Description string                 `json:"description"`
+	IsDefault   *bool                  `json:"isDefault,omitempty"`
+	Name        string                 `json:"name"`
+	TeamId      nullable.Nullable[int] `json:"teamId,omitempty"`
+
+	// Tiers At least one tier is required. Tiers escalate in array order, starting with the first item. The server assigns their positions.
+	Tiers []PublicEscalationPolicyTierInput `json:"tiers"`
+}
+
 // CreateTeamRequest defines model for CreateTeamRequest.
 type CreateTeamRequest struct {
 	Description      nullable.Nullable[string] `json:"description,omitempty"`
@@ -371,6 +466,95 @@ type MicrosoftTeamsTeamsListResponse struct {
 	// Total Total number of joined teams matching the filters.
 	Total int32 `json:"total"`
 }
+
+// PublicEscalationPolicyListResponse defines model for PublicEscalationPolicyListResponse.
+type PublicEscalationPolicyListResponse struct {
+	HasMore  bool                             `json:"hasMore"`
+	Policies []PublicEscalationPolicyResponse `json:"policies"`
+	Total    int                              `json:"total"`
+}
+
+// PublicEscalationPolicyResponse defines model for PublicEscalationPolicyResponse.
+type PublicEscalationPolicyResponse struct {
+	Description string                 `json:"description"`
+	Id          int                    `json:"id"`
+	IsDefault   bool                   `json:"isDefault"`
+	Name        string                 `json:"name"`
+	TeamId      nullable.Nullable[int] `json:"teamId"`
+
+	// Tiers Tiers in escalation order, starting with the first item.
+	Tiers     []PublicEscalationPolicyTierResponse `json:"tiers"`
+	UpdatedAt time.Time                            `json:"updatedAt"`
+}
+
+// PublicEscalationPolicyRotationTargetInput defines model for PublicEscalationPolicyRotationTargetInput.
+type PublicEscalationPolicyRotationTargetInput struct {
+	Mode       *PublicEscalationPolicyRotationTargetInputMode `json:"mode,omitempty"`
+	RotationId int                                            `json:"rotationId"`
+	ScheduleId int                                            `json:"scheduleId"`
+}
+
+// PublicEscalationPolicyRotationTargetInputMode defines model for PublicEscalationPolicyRotationTargetInput.Mode.
+type PublicEscalationPolicyRotationTargetInputMode string
+
+// PublicEscalationPolicyRotationTargetResponse defines model for PublicEscalationPolicyRotationTargetResponse.
+type PublicEscalationPolicyRotationTargetResponse struct {
+	Mode       PublicEscalationPolicyRotationTargetResponseMode `json:"mode"`
+	RotationId int                                              `json:"rotationId"`
+	ScheduleId int                                              `json:"scheduleId"`
+}
+
+// PublicEscalationPolicyRotationTargetResponseMode defines model for PublicEscalationPolicyRotationTargetResponse.Mode.
+type PublicEscalationPolicyRotationTargetResponseMode string
+
+// PublicEscalationPolicyScheduleTargetInput defines model for PublicEscalationPolicyScheduleTargetInput.
+type PublicEscalationPolicyScheduleTargetInput struct {
+	Mode       *PublicEscalationPolicyScheduleTargetInputMode `json:"mode,omitempty"`
+	ScheduleId int                                            `json:"scheduleId"`
+}
+
+// PublicEscalationPolicyScheduleTargetInputMode defines model for PublicEscalationPolicyScheduleTargetInput.Mode.
+type PublicEscalationPolicyScheduleTargetInputMode string
+
+// PublicEscalationPolicyTierInput defines model for PublicEscalationPolicyTierInput.
+type PublicEscalationPolicyTierInput struct {
+	// AcknowledgementTimeThreshold Acknowledgement timeout in milliseconds.
+	AcknowledgementTimeThreshold int                                          `json:"acknowledgementTimeThreshold"`
+	RotationTargets              *[]PublicEscalationPolicyRotationTargetInput `json:"rotationTargets,omitempty"`
+	ScheduleTargets              *[]PublicEscalationPolicyScheduleTargetInput `json:"scheduleTargets,omitempty"`
+	UserIds                      *[]int                                       `json:"userIds,omitempty"`
+	union                        json.RawMessage
+}
+
+// PublicEscalationPolicyTierInput0 defines model for PublicEscalationPolicyTierInput.0.
+type PublicEscalationPolicyTierInput0 struct {
+	ScheduleTargets []interface{} `json:"scheduleTargets"`
+}
+
+// PublicEscalationPolicyTierInput1 defines model for PublicEscalationPolicyTierInput.1.
+type PublicEscalationPolicyTierInput1 struct {
+	RotationTargets []interface{} `json:"rotationTargets"`
+}
+
+// PublicEscalationPolicyTierInput2 defines model for PublicEscalationPolicyTierInput.2.
+type PublicEscalationPolicyTierInput2 struct {
+	UserIds []interface{} `json:"userIds"`
+}
+
+// PublicEscalationPolicyTierResponse defines model for PublicEscalationPolicyTierResponse.
+type PublicEscalationPolicyTierResponse struct {
+	AcknowledgementTimeThreshold int                                            `json:"acknowledgementTimeThreshold"`
+	Id                           int                                            `json:"id"`
+	RotationTargets              []PublicEscalationPolicyRotationTargetResponse `json:"rotationTargets"`
+	ScheduleTargets              []struct {
+		Mode       PublicEscalationPolicyTierResponseScheduleTargetsMode `json:"mode"`
+		ScheduleId int                                                   `json:"scheduleId"`
+	} `json:"scheduleTargets"`
+	UserIds []int `json:"userIds"`
+}
+
+// PublicEscalationPolicyTierResponseScheduleTargetsMode defines model for PublicEscalationPolicyTierResponse.ScheduleTargets.Mode.
+type PublicEscalationPolicyTierResponseScheduleTargetsMode string
 
 // TeamMemberAssignmentResponse defines model for TeamMemberAssignmentResponse.
 type TeamMemberAssignmentResponse struct {
@@ -536,6 +720,16 @@ type TeamsListResponse struct {
 	Total int32 `json:"total"`
 }
 
+// UpdatePublicEscalationPolicyRequest defines model for UpdatePublicEscalationPolicyRequest.
+type UpdatePublicEscalationPolicyRequest struct {
+	Description *string `json:"description,omitempty"`
+	IsDefault   *bool   `json:"isDefault,omitempty"`
+	Name        *string `json:"name,omitempty"`
+
+	// Tiers At least one tier is required. Tiers escalate in array order, starting with the first item. The server assigns their positions.
+	Tiers *[]PublicEscalationPolicyTierInput `json:"tiers,omitempty"`
+}
+
 // UpdateTeamRequest defines model for UpdateTeamRequest.
 type UpdateTeamRequest struct {
 	Description      nullable.Nullable[string] `json:"description,omitempty"`
@@ -557,6 +751,38 @@ type ValidationErrorResponse struct {
 		// Path Path to the field that caused the error.
 		Path *[]string `json:"path,omitempty"`
 	} `json:"error"`
+}
+
+// ListEscalationPoliciesParams defines parameters for ListEscalationPolicies.
+type ListEscalationPoliciesParams struct {
+	Limit  *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset *int32 `form:"offset,omitempty" json:"offset,omitempty"`
+	TeamId *int32 `form:"teamId,omitempty" json:"teamId,omitempty"`
+}
+
+// ListEscalationPolicies400JSONResponseBody defines parameters for ListEscalationPolicies.
+type ListEscalationPolicies400JSONResponseBody struct {
+	union json.RawMessage
+}
+
+// CreateEscalationPolicy400JSONResponseBody defines parameters for CreateEscalationPolicy.
+type CreateEscalationPolicy400JSONResponseBody struct {
+	union json.RawMessage
+}
+
+// DeleteEscalationPolicy400JSONResponseBody defines parameters for DeleteEscalationPolicy.
+type DeleteEscalationPolicy400JSONResponseBody struct {
+	union json.RawMessage
+}
+
+// GetEscalationPolicy400JSONResponseBody defines parameters for GetEscalationPolicy.
+type GetEscalationPolicy400JSONResponseBody struct {
+	union json.RawMessage
+}
+
+// UpdateEscalationPolicy400JSONResponseBody defines parameters for UpdateEscalationPolicy.
+type UpdateEscalationPolicy400JSONResponseBody struct {
+	union json.RawMessage
 }
 
 // ListChatChannelsParams defines parameters for ListChatChannels.
@@ -609,6 +835,12 @@ type ListTeamMembersParams struct {
 	Offset *int32 `form:"offset,omitempty" json:"offset,omitempty"`
 }
 
+// CreateEscalationPolicyJSONRequestBody defines body for CreateEscalationPolicy for application/json ContentType.
+type CreateEscalationPolicyJSONRequestBody = CreatePublicEscalationPolicyRequest
+
+// UpdateEscalationPolicyJSONRequestBody defines body for UpdateEscalationPolicy for application/json ContentType.
+type UpdateEscalationPolicyJSONRequestBody = UpdatePublicEscalationPolicyRequest
+
 // CreateTeamJSONRequestBody defines body for CreateTeam for application/json ContentType.
 type CreateTeamJSONRequestBody = CreateTeamRequest
 
@@ -617,6 +849,478 @@ type UpdateTeamJSONRequestBody = UpdateTeamRequest
 
 // AssignTeamMemberJSONRequestBody defines body for AssignTeamMember for application/json ContentType.
 type AssignTeamMemberJSONRequestBody = AssignTeamMemberRequest
+
+// AsPublicEscalationPolicyTierInput0 returns the union data inside the PublicEscalationPolicyTierInput as a PublicEscalationPolicyTierInput0
+func (t PublicEscalationPolicyTierInput) AsPublicEscalationPolicyTierInput0() (PublicEscalationPolicyTierInput0, error) {
+	var body PublicEscalationPolicyTierInput0
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPublicEscalationPolicyTierInput0 overwrites any union data inside the PublicEscalationPolicyTierInput as the provided PublicEscalationPolicyTierInput0
+func (t *PublicEscalationPolicyTierInput) FromPublicEscalationPolicyTierInput0(v PublicEscalationPolicyTierInput0) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePublicEscalationPolicyTierInput0 performs a merge with any union data inside the PublicEscalationPolicyTierInput, using the provided PublicEscalationPolicyTierInput0
+func (t *PublicEscalationPolicyTierInput) MergePublicEscalationPolicyTierInput0(v PublicEscalationPolicyTierInput0) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPublicEscalationPolicyTierInput1 returns the union data inside the PublicEscalationPolicyTierInput as a PublicEscalationPolicyTierInput1
+func (t PublicEscalationPolicyTierInput) AsPublicEscalationPolicyTierInput1() (PublicEscalationPolicyTierInput1, error) {
+	var body PublicEscalationPolicyTierInput1
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPublicEscalationPolicyTierInput1 overwrites any union data inside the PublicEscalationPolicyTierInput as the provided PublicEscalationPolicyTierInput1
+func (t *PublicEscalationPolicyTierInput) FromPublicEscalationPolicyTierInput1(v PublicEscalationPolicyTierInput1) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePublicEscalationPolicyTierInput1 performs a merge with any union data inside the PublicEscalationPolicyTierInput, using the provided PublicEscalationPolicyTierInput1
+func (t *PublicEscalationPolicyTierInput) MergePublicEscalationPolicyTierInput1(v PublicEscalationPolicyTierInput1) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPublicEscalationPolicyTierInput2 returns the union data inside the PublicEscalationPolicyTierInput as a PublicEscalationPolicyTierInput2
+func (t PublicEscalationPolicyTierInput) AsPublicEscalationPolicyTierInput2() (PublicEscalationPolicyTierInput2, error) {
+	var body PublicEscalationPolicyTierInput2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPublicEscalationPolicyTierInput2 overwrites any union data inside the PublicEscalationPolicyTierInput as the provided PublicEscalationPolicyTierInput2
+func (t *PublicEscalationPolicyTierInput) FromPublicEscalationPolicyTierInput2(v PublicEscalationPolicyTierInput2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePublicEscalationPolicyTierInput2 performs a merge with any union data inside the PublicEscalationPolicyTierInput, using the provided PublicEscalationPolicyTierInput2
+func (t *PublicEscalationPolicyTierInput) MergePublicEscalationPolicyTierInput2(v PublicEscalationPolicyTierInput2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t PublicEscalationPolicyTierInput) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	object := make(map[string]json.RawMessage)
+	if t.union != nil {
+		err = json.Unmarshal(b, &object)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	object["acknowledgementTimeThreshold"], err = json.Marshal(t.AcknowledgementTimeThreshold)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'acknowledgementTimeThreshold': %w", err)
+	}
+
+	if t.RotationTargets != nil {
+		object["rotationTargets"], err = json.Marshal(t.RotationTargets)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'rotationTargets': %w", err)
+		}
+	}
+
+	if t.ScheduleTargets != nil {
+		object["scheduleTargets"], err = json.Marshal(t.ScheduleTargets)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'scheduleTargets': %w", err)
+		}
+	}
+
+	if t.UserIds != nil {
+		object["userIds"], err = json.Marshal(t.UserIds)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'userIds': %w", err)
+		}
+	}
+	b, err = json.Marshal(object)
+	return b, err
+}
+
+func (t *PublicEscalationPolicyTierInput) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	if err != nil {
+		return err
+	}
+	object := make(map[string]json.RawMessage)
+	err = json.Unmarshal(b, &object)
+	if err != nil {
+		return err
+	}
+
+	if raw, found := object["acknowledgementTimeThreshold"]; found {
+		err = json.Unmarshal(raw, &t.AcknowledgementTimeThreshold)
+		if err != nil {
+			return fmt.Errorf("error reading 'acknowledgementTimeThreshold': %w", err)
+		}
+	}
+
+	if raw, found := object["rotationTargets"]; found {
+		err = json.Unmarshal(raw, &t.RotationTargets)
+		if err != nil {
+			return fmt.Errorf("error reading 'rotationTargets': %w", err)
+		}
+	}
+
+	if raw, found := object["scheduleTargets"]; found {
+		err = json.Unmarshal(raw, &t.ScheduleTargets)
+		if err != nil {
+			return fmt.Errorf("error reading 'scheduleTargets': %w", err)
+		}
+	}
+
+	if raw, found := object["userIds"]; found {
+		err = json.Unmarshal(raw, &t.UserIds)
+		if err != nil {
+			return fmt.Errorf("error reading 'userIds': %w", err)
+		}
+	}
+
+	return err
+}
+
+// AsValidationErrorResponse returns the union data inside the ListEscalationPolicies400JSONResponseBody as a ValidationErrorResponse
+func (t ListEscalationPolicies400JSONResponseBody) AsValidationErrorResponse() (ValidationErrorResponse, error) {
+	var body ValidationErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromValidationErrorResponse overwrites any union data inside the ListEscalationPolicies400JSONResponseBody as the provided ValidationErrorResponse
+func (t *ListEscalationPolicies400JSONResponseBody) FromValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeValidationErrorResponse performs a merge with any union data inside the ListEscalationPolicies400JSONResponseBody, using the provided ValidationErrorResponse
+func (t *ListEscalationPolicies400JSONResponseBody) MergeValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsErrorResponse returns the union data inside the ListEscalationPolicies400JSONResponseBody as a ErrorResponse
+func (t ListEscalationPolicies400JSONResponseBody) AsErrorResponse() (ErrorResponse, error) {
+	var body ErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorResponse overwrites any union data inside the ListEscalationPolicies400JSONResponseBody as the provided ErrorResponse
+func (t *ListEscalationPolicies400JSONResponseBody) FromErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorResponse performs a merge with any union data inside the ListEscalationPolicies400JSONResponseBody, using the provided ErrorResponse
+func (t *ListEscalationPolicies400JSONResponseBody) MergeErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t ListEscalationPolicies400JSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *ListEscalationPolicies400JSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsValidationErrorResponse returns the union data inside the CreateEscalationPolicy400JSONResponseBody as a ValidationErrorResponse
+func (t CreateEscalationPolicy400JSONResponseBody) AsValidationErrorResponse() (ValidationErrorResponse, error) {
+	var body ValidationErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromValidationErrorResponse overwrites any union data inside the CreateEscalationPolicy400JSONResponseBody as the provided ValidationErrorResponse
+func (t *CreateEscalationPolicy400JSONResponseBody) FromValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeValidationErrorResponse performs a merge with any union data inside the CreateEscalationPolicy400JSONResponseBody, using the provided ValidationErrorResponse
+func (t *CreateEscalationPolicy400JSONResponseBody) MergeValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsErrorResponse returns the union data inside the CreateEscalationPolicy400JSONResponseBody as a ErrorResponse
+func (t CreateEscalationPolicy400JSONResponseBody) AsErrorResponse() (ErrorResponse, error) {
+	var body ErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorResponse overwrites any union data inside the CreateEscalationPolicy400JSONResponseBody as the provided ErrorResponse
+func (t *CreateEscalationPolicy400JSONResponseBody) FromErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorResponse performs a merge with any union data inside the CreateEscalationPolicy400JSONResponseBody, using the provided ErrorResponse
+func (t *CreateEscalationPolicy400JSONResponseBody) MergeErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t CreateEscalationPolicy400JSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *CreateEscalationPolicy400JSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsValidationErrorResponse returns the union data inside the DeleteEscalationPolicy400JSONResponseBody as a ValidationErrorResponse
+func (t DeleteEscalationPolicy400JSONResponseBody) AsValidationErrorResponse() (ValidationErrorResponse, error) {
+	var body ValidationErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromValidationErrorResponse overwrites any union data inside the DeleteEscalationPolicy400JSONResponseBody as the provided ValidationErrorResponse
+func (t *DeleteEscalationPolicy400JSONResponseBody) FromValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeValidationErrorResponse performs a merge with any union data inside the DeleteEscalationPolicy400JSONResponseBody, using the provided ValidationErrorResponse
+func (t *DeleteEscalationPolicy400JSONResponseBody) MergeValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsErrorResponse returns the union data inside the DeleteEscalationPolicy400JSONResponseBody as a ErrorResponse
+func (t DeleteEscalationPolicy400JSONResponseBody) AsErrorResponse() (ErrorResponse, error) {
+	var body ErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorResponse overwrites any union data inside the DeleteEscalationPolicy400JSONResponseBody as the provided ErrorResponse
+func (t *DeleteEscalationPolicy400JSONResponseBody) FromErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorResponse performs a merge with any union data inside the DeleteEscalationPolicy400JSONResponseBody, using the provided ErrorResponse
+func (t *DeleteEscalationPolicy400JSONResponseBody) MergeErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t DeleteEscalationPolicy400JSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *DeleteEscalationPolicy400JSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsValidationErrorResponse returns the union data inside the GetEscalationPolicy400JSONResponseBody as a ValidationErrorResponse
+func (t GetEscalationPolicy400JSONResponseBody) AsValidationErrorResponse() (ValidationErrorResponse, error) {
+	var body ValidationErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromValidationErrorResponse overwrites any union data inside the GetEscalationPolicy400JSONResponseBody as the provided ValidationErrorResponse
+func (t *GetEscalationPolicy400JSONResponseBody) FromValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeValidationErrorResponse performs a merge with any union data inside the GetEscalationPolicy400JSONResponseBody, using the provided ValidationErrorResponse
+func (t *GetEscalationPolicy400JSONResponseBody) MergeValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsErrorResponse returns the union data inside the GetEscalationPolicy400JSONResponseBody as a ErrorResponse
+func (t GetEscalationPolicy400JSONResponseBody) AsErrorResponse() (ErrorResponse, error) {
+	var body ErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorResponse overwrites any union data inside the GetEscalationPolicy400JSONResponseBody as the provided ErrorResponse
+func (t *GetEscalationPolicy400JSONResponseBody) FromErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorResponse performs a merge with any union data inside the GetEscalationPolicy400JSONResponseBody, using the provided ErrorResponse
+func (t *GetEscalationPolicy400JSONResponseBody) MergeErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t GetEscalationPolicy400JSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *GetEscalationPolicy400JSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsValidationErrorResponse returns the union data inside the UpdateEscalationPolicy400JSONResponseBody as a ValidationErrorResponse
+func (t UpdateEscalationPolicy400JSONResponseBody) AsValidationErrorResponse() (ValidationErrorResponse, error) {
+	var body ValidationErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromValidationErrorResponse overwrites any union data inside the UpdateEscalationPolicy400JSONResponseBody as the provided ValidationErrorResponse
+func (t *UpdateEscalationPolicy400JSONResponseBody) FromValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeValidationErrorResponse performs a merge with any union data inside the UpdateEscalationPolicy400JSONResponseBody, using the provided ValidationErrorResponse
+func (t *UpdateEscalationPolicy400JSONResponseBody) MergeValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsErrorResponse returns the union data inside the UpdateEscalationPolicy400JSONResponseBody as a ErrorResponse
+func (t UpdateEscalationPolicy400JSONResponseBody) AsErrorResponse() (ErrorResponse, error) {
+	var body ErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorResponse overwrites any union data inside the UpdateEscalationPolicy400JSONResponseBody as the provided ErrorResponse
+func (t *UpdateEscalationPolicy400JSONResponseBody) FromErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorResponse performs a merge with any union data inside the UpdateEscalationPolicy400JSONResponseBody, using the provided ErrorResponse
+func (t *UpdateEscalationPolicy400JSONResponseBody) MergeErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t UpdateEscalationPolicy400JSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *UpdateEscalationPolicy400JSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
 
 // AsValidationErrorResponse returns the union data inside the ListChatChannels400JSONResponseBody as a ValidationErrorResponse
 func (t ListChatChannels400JSONResponseBody) AsValidationErrorResponse() (ValidationErrorResponse, error) {
@@ -816,6 +1520,61 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 // The interface specification for the client above.
 type ClientInterface interface {
 
+	// ListEscalationPolicies List escalation policies
+	//
+	// Lists all global and team policies in the API key organization. teamId filters to one team.
+	//
+	// Corresponds with GET /escalation-policies (the `ListEscalationPolicies` operationId).
+	ListEscalationPolicies(ctx context.Context, params *ListEscalationPoliciesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateEscalationPolicyWithBody Create an escalation policy
+	//
+	// Omit teamId or send null for a global policy. Only team policies can be default.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /escalation-policies (the `CreateEscalationPolicy` operationId).
+	CreateEscalationPolicyWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateEscalationPolicy Create an escalation policy
+	//
+	// Omit teamId or send null for a global policy. Only team policies can be default.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /escalation-policies (the `CreateEscalationPolicy` operationId).
+	CreateEscalationPolicy(ctx context.Context, body CreateEscalationPolicyJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteEscalationPolicy Delete an escalation policy
+	//
+	// Soft-deletes the policy and clears its team default reference when applicable. A policy that a routing rule or automation still uses cannot be deleted; change those first.
+	//
+	// Corresponds with DELETE /escalation-policies/{id} (the `DeleteEscalationPolicy` operationId).
+	DeleteEscalationPolicy(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetEscalationPolicy Get an escalation policy
+	//
+	// Corresponds with GET /escalation-policies/{id} (the `GetEscalationPolicy` operationId).
+	GetEscalationPolicy(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateEscalationPolicyWithBody Update an escalation policy
+	//
+	// Omitted fields are unchanged. A supplied tiers array replaces every tier in the given array order and must contain at least one tier. Reorder by sending the complete tier list in the desired order. isDefault false clears this policy as its team default.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PATCH /escalation-policies/{id} (the `UpdateEscalationPolicy` operationId).
+	UpdateEscalationPolicyWithBody(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateEscalationPolicy Update an escalation policy
+	//
+	// Omitted fields are unchanged. A supplied tiers array replaces every tier in the given array order and must contain at least one tier. Reorder by sending the complete tier list in the desired order. isDefault false clears this policy as its team default.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PATCH /escalation-policies/{id} (the `UpdateEscalationPolicy` operationId).
+	UpdateEscalationPolicy(ctx context.Context, id int32, body UpdateEscalationPolicyJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// ListChatChannels List chat channels
 	//
 	// Returns the channels of the chat platform the organization is connected to, sorted by name. On Slack every workspace channel is listed. On Microsoft Teams, channels belong to a team, so `microsoftTeamsTeamId` is required; list the teams with GET /integrations/chat/microsoft-teams/teams. Use the returned channel `id` values as `announcementChannels` on maintenance windows.
@@ -946,6 +1705,131 @@ type ClientInterface interface {
 	//
 	// Corresponds with GET /teams/{teamShortId}/on-call (the `GetTeamCurrentOnCall` operationId).
 	GetTeamCurrentOnCall(ctx context.Context, teamShortId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+}
+
+// ListEscalationPolicies List escalation policies
+//
+// Lists all global and team policies in the API key organization. teamId filters to one team.
+//
+// Corresponds with GET /escalation-policies (the `ListEscalationPolicies` operationId).
+func (c *Client) ListEscalationPolicies(ctx context.Context, params *ListEscalationPoliciesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListEscalationPoliciesRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateEscalationPolicyWithBody Create an escalation policy
+//
+// Omit teamId or send null for a global policy. Only team policies can be default.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /escalation-policies (the `CreateEscalationPolicy` operationId).
+func (c *Client) CreateEscalationPolicyWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateEscalationPolicyRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateEscalationPolicy Create an escalation policy
+//
+// Omit teamId or send null for a global policy. Only team policies can be default.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /escalation-policies (the `CreateEscalationPolicy` operationId).
+func (c *Client) CreateEscalationPolicy(ctx context.Context, body CreateEscalationPolicyJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateEscalationPolicyRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DeleteEscalationPolicy Delete an escalation policy
+//
+// Soft-deletes the policy and clears its team default reference when applicable. A policy that a routing rule or automation still uses cannot be deleted; change those first.
+//
+// Corresponds with DELETE /escalation-policies/{id} (the `DeleteEscalationPolicy` operationId).
+func (c *Client) DeleteEscalationPolicy(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteEscalationPolicyRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetEscalationPolicy Get an escalation policy
+//
+// Corresponds with GET /escalation-policies/{id} (the `GetEscalationPolicy` operationId).
+func (c *Client) GetEscalationPolicy(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetEscalationPolicyRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateEscalationPolicyWithBody Update an escalation policy
+//
+// Omitted fields are unchanged. A supplied tiers array replaces every tier in the given array order and must contain at least one tier. Reorder by sending the complete tier list in the desired order. isDefault false clears this policy as its team default.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PATCH /escalation-policies/{id} (the `UpdateEscalationPolicy` operationId).
+func (c *Client) UpdateEscalationPolicyWithBody(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateEscalationPolicyRequestWithBody(c.Server, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateEscalationPolicy Update an escalation policy
+//
+// Omitted fields are unchanged. A supplied tiers array replaces every tier in the given array order and must contain at least one tier. Reorder by sending the complete tier list in the desired order. isDefault false clears this policy as its team default.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PATCH /escalation-policies/{id} (the `UpdateEscalationPolicy` operationId).
+func (c *Client) UpdateEscalationPolicy(ctx context.Context, id int32, body UpdateEscalationPolicyJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateEscalationPolicyRequest(c.Server, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
 }
 
 // ListChatChannels List chat channels
@@ -1247,6 +2131,239 @@ func (c *Client) GetTeamCurrentOnCall(ctx context.Context, teamShortId string, r
 		return nil, err
 	}
 	return c.Client.Do(req)
+}
+
+// NewListEscalationPoliciesRequest constructs an http.Request for the ListEscalationPolicies method
+func NewListEscalationPoliciesRequest(server string, params *ListEscalationPoliciesParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/escalation-policies")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "limit", *params.Limit, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: "int32"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Offset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "offset", *params.Offset, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: "int32"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.TeamId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "teamId", *params.TeamId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: "int32"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCreateEscalationPolicyRequest calls the generic CreateEscalationPolicy builder with application/json body
+func NewCreateEscalationPolicyRequest(server string, body CreateEscalationPolicyJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateEscalationPolicyRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewCreateEscalationPolicyRequestWithBody constructs an http.Request for the CreateEscalationPolicy method, with any body, and a specified content type
+func NewCreateEscalationPolicyRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/escalation-policies")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteEscalationPolicyRequest constructs an http.Request for the DeleteEscalationPolicy method
+func NewDeleteEscalationPolicyRequest(server string, id int32) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/escalation-policies/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetEscalationPolicyRequest constructs an http.Request for the GetEscalationPolicy method
+func NewGetEscalationPolicyRequest(server string, id int32) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/escalation-policies/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateEscalationPolicyRequest calls the generic UpdateEscalationPolicy builder with application/json body
+func NewUpdateEscalationPolicyRequest(server string, id int32, body UpdateEscalationPolicyJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateEscalationPolicyRequestWithBody(server, id, "application/json", bodyReader)
+}
+
+// NewUpdateEscalationPolicyRequestWithBody constructs an http.Request for the UpdateEscalationPolicy method, with any body, and a specified content type
+func NewUpdateEscalationPolicyRequestWithBody(server string, id int32, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/escalation-policies/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPatch, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
 }
 
 // NewListChatChannelsRequest constructs an http.Request for the ListChatChannels method
@@ -2052,6 +3169,67 @@ func WithBaseURL(baseURL string) ClientOption {
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
 
+	// ListEscalationPoliciesWithResponse List escalation policies
+	//
+	// Lists all global and team policies in the API key organization. teamId filters to one team.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /escalation-policies (the `ListEscalationPolicies` operationId).
+	ListEscalationPoliciesWithResponse(ctx context.Context, params *ListEscalationPoliciesParams, reqEditors ...RequestEditorFn) (*ListEscalationPoliciesResponse, error)
+
+	// CreateEscalationPolicyWithBodyWithResponse Create an escalation policy
+	//
+	// Omit teamId or send null for a global policy. Only team policies can be default.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /escalation-policies (the `CreateEscalationPolicy` operationId).
+	CreateEscalationPolicyWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateEscalationPolicyResponse, error)
+
+	// CreateEscalationPolicyWithResponse Create an escalation policy
+	//
+	// Omit teamId or send null for a global policy. Only team policies can be default.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /escalation-policies (the `CreateEscalationPolicy` operationId).
+	CreateEscalationPolicyWithResponse(ctx context.Context, body CreateEscalationPolicyJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateEscalationPolicyResponse, error)
+
+	// DeleteEscalationPolicyWithResponse Delete an escalation policy
+	//
+	// Soft-deletes the policy and clears its team default reference when applicable. A policy that a routing rule or automation still uses cannot be deleted; change those first.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /escalation-policies/{id} (the `DeleteEscalationPolicy` operationId).
+	DeleteEscalationPolicyWithResponse(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*DeleteEscalationPolicyResponse, error)
+
+	// GetEscalationPolicyWithResponse Get an escalation policy
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /escalation-policies/{id} (the `GetEscalationPolicy` operationId).
+	GetEscalationPolicyWithResponse(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*GetEscalationPolicyResponse, error)
+
+	// UpdateEscalationPolicyWithBodyWithResponse Update an escalation policy
+	//
+	// Omitted fields are unchanged. A supplied tiers array replaces every tier in the given array order and must contain at least one tier. Reorder by sending the complete tier list in the desired order. isDefault false clears this policy as its team default.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PATCH /escalation-policies/{id} (the `UpdateEscalationPolicy` operationId).
+	UpdateEscalationPolicyWithBodyWithResponse(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateEscalationPolicyResponse, error)
+
+	// UpdateEscalationPolicyWithResponse Update an escalation policy
+	//
+	// Omitted fields are unchanged. A supplied tiers array replaces every tier in the given array order and must contain at least one tier. Reorder by sending the complete tier list in the desired order. isDefault false clears this policy as its team default.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PATCH /escalation-policies/{id} (the `UpdateEscalationPolicy` operationId).
+	UpdateEscalationPolicyWithResponse(ctx context.Context, id int32, body UpdateEscalationPolicyJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateEscalationPolicyResponse, error)
+
 	// ListChatChannelsWithResponse List chat channels
 	//
 	// Returns the channels of the chat platform the organization is connected to, sorted by name. On Slack every workspace channel is listed. On Microsoft Teams, channels belong to a team, so `microsoftTeamsTeamId` is required; list the teams with GET /integrations/chat/microsoft-teams/teams. Use the returned channel `id` values as `announcementChannels` on maintenance windows.
@@ -2204,6 +3382,379 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with GET /teams/{teamShortId}/on-call (the `GetTeamCurrentOnCall` operationId).
 	GetTeamCurrentOnCallWithResponse(ctx context.Context, teamShortId string, reqEditors ...RequestEditorFn) (*GetTeamCurrentOnCallResponse, error)
+}
+
+type ListEscalationPoliciesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *PublicEscalationPolicyListResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ListEscalationPolicies400JSONResponseBody
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r ListEscalationPoliciesResponse) GetJSON200() *PublicEscalationPolicyListResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r ListEscalationPoliciesResponse) GetJSON400() *ListEscalationPolicies400JSONResponseBody {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r ListEscalationPoliciesResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r ListEscalationPoliciesResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r ListEscalationPoliciesResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r ListEscalationPoliciesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListEscalationPoliciesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r ListEscalationPoliciesResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type CreateEscalationPolicyResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON201 the response for an HTTP 201 `application/json` response
+	JSON201 *PublicEscalationPolicyResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *CreateEscalationPolicy400JSONResponseBody
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ApiKeyDenialResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON201 returns the response for an HTTP 201 `application/json` response
+func (r CreateEscalationPolicyResponse) GetJSON201() *PublicEscalationPolicyResponse {
+	return r.JSON201
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r CreateEscalationPolicyResponse) GetJSON400() *CreateEscalationPolicy400JSONResponseBody {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r CreateEscalationPolicyResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r CreateEscalationPolicyResponse) GetJSON403() *ApiKeyDenialResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r CreateEscalationPolicyResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r CreateEscalationPolicyResponse) GetJSON409() *ErrorResponse {
+	return r.JSON409
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r CreateEscalationPolicyResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r CreateEscalationPolicyResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateEscalationPolicyResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateEscalationPolicyResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r CreateEscalationPolicyResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type DeleteEscalationPolicyResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *DeleteEscalationPolicy400JSONResponseBody
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ApiKeyDenialResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r DeleteEscalationPolicyResponse) GetJSON400() *DeleteEscalationPolicy400JSONResponseBody {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r DeleteEscalationPolicyResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r DeleteEscalationPolicyResponse) GetJSON403() *ApiKeyDenialResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r DeleteEscalationPolicyResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r DeleteEscalationPolicyResponse) GetJSON409() *ErrorResponse {
+	return r.JSON409
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r DeleteEscalationPolicyResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r DeleteEscalationPolicyResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteEscalationPolicyResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteEscalationPolicyResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r DeleteEscalationPolicyResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetEscalationPolicyResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *PublicEscalationPolicyResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *GetEscalationPolicy400JSONResponseBody
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetEscalationPolicyResponse) GetJSON200() *PublicEscalationPolicyResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r GetEscalationPolicyResponse) GetJSON400() *GetEscalationPolicy400JSONResponseBody {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r GetEscalationPolicyResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r GetEscalationPolicyResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r GetEscalationPolicyResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r GetEscalationPolicyResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetEscalationPolicyResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetEscalationPolicyResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetEscalationPolicyResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type UpdateEscalationPolicyResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *PublicEscalationPolicyResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *UpdateEscalationPolicy400JSONResponseBody
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ApiKeyDenialResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r UpdateEscalationPolicyResponse) GetJSON200() *PublicEscalationPolicyResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r UpdateEscalationPolicyResponse) GetJSON400() *UpdateEscalationPolicy400JSONResponseBody {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r UpdateEscalationPolicyResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r UpdateEscalationPolicyResponse) GetJSON403() *ApiKeyDenialResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r UpdateEscalationPolicyResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r UpdateEscalationPolicyResponse) GetJSON409() *ErrorResponse {
+	return r.JSON409
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r UpdateEscalationPolicyResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r UpdateEscalationPolicyResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateEscalationPolicyResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateEscalationPolicyResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r UpdateEscalationPolicyResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
 }
 
 type ListChatChannelsResponse struct {
@@ -3207,6 +4758,109 @@ func (r GetTeamCurrentOnCallResponse) ContentType() string {
 	return ""
 }
 
+// ListEscalationPoliciesWithResponse List escalation policies
+//
+// Lists all global and team policies in the API key organization. teamId filters to one team.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /escalation-policies (the `ListEscalationPolicies` operationId).
+func (c *ClientWithResponses) ListEscalationPoliciesWithResponse(ctx context.Context, params *ListEscalationPoliciesParams, reqEditors ...RequestEditorFn) (*ListEscalationPoliciesResponse, error) {
+	rsp, err := c.ListEscalationPolicies(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListEscalationPoliciesResponse(rsp)
+}
+
+// CreateEscalationPolicyWithBodyWithResponse Create an escalation policy
+//
+// Omit teamId or send null for a global policy. Only team policies can be default.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /escalation-policies (the `CreateEscalationPolicy` operationId).
+func (c *ClientWithResponses) CreateEscalationPolicyWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateEscalationPolicyResponse, error) {
+	rsp, err := c.CreateEscalationPolicyWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateEscalationPolicyResponse(rsp)
+}
+
+// CreateEscalationPolicyWithResponse Create an escalation policy
+//
+// Omit teamId or send null for a global policy. Only team policies can be default.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /escalation-policies (the `CreateEscalationPolicy` operationId).
+func (c *ClientWithResponses) CreateEscalationPolicyWithResponse(ctx context.Context, body CreateEscalationPolicyJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateEscalationPolicyResponse, error) {
+	rsp, err := c.CreateEscalationPolicy(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateEscalationPolicyResponse(rsp)
+}
+
+// DeleteEscalationPolicyWithResponse Delete an escalation policy
+//
+// Soft-deletes the policy and clears its team default reference when applicable. A policy that a routing rule or automation still uses cannot be deleted; change those first.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /escalation-policies/{id} (the `DeleteEscalationPolicy` operationId).
+func (c *ClientWithResponses) DeleteEscalationPolicyWithResponse(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*DeleteEscalationPolicyResponse, error) {
+	rsp, err := c.DeleteEscalationPolicy(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteEscalationPolicyResponse(rsp)
+}
+
+// GetEscalationPolicyWithResponse Get an escalation policy
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /escalation-policies/{id} (the `GetEscalationPolicy` operationId).
+func (c *ClientWithResponses) GetEscalationPolicyWithResponse(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*GetEscalationPolicyResponse, error) {
+	rsp, err := c.GetEscalationPolicy(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetEscalationPolicyResponse(rsp)
+}
+
+// UpdateEscalationPolicyWithBodyWithResponse Update an escalation policy
+//
+// Omitted fields are unchanged. A supplied tiers array replaces every tier in the given array order and must contain at least one tier. Reorder by sending the complete tier list in the desired order. isDefault false clears this policy as its team default.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PATCH /escalation-policies/{id} (the `UpdateEscalationPolicy` operationId).
+func (c *ClientWithResponses) UpdateEscalationPolicyWithBodyWithResponse(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateEscalationPolicyResponse, error) {
+	rsp, err := c.UpdateEscalationPolicyWithBody(ctx, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateEscalationPolicyResponse(rsp)
+}
+
+// UpdateEscalationPolicyWithResponse Update an escalation policy
+//
+// Omitted fields are unchanged. A supplied tiers array replaces every tier in the given array order and must contain at least one tier. Reorder by sending the complete tier list in the desired order. isDefault false clears this policy as its team default.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PATCH /escalation-policies/{id} (the `UpdateEscalationPolicy` operationId).
+func (c *ClientWithResponses) UpdateEscalationPolicyWithResponse(ctx context.Context, id int32, body UpdateEscalationPolicyJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateEscalationPolicyResponse, error) {
+	rsp, err := c.UpdateEscalationPolicy(ctx, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateEscalationPolicyResponse(rsp)
+}
+
 // ListChatChannelsWithResponse List chat channels
 //
 // Returns the channels of the chat platform the organization is connected to, sorted by name. On Slack every workspace channel is listed. On Microsoft Teams, channels belong to a team, so `microsoftTeamsTeamId` is required; list the teams with GET /integrations/chat/microsoft-teams/teams. Use the returned channel `id` values as `announcementChannels` on maintenance windows.
@@ -3460,6 +5114,307 @@ func (c *ClientWithResponses) GetTeamCurrentOnCallWithResponse(ctx context.Conte
 		return nil, err
 	}
 	return ParseGetTeamCurrentOnCallResponse(rsp)
+}
+
+// ParseListEscalationPoliciesResponse parses an HTTP response from a ListEscalationPoliciesWithResponse call
+func ParseListEscalationPoliciesResponse(rsp *http.Response) (*ListEscalationPoliciesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListEscalationPoliciesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PublicEscalationPolicyListResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ListEscalationPolicies400JSONResponseBody
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateEscalationPolicyResponse parses an HTTP response from a CreateEscalationPolicyWithResponse call
+func ParseCreateEscalationPolicyResponse(rsp *http.Response) (*CreateEscalationPolicyResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateEscalationPolicyResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest PublicEscalationPolicyResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest CreateEscalationPolicy400JSONResponseBody
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ApiKeyDenialResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteEscalationPolicyResponse parses an HTTP response from a DeleteEscalationPolicyWithResponse call
+func ParseDeleteEscalationPolicyResponse(rsp *http.Response) (*DeleteEscalationPolicyResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteEscalationPolicyResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 204:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest DeleteEscalationPolicy400JSONResponseBody
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ApiKeyDenialResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetEscalationPolicyResponse parses an HTTP response from a GetEscalationPolicyWithResponse call
+func ParseGetEscalationPolicyResponse(rsp *http.Response) (*GetEscalationPolicyResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetEscalationPolicyResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PublicEscalationPolicyResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest GetEscalationPolicy400JSONResponseBody
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateEscalationPolicyResponse parses an HTTP response from a UpdateEscalationPolicyWithResponse call
+func ParseUpdateEscalationPolicyResponse(rsp *http.Response) (*UpdateEscalationPolicyResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateEscalationPolicyResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PublicEscalationPolicyResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest UpdateEscalationPolicy400JSONResponseBody
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ApiKeyDenialResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
 }
 
 // ParseListChatChannelsResponse parses an HTTP response from a ListChatChannelsWithResponse call
