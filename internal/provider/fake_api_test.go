@@ -473,3 +473,13 @@ func (a *fakeAPI) setPolicyInUse(id int, inUse bool) {
 	defer a.mu.Unlock()
 	a.policies[id].inUse = inUse
 }
+
+func (a *fakeAPI) setTeamDefault(teamID, policyID int) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	if policyID == 0 {
+		delete(a.teamDefaults, teamID)
+		return
+	}
+	a.teamDefaults[teamID] = policyID
+}
