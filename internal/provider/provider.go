@@ -101,6 +101,7 @@ func (p *VibeOnCallProvider) DataSources(ctx context.Context) []func() datasourc
 		NewMemberDataSource,
 		NewTeamDataSource,
 		NewLabelDataSource,
+		NewChatChannelDataSource,
 	}
 }
 

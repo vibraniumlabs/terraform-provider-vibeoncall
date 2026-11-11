@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"sort"
 	"strconv"
 	"strings"
@@ -36,13 +37,20 @@ type fakeLabel struct {
 	Color string `json:"color"`
 }
 
+type fakeChatChannel struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
 type fakeAPI struct {
-	mu          sync.Mutex
-	nextTeamID  int
-	teams       map[int]*fakeTeam
-	users       []fakeUser
-	memberships map[int]map[int]string
-	labels      []fakeLabel
+	mu           sync.Mutex
+	nextTeamID   int
+	teams        map[int]*fakeTeam
+	users        []fakeUser
+	memberships  map[int]map[int]string
+	labels       []fakeLabel
+	chatChannels []fakeChatChannel
+	chatQuery    url.Values
 }
 
 func strPtr(s string) *string { return &s }
@@ -113,6 +121,8 @@ func (a *fakeAPI) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		a.listTeams(w, r)
 	case len(parts) == 1 && parts[0] == "labels" && r.Method == http.MethodGet:
 		a.listLabels(w)
+	case r.URL.Path == "/integrations/chat/channels" && r.Method == http.MethodGet:
+		a.listChatChannels(w, r)
 	case len(parts) == 1 && parts[0] == "teams" && r.Method == http.MethodPost:
 		team := &fakeTeam{ID: a.nextTeamID, ShortID: fmt.Sprintf("VP-TEAM-%d", a.nextTeamID)}
 		a.nextTeamID++
@@ -214,6 +224,19 @@ func (a *fakeAPI) listTeams(w http.ResponseWriter, r *http.Request) {
 
 func (a *fakeAPI) listLabels(w http.ResponseWriter) {
 	writeJSON(w, http.StatusOK, map[string]any{"labels": a.labels})
+}
+
+func (a *fakeAPI) listChatChannels(w http.ResponseWriter, r *http.Request) {
+	a.chatQuery = r.URL.Query()
+	search := strings.ToLower(a.chatQuery.Get("search"))
+	matched := []fakeChatChannel{}
+	for _, c := range a.chatChannels {
+		if strings.Contains(strings.ToLower(c.Name), search) {
+			matched = append(matched, c)
+		}
+	}
+	start, end := pageBounds(r, len(matched))
+	writeJSON(w, http.StatusOK, map[string]any{"channels": matched[start:end], "total": len(matched), "hasMore": end < len(matched)})
 }
 
 func (a *fakeAPI) listMembers(w http.ResponseWriter, r *http.Request) {

@@ -7,3 +7,4 @@ FEATURES:
 * **New Data Source:** `vibeoncall_member`
 * **New Data Source:** `vibeoncall_team`
 * **New Data Source:** `vibeoncall_label`
+* **New Data Source:** `vibeoncall_chat_channel`
