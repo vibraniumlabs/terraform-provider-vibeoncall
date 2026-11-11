@@ -30,12 +30,19 @@ type fakeUser struct {
 	Status   string  `json:"status"`
 }
 
+type fakeLabel struct {
+	ID    int    `json:"id"`
+	Name  string `json:"name"`
+	Color string `json:"color"`
+}
+
 type fakeAPI struct {
 	mu          sync.Mutex
 	nextTeamID  int
 	teams       map[int]*fakeTeam
 	users       []fakeUser
 	memberships map[int]map[int]string
+	labels      []fakeLabel
 }
 
 func strPtr(s string) *string { return &s }
@@ -104,6 +111,8 @@ func (a *fakeAPI) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		a.listMembers(w, r)
 	case len(parts) == 1 && parts[0] == "teams" && r.Method == http.MethodGet:
 		a.listTeams(w, r)
+	case len(parts) == 1 && parts[0] == "labels" && r.Method == http.MethodGet:
+		a.listLabels(w)
 	case len(parts) == 1 && parts[0] == "teams" && r.Method == http.MethodPost:
 		team := &fakeTeam{ID: a.nextTeamID, ShortID: fmt.Sprintf("VP-TEAM-%d", a.nextTeamID)}
 		a.nextTeamID++
@@ -201,6 +210,10 @@ func (a *fakeAPI) listTeams(w http.ResponseWriter, r *http.Request) {
 	sort.Slice(teams, func(i, j int) bool { return teams[i].ID < teams[j].ID })
 	start, end := pageBounds(r, len(teams))
 	writeJSON(w, http.StatusOK, map[string]any{"teams": teams[start:end], "total": len(teams), "hasMore": end < len(teams)})
+}
+
+func (a *fakeAPI) listLabels(w http.ResponseWriter) {
+	writeJSON(w, http.StatusOK, map[string]any{"labels": a.labels})
 }
 
 func (a *fakeAPI) listMembers(w http.ResponseWriter, r *http.Request) {

@@ -100,6 +100,7 @@ func (p *VibeOnCallProvider) DataSources(ctx context.Context) []func() datasourc
 	return []func() datasource.DataSource{
 		NewMemberDataSource,
 		NewTeamDataSource,
+		NewLabelDataSource,
 	}
 }
 
