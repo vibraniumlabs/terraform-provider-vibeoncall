@@ -8,3 +8,5 @@ output-options:
   include-tags:
     - Teams
     - Members
+    - Labels
+    - Chat Integrations
