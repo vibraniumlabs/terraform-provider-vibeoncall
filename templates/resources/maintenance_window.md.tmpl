@@ -1,0 +1,36 @@
+---
+page_title: "{{.Name}} {{.Type}} - {{.ProviderName}}"
+subcategory: ""
+description: |-
+{{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
+---
+
+# {{.Name}} ({{.Type}})
+
+{{ .Description | trimspace }}
+
+~> **Note** Once `start_at` has passed, the window's `start_at` cannot change, and changing `team_id` fails at plan time because it would replace the window. Once `end_at` has passed, the window cannot change at all. To keep an ended window in the app's history when you remove it from your configuration, use a `removed` block with `destroy = false`; destroying it deletes it from the app.
+
+## Conditions
+
+`condition_groups` takes the same shape the app's condition editor builds. An alert is covered when it matches any group. Inside a group, `operator = "AND"` requires every condition and `operator = "OR"` requires any. Each condition sets exactly one of `severity`, `field`, `provider` or `time`.
+
+To express `A AND (B OR C)`, write it as two groups: `(A AND B)` and `(A AND C)`.
+
+Coming from an Opsgenie maintenance that disables one integration, use a single group with a `provider` condition naming that alert source.
+
+## Example Usage
+
+{{ tffile .ExampleFile }}
+
+{{ .SchemaMarkdown | trimspace }}
+
+## Import
+
+Import is supported using the following syntax:
+
+The [`terraform import` command](https://developer.hashicorp.com/terraform/cli/commands/import) can be used, for example:
+
+{{ codefile "shell" .ImportFile }}
+
+An imported window reads `start_at` and `end_at` back in UTC. If your configuration writes them with another offset, the first plan after import shows an update that changes only their format and sends nothing to the API. A window whose conditions the app's editor cannot build, such as a group nested in a group, cannot be imported. If such conditions are written through the API to a window Terraform already manages, the next plan shows them as changed and the apply replaces them with your configuration.
