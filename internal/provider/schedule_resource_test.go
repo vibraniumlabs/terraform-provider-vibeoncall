@@ -1,0 +1,534 @@
+package provider
+
+import (
+	"encoding/json"
+	"errors"
+	"fmt"
+	"reflect"
+	"regexp"
+	"strings"
+	"testing"
+
+	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/knownvalue"
+	"github.com/hashicorp/terraform-plugin-testing/plancheck"
+	"github.com/hashicorp/terraform-plugin-testing/terraform"
+	"github.com/hashicorp/terraform-plugin-testing/tfjsonpath"
+)
+
+var scheduleUsers = []fakeUser{
+	{ID: 7, Email: "alice@example.com", Status: "active"},
+	{ID: 8, Email: "bob@example.com", Status: "active"},
+	{ID: 9, Email: "carol@example.com", Status: "active"},
+}
+
+type wantRotation struct {
+	ID           int
+	Name         string
+	Participants []int
+}
+
+func (a *fakeAPI) checkRotations(want []wantRotation) resource.TestCheckFunc {
+	return func(*terraform.State) error {
+		a.mu.Lock()
+		defer a.mu.Unlock()
+		s := a.schedules[1]
+		if s == nil {
+			return errors.New("schedule 1 not found")
+		}
+		got := make([]wantRotation, len(s.Rotations))
+		for i, rot := range s.Rotations {
+			got[i] = wantRotation{ID: rot.ID, Name: rot.Name, Participants: rot.Participants}
+		}
+		if !reflect.DeepEqual(got, want) {
+			return fmt.Errorf("schedule rotations = %+v, want %+v", got, want)
+		}
+		return nil
+	}
+}
+
+func (a *fakeAPI) checkRotationConfig(index int, want string) resource.TestCheckFunc {
+	return func(*terraform.State) error {
+		a.mu.Lock()
+		defer a.mu.Unlock()
+		var got, expected any
+		if err := json.Unmarshal(a.schedules[1].Rotations[index].RotationConfig, &got); err != nil {
+			return err
+		}
+		if err := json.Unmarshal([]byte(want), &expected); err != nil {
+			return err
+		}
+		if !reflect.DeepEqual(got, expected) {
+			return fmt.Errorf("rotation %d config = %v, want %v", index, got, expected)
+		}
+		return nil
+	}
+}
+
+func (a *fakeAPI) checkScheduleTeams(want []int) resource.TestCheckFunc {
+	return func(*terraform.State) error {
+		a.mu.Lock()
+		defer a.mu.Unlock()
+		if got := a.schedules[1].TeamIDs; !reflect.DeepEqual(got, want) {
+			return fmt.Errorf("schedule teams = %v, want %v", got, want)
+		}
+		return nil
+	}
+}
+
+func (a *fakeAPI) checkNoRotationPuts(*terraform.State) error {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	if a.rotationPuts > 0 {
+		return fmt.Errorf("%d rotation PUTs, want none", a.rotationPuts)
+	}
+	return nil
+}
+
+func scheduleConfig(baseURL, attrs string) string {
+	return providerConfig(baseURL) + fmt.Sprintf(`
+resource "vibeoncall_team" "payments" {
+  name = "Payments"
+}
+
+resource "vibeoncall_team" "platform" {
+  name       = "Platform"
+  depends_on = [vibeoncall_team.payments]
+}
+
+resource "vibeoncall_schedule" "test" {
+%s
+}
+`, attrs)
+}
+
+func weeklyRotation(name string, participants ...string) string {
+	return fmt.Sprintf(`{
+      name            = %q
+      start_date      = "2026-09-01"
+      participant_ids = [%s]
+      weekly = {
+        start_day  = "monday"
+        start_time = "09:00"
+        end_day    = "monday"
+        end_time   = "09:00"
+      }
+    }`, name, `"`+strings.Join(participants, `", "`)+`"`)
+}
+
+func rotationsAttr(rotations ...string) string {
+	return "  rotations = [\n    " + strings.Join(rotations, ",\n    ") + ",\n  ]"
+}
+
+func expectUpdate() resource.ConfigPlanChecks {
+	return resource.ConfigPlanChecks{PreApply: []plancheck.PlanCheck{
+		plancheck.ExpectResourceAction("vibeoncall_schedule.test", plancheck.ResourceActionUpdate),
+	}}
+}
+
+func TestScheduleResourceLifecycle(t *testing.T) {
+	api, srv := newFakeAPI(t, scheduleUsers...)
+	config := scheduleConfig(srv.URL, `
+  name      = "Payments primary"
+  time_zone = "Asia/Taipei"
+  team_ids  = [vibeoncall_team.payments.id]
+`+rotationsAttr(weeklyRotation("Primary", "7", "8", "9")))
+
+	resource.UnitTest(t, resource.TestCase{
+		ProtoV6ProviderFactories: protoV6ProviderFactories(),
+		CheckDestroy:             api.checkNothingLeft,
+		Steps: []resource.TestStep{
+			{
+				Config: config,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("vibeoncall_schedule.test", "id", "1"),
+					resource.TestCheckResourceAttr("vibeoncall_schedule.test", "time_zone", "Asia/Taipei"),
+					resource.TestCheckTypeSetElemAttr("vibeoncall_schedule.test", "team_ids.*", "1"),
+					resource.TestCheckResourceAttr("vibeoncall_schedule.test", "rotations.0.id", "1"),
+					resource.TestCheckResourceAttr("vibeoncall_schedule.test", "rotations.0.weekly.start_day", "monday"),
+					api.checkScheduleTeams([]int{1}),
+					api.checkRotations([]wantRotation{{ID: 1, Name: "Primary", Participants: []int{7, 8, 9}}}),
+					api.checkRotationConfig(0, `{"type":"weekly","payload":{"startDay":1,"startTime":"09:00","endDay":1,"endTime":"09:00"}}`),
+				),
+			},
+			{
+				ResourceName:      "vibeoncall_schedule.test",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+			{
+				PreConfig:          func() { api.removeSchedule(1) },
+				Config:             config,
+				PlanOnly:           true,
+				ExpectNonEmptyPlan: true,
+			},
+		},
+	})
+}
+
+func TestScheduleResourceStoresEachRotationShape(t *testing.T) {
+	api, srv := newFakeAPI(t, scheduleUsers...)
+
+	resource.UnitTest(t, resource.TestCase{
+		ProtoV6ProviderFactories: protoV6ProviderFactories(),
+		CheckDestroy:             api.checkNothingLeft,
+		Steps: []resource.TestStep{
+			{
+				Config: scheduleConfig(srv.URL, `
+  name      = "Shapes"
+  time_zone = "America/New_York"
+  rotations = [
+    {
+      name            = "Daily"
+      start_date      = "2026-09-01"
+      participant_ids = ["7"]
+      daily = { start_time = "09:30", end_time = "17:30" }
+    },
+    {
+      name            = "Weekdays"
+      start_date      = "2026-09-01"
+      participant_ids = ["8"]
+      weekly = {
+        start_day        = "monday"
+        start_time       = "09:00"
+        end_day          = "friday"
+        end_time         = "17:00"
+        daily_start_time = "09:00"
+        daily_end_time   = "17:00"
+        hand_off_day     = "wednesday"
+      }
+    },
+    {
+      name            = "Weekends"
+      start_date      = "2026-09-05"
+      participant_ids = ["9"]
+      weekly_windows = {
+        windows = [
+          { start_day = "saturday", start_time = "00:00", end_day = "saturday", end_time = "23:00" },
+          { start_day = "sunday", start_time = "00:00", end_day = "sunday", end_time = "23:00" },
+        ]
+        hand_off_day = "saturday"
+      }
+    },
+  ]`),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckNoResourceAttr("vibeoncall_schedule.test", "team_ids"),
+					api.checkScheduleTeams([]int{}),
+					api.checkRotationConfig(0, `{"type":"daily","payload":{"startTime":"09:30","endTime":"17:30"}}`),
+					api.checkRotationConfig(1, `{"type":"weekly","payload":{"startDay":1,"startTime":"09:00","endDay":5,"endTime":"17:00","dailyStartTime":"09:00","dailyEndTime":"17:00","handOffDay":3}}`),
+					api.checkRotationConfig(2, `{"type":"weekly","payload":{"windows":[{"startDay":6,"startTime":"00:00","endDay":6,"endTime":"23:00"},{"startDay":0,"startTime":"00:00","endDay":0,"endTime":"23:00"}],"handOffDay":6}}`),
+				),
+			},
+			{
+				ResourceName:      "vibeoncall_schedule.test",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+		},
+	})
+}
+
+func TestScheduleResourceUpdatesDetailsAndTeamsInPlace(t *testing.T) {
+	api, srv := newFakeAPI(t, scheduleUsers...)
+	rotations := rotationsAttr(weeklyRotation("Primary", "7", "8"))
+
+	resource.UnitTest(t, resource.TestCase{
+		ProtoV6ProviderFactories: protoV6ProviderFactories(),
+		CheckDestroy:             api.checkNothingLeft,
+		Steps: []resource.TestStep{
+			{
+				Config: scheduleConfig(srv.URL, `
+  name      = "Primary"
+  time_zone = "Asia/Taipei"
+  team_ids  = [vibeoncall_team.payments.id]
+`+rotations),
+			},
+			{
+				Config: scheduleConfig(srv.URL, `
+  name      = "Shared primary"
+  time_zone = "Europe/London"
+  team_ids  = [vibeoncall_team.payments.id, vibeoncall_team.platform.id]
+`+rotations),
+				ConfigPlanChecks: expectUpdate(),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("vibeoncall_schedule.test", "id", "1"),
+					resource.TestCheckResourceAttr("vibeoncall_schedule.test", "name", "Shared primary"),
+					resource.TestCheckResourceAttr("vibeoncall_schedule.test", "time_zone", "Europe/London"),
+					resource.TestCheckResourceAttr("vibeoncall_schedule.test", "rotations.0.id", "1"),
+					api.checkScheduleTeams([]int{1, 2}),
+					api.checkNoRotationPuts,
+				),
+			},
+			{
+				Config: scheduleConfig(srv.URL, `
+  name      = "Shared primary"
+  time_zone = "Europe/London"
+`+rotations),
+				ConfigPlanChecks: expectUpdate(),
+				Check:            api.checkScheduleTeams([]int{}),
+			},
+		},
+	})
+}
+
+func TestScheduleResourceKeepsRotationIDsAcrossChanges(t *testing.T) {
+	api, srv := newFakeAPI(t, scheduleUsers...)
+	config := func(rotations ...string) string {
+		return scheduleConfig(srv.URL, `
+  name      = "Primary"
+  time_zone = "Asia/Taipei"
+`+rotationsAttr(rotations...))
+	}
+	ids := func(ids ...string) resource.TestCheckFunc {
+		checks := make([]resource.TestCheckFunc, 0, len(ids)+1)
+		checks = append(checks, resource.TestCheckResourceAttr("vibeoncall_schedule.test", "rotations.#", fmt.Sprint(len(ids))))
+		for i, id := range ids {
+			checks = append(checks, resource.TestCheckResourceAttr("vibeoncall_schedule.test", fmt.Sprintf("rotations.%d.id", i), id))
+		}
+		return resource.ComposeAggregateTestCheckFunc(checks...)
+	}
+
+	resource.UnitTest(t, resource.TestCase{
+		ProtoV6ProviderFactories: protoV6ProviderFactories(),
+		CheckDestroy:             api.checkNothingLeft,
+		Steps: []resource.TestStep{
+			{
+				Config: config(weeklyRotation("Primary", "7", "8"), weeklyRotation("Secondary", "8", "9"), weeklyRotation("Backup", "9", "7")),
+				Check:  ids("1", "2", "3"),
+			},
+			{
+				Config: config(weeklyRotation("Primary", "7", "8"), weeklyRotation("Backup", "9", "7")),
+				ConfigPlanChecks: resource.ConfigPlanChecks{PreApply: []plancheck.PlanCheck{
+					plancheck.ExpectResourceAction("vibeoncall_schedule.test", plancheck.ResourceActionUpdate),
+					plancheck.ExpectKnownValue("vibeoncall_schedule.test", tfjsonpath.New("rotations").AtSliceIndex(1).AtMapKey("id"), knownvalue.StringExact("3")),
+				}},
+				Check: resource.ComposeAggregateTestCheckFunc(
+					ids("1", "3"),
+					api.checkRotations([]wantRotation{{1, "Primary", []int{7, 8}}, {3, "Backup", []int{9, 7}}}),
+				),
+			},
+			{
+				Config:           config(weeklyRotation("Primary", "7", "8"), weeklyRotation("Backup night", "9", "7")),
+				ConfigPlanChecks: expectUpdate(),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					ids("1", "3"),
+					api.checkRotations([]wantRotation{{1, "Primary", []int{7, 8}}, {3, "Backup night", []int{9, 7}}}),
+				),
+			},
+			{
+				Config:           config(weeklyRotation("Primary", "7", "8"), weeklyRotation("Backup night", "9", "7"), weeklyRotation("Weekend", "8")),
+				ConfigPlanChecks: expectUpdate(),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					ids("1", "3", "4"),
+					api.checkRotations([]wantRotation{{1, "Primary", []int{7, 8}}, {3, "Backup night", []int{9, 7}}, {4, "Weekend", []int{8}}}),
+				),
+			},
+			{
+				Config:           config(weeklyRotation("Weekend", "8"), weeklyRotation("Primary", "7", "8"), weeklyRotation("Backup night", "9", "7")),
+				ConfigPlanChecks: expectUpdate(),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					ids("1", "3", "4"),
+					api.checkRotations([]wantRotation{{1, "Weekend", []int{8}}, {3, "Primary", []int{7, 8}}, {4, "Backup night", []int{9, 7}}}),
+				),
+			},
+		},
+	})
+}
+
+func TestScheduleResourceKeepsParticipantOrderAsWritten(t *testing.T) {
+	api, srv := newFakeAPI(t, scheduleUsers...)
+	config := func(participants ...string) string {
+		return scheduleConfig(srv.URL, `
+  name      = "Primary"
+  time_zone = "Asia/Taipei"
+`+rotationsAttr(weeklyRotation("Primary", participants...)))
+	}
+
+	resource.UnitTest(t, resource.TestCase{
+		ProtoV6ProviderFactories: protoV6ProviderFactories(),
+		CheckDestroy:             api.checkNothingLeft,
+		Steps: []resource.TestStep{
+			{
+				Config: config("7", "8", "9"),
+				Check:  api.checkRotations([]wantRotation{{1, "Primary", []int{7, 8, 9}}}),
+			},
+			{
+				Config:           config("9", "7"),
+				ConfigPlanChecks: expectUpdate(),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("vibeoncall_schedule.test", "rotations.0.participant_ids.0", "9"),
+					api.checkRotations([]wantRotation{{1, "Primary", []int{9, 7}}}),
+				),
+			},
+			{
+				Config:           config("9", "7", "8"),
+				ConfigPlanChecks: expectUpdate(),
+				Check:            api.checkRotations([]wantRotation{{1, "Primary", []int{9, 7, 8}}}),
+			},
+		},
+	})
+}
+
+func TestScheduleResourceRestoresRotationsBeforeRenamingImportedSchedule(t *testing.T) {
+	api, srv := newFakeAPI(t, scheduleUsers...)
+	api.schedules[1] = &fakeSchedule{ID: 1, Name: "Legacy", Timezone: "UTC", TeamIDs: []int{}, Rotations: []*fakeRotation{}}
+	api.nextSchedID = 2
+	config := func(name string) string {
+		return scheduleConfig(srv.URL, fmt.Sprintf(`
+  name      = %q
+  time_zone = "Asia/Taipei"
+`, name)+rotationsAttr(weeklyRotation("Primary", "7", "8")))
+	}
+
+	resource.UnitTest(t, resource.TestCase{
+		ProtoV6ProviderFactories: protoV6ProviderFactories(),
+		CheckDestroy:             api.checkNothingLeft,
+		Steps: []resource.TestStep{
+			{
+				Config:             config("Legacy"),
+				ResourceName:       "vibeoncall_schedule.test",
+				ImportState:        true,
+				ImportStateId:      "1",
+				ImportStatePersist: true,
+			},
+			{
+				Config:           config("Payments primary"),
+				ConfigPlanChecks: expectUpdate(),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("vibeoncall_schedule.test", "name", "Payments primary"),
+					api.checkRotations([]wantRotation{{1, "Primary", []int{7, 8}}}),
+				),
+			},
+		},
+	})
+}
+
+func TestScheduleResourceRejectsInvalidConfigAtPlanTime(t *testing.T) {
+	_, srv := newFakeAPI(t, scheduleUsers...)
+	valid := map[string]string{
+		"team_ids":        `vibeoncall_team.payments.id`,
+		"start_date":      `"2026-09-01"`,
+		"participant_ids": `"7", "8"`,
+		"shape":           `daily = { start_time = "09:00", end_time = "17:00" }`,
+	}
+
+	for name, tc := range map[string]struct {
+		field, value, want string
+	}{
+		"no rotation shape":     {"shape", ``, `No attribute specified when one \(and only one\)`},
+		"two rotation shapes":   {"shape", `daily = { start_time = "09:00", end_time = "17:00" }` + "\n" + `weekly = { start_day = "monday", start_time = "09:00", end_day = "monday", end_time = "09:00" }`, `2 attributes specified when one \(and only one\)`},
+		"minute out of range":   {"shape", `daily = { start_time = "09:60", end_time = "17:00" }`, `must be a 24-hour time`},
+		"hour out of range":     {"shape", `daily = { start_time = "24:00", end_time = "17:00" }`, `must be a 24-hour time`},
+		"unknown weekday":       {"shape", `weekly = { start_day = "mon", start_time = "09:00", end_day = "monday", end_time = "09:00" }`, `value must be one of`},
+		"duplicate participant": {"participant_ids", `"7", "7"`, `duplicate`},
+		"malformed start date":  {"start_date", `"2026/09/01"`, `must be a date in YYYY-MM-DD format`},
+		"impossible start date": {"start_date", `"2026-02-30"`, `must be a date in YYYY-MM-DD format`},
+		"empty team list":       {"team_ids", ``, `at least 1`},
+	} {
+		t.Run(name, func(t *testing.T) {
+			attrs := map[string]string{}
+			for k, v := range valid {
+				attrs[k] = v
+			}
+			attrs[tc.field] = tc.value
+			resource.UnitTest(t, resource.TestCase{
+				ProtoV6ProviderFactories: protoV6ProviderFactories(),
+				Steps: []resource.TestStep{{
+					Config: scheduleConfig(srv.URL, fmt.Sprintf(`
+  name      = "Primary"
+  time_zone = "Asia/Taipei"
+  team_ids  = [%s]
+  rotations = [{
+    name            = "Primary"
+    start_date      = %s
+    participant_ids = [%s]
+    %s
+  }]`, attrs["team_ids"], attrs["start_date"], attrs["participant_ids"], attrs["shape"])),
+					PlanOnly:    true,
+					ExpectError: regexp.MustCompile(tc.want),
+				}},
+			})
+		})
+	}
+}
+
+func TestScheduleResourceDeleteInUseShowsReadableError(t *testing.T) {
+	api, srv := newFakeAPI(t, scheduleUsers...)
+	config := scheduleConfig(srv.URL, `
+  name      = "Primary"
+  time_zone = "Asia/Taipei"
+`+rotationsAttr(weeklyRotation("Primary", "7")))
+
+	resource.UnitTest(t, resource.TestCase{
+		ProtoV6ProviderFactories: protoV6ProviderFactories(),
+		CheckDestroy:             api.checkNothingLeft,
+		Steps: []resource.TestStep{
+			{Config: config},
+			{
+				PreConfig:   func() { api.setScheduleInUse(1, true) },
+				Config:      config,
+				Destroy:     true,
+				ExpectError: regexp.MustCompile(`(?s)Schedule is still in use.*escalation policy or routing rule`),
+			},
+			{
+				PreConfig: func() { api.setScheduleInUse(1, false) },
+				Config:    config,
+			},
+		},
+	})
+}
+
+func TestScheduleResourceRejectsMalformedImportID(t *testing.T) {
+	_, srv := newFakeAPI(t, scheduleUsers...)
+
+	resource.UnitTest(t, resource.TestCase{
+		ProtoV6ProviderFactories: protoV6ProviderFactories(),
+		Steps: []resource.TestStep{{
+			Config: scheduleConfig(srv.URL, `
+  name      = "Primary"
+  time_zone = "Asia/Taipei"
+`+rotationsAttr(weeklyRotation("Primary", "7"))),
+			ResourceName:  "vibeoncall_schedule.test",
+			ImportState:   true,
+			ImportStateId: "Primary",
+			ExpectError:   regexp.MustCompile(`Invalid import ID`),
+		}},
+	})
+}
+
+func TestMatchRotations(t *testing.T) {
+	prior := func(pairs ...string) []priorRotation {
+		out := make([]priorRotation, 0, len(pairs)/2)
+		for i := 0; i < len(pairs); i += 2 {
+			out = append(out, priorRotation{Name: pairs[i], ID: pairs[i+1]})
+		}
+		return out
+	}
+
+	for name, tc := range map[string]struct {
+		prior   []priorRotation
+		desired []string
+		want    []string
+	}{
+		"unchanged":                    {prior("A", "1", "B", "2"), []string{"A", "B"}, []string{"1", "2"}},
+		"middle removed":               {prior("A", "1", "B", "2", "C", "3"), []string{"A", "C"}, []string{"1", "3"}},
+		"appended":                     {prior("A", "1"), []string{"A", "B"}, []string{"1", ""}},
+		"last renamed":                 {prior("A", "1", "B", "2"), []string{"A", "X"}, []string{"1", "2"}},
+		"middle renamed":               {prior("A", "1", "B", "2", "C", "3"), []string{"A", "X", "C"}, []string{"1", "2", "3"}},
+		"middle removed and appended":  {prior("A", "1", "B", "2", "C", "3"), []string{"A", "C", "D"}, []string{"1", "3", ""}},
+		"reordered":                    {prior("A", "1", "B", "2"), []string{"B", "A"}, []string{"1", "2"}},
+		"inserted in the middle":       {prior("A", "1", "B", "2"), []string{"A", "X", "B"}, []string{"1", "2", ""}},
+		"duplicate names unchanged":    {prior("L", "7", "L", "8", "B", "9"), []string{"L", "L", "B"}, []string{"7", "8", "9"}},
+		"duplicate names renamed":      {prior("L", "7", "L", "8", "B", "9"), []string{"L day", "L night", "B"}, []string{"7", "8", "9"}},
+		"one of duplicate names gone":  {prior("L", "7", "L", "8", "B", "9"), []string{"L", "B"}, []string{"7", "9"}},
+		"every rotation replaced":      {prior("A", "1"), []string{"X", "Y"}, []string{"1", ""}},
+		"rotations removed from tail":  {prior("A", "1", "B", "2", "C", "3"), []string{"A"}, []string{"1"}},
+		"same names with new appended": {prior("A", "1", "B", "2"), []string{"A", "B", "B"}, []string{"1", "2", ""}},
+	} {
+		t.Run(name, func(t *testing.T) {
+			if got := matchRotations(tc.prior, tc.desired); !reflect.DeepEqual(got, tc.want) {
+				t.Errorf("matchRotations(%v, %v) = %q, want %q", tc.prior, tc.desired, got, tc.want)
+			}
+		})
+	}
+}

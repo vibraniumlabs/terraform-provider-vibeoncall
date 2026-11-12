@@ -11,3 +11,4 @@ output-options:
     - Labels
     - Chat Integrations
     - Escalation Policies
+    - Schedules
