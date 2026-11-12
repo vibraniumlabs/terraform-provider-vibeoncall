@@ -37,6 +37,26 @@ func TestTeamDataSourceFindsExactNameAcrossPages(t *testing.T) {
 	})
 }
 
+func TestTeamDataSourceCountsATeamSeenOnTwoPagesOnce(t *testing.T) {
+	api, srv := newFakeAPI(t)
+	for i := 2; i <= 100; i++ {
+		api.teams[i] = &fakeTeam{ID: i, ShortID: fmt.Sprintf("VP-TEAM-%d", i), Name: fmt.Sprintf("Team %d", i)}
+	}
+	api.teams[101] = &fakeTeam{ID: 101, ShortID: "VP-TEAM-101", Name: "Platform"}
+	api.teams[102] = &fakeTeam{ID: 102, ShortID: "VP-TEAM-102", Name: "Team 102"}
+	api.afterTeams = func() {
+		api.teams[1] = &fakeTeam{ID: 1, ShortID: "VP-TEAM-1", Name: "Created mid-plan"}
+	}
+
+	resource.UnitTest(t, resource.TestCase{
+		ProtoV6ProviderFactories: protoV6ProviderFactories(),
+		Steps: []resource.TestStep{{
+			Config: teamDataSourceConfig(srv.URL, "Platform"),
+			Check:  resource.TestCheckResourceAttr("data.vibeoncall_team.test", "id", "101"),
+		}},
+	})
+}
+
 func TestTeamDataSourceErrorsWhenNotExactlyOneMatch(t *testing.T) {
 	api, srv := newFakeAPI(t)
 	api.teams[1] = &fakeTeam{ID: 1, ShortID: "VP-TEAM-1", Name: "Platform Ops"}

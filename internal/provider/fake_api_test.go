@@ -51,6 +51,7 @@ type fakeAPI struct {
 	labels       []fakeLabel
 	chatChannels []fakeChatChannel
 	chatQuery    url.Values
+	afterTeams   func()
 }
 
 func strPtr(s string) *string { return &s }
@@ -220,6 +221,9 @@ func (a *fakeAPI) listTeams(w http.ResponseWriter, r *http.Request) {
 	sort.Slice(teams, func(i, j int) bool { return teams[i].ID < teams[j].ID })
 	start, end := pageBounds(r, len(teams))
 	writeJSON(w, http.StatusOK, map[string]any{"teams": teams[start:end], "total": len(teams), "hasMore": end < len(teams)})
+	if a.afterTeams != nil {
+		a.afterTeams()
+	}
 }
 
 func (a *fakeAPI) listLabels(w http.ResponseWriter) {

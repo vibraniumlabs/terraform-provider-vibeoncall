@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"fmt"
+	"slices"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -82,7 +83,7 @@ func (d *TeamDataSource) Read(ctx context.Context, req datasource.ReadRequest, r
 			return
 		}
 		for _, t := range res.JSON200.Teams {
-			if t.Name == name {
+			if t.Name == name && !slices.ContainsFunc(matches, func(m client.TeamSummary) bool { return m.Id == t.Id }) {
 				matches = append(matches, t)
 			}
 		}
