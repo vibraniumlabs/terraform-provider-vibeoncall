@@ -41,7 +41,7 @@ func (d *ChatChannelDataSource) Schema(ctx context.Context, req datasource.Schem
 			"name": schema.StringAttribute{
 				MarkdownDescription: "Channel name, without `#`. Matched exactly, ignoring case.",
 				Required:            true,
-				Validators:          []validator.String{stringvalidator.LengthAtLeast(1)},
+				Validators:          []validator.String{noSurroundingWhitespace},
 			},
 			"microsoft_teams_team_id": schema.StringAttribute{
 				MarkdownDescription: "ID of the Microsoft Teams team the channel belongs to: the `groupId` in the team's link. Required on Microsoft Teams, rejected on Slack.",

@@ -85,20 +85,24 @@ func TestChatChannelDataSourceErrorsWhenNotExactlyOneMatch(t *testing.T) {
 	}
 }
 
-func TestChatChannelDataSourceRejectsEmptyArguments(t *testing.T) {
+func TestChatChannelDataSourceRejectsEmptyOrPaddedArguments(t *testing.T) {
 	_, srv := newFakeAPI(t)
 
-	for _, args := range []string{
-		`name = ""`,
+	for args, want := range map[string]string{
+		`name = ""`:            `must not be empty or start or end with whitespace`,
+		`name = " incidents"`:  `must not be empty or start or end with whitespace`,
+		`name = "incidents\n"`: `must not be empty or start or end with whitespace`,
 		`name = "General"
-  microsoft_teams_team_id = ""`,
+  microsoft_teams_team_id = ""`: `string length must be at least 1`,
 	} {
-		resource.UnitTest(t, resource.TestCase{
-			ProtoV6ProviderFactories: protoV6ProviderFactories(),
-			Steps: []resource.TestStep{{
-				Config:      providerConfig(srv.URL) + "data \"vibeoncall_chat_channel\" \"test\" {\n  " + args + "\n}\n",
-				ExpectError: regexp.MustCompile(`string length must be at least 1`),
-			}},
+		t.Run(args, func(t *testing.T) {
+			resource.UnitTest(t, resource.TestCase{
+				ProtoV6ProviderFactories: protoV6ProviderFactories(),
+				Steps: []resource.TestStep{{
+					Config:      providerConfig(srv.URL) + "data \"vibeoncall_chat_channel\" \"test\" {\n  " + args + "\n}\n",
+					ExpectError: regexp.MustCompile(want),
+				}},
+			})
 		})
 	}
 }
