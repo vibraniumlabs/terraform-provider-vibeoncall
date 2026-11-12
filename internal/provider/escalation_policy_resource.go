@@ -114,7 +114,7 @@ func (r *EscalationPolicyResource) Schema(ctx context.Context, req resource.Sche
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"acknowledgement_timeout_minutes": schema.Int64Attribute{
-							MarkdownDescription: "Minutes to wait for an acknowledgement before escalating to the next tier.",
+							MarkdownDescription: "Minutes to wait for an acknowledgement before escalating to the next tier. A timeout set outside the app that is not a whole number of minutes reads back rounded to the nearest minute, and the next change to `tiers` saves the rounded value.",
 							Required:            true,
 							Validators:          []validator.Int64{int64validator.AtLeast(1)},
 						},

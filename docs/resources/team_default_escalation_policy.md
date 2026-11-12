@@ -9,7 +9,7 @@ description: |-
 
 A team's default escalation policy, paged when the team is paged without a policy.
 
-~> **Note** Creating this resource replaces any default the team already has, and the plan does not show the policy it replaces. Destroying it clears the team's default.
+~> **Note** Creating this resource replaces any default the team already has, and the plan does not show the policy it replaces. Destroying it clears the team's default. Manage each team's default with a single `vibeoncall_team_default_escalation_policy`; two resources that set it, in the same or different configurations, overwrite each other on every apply.
 
 ## Example Usage
 
