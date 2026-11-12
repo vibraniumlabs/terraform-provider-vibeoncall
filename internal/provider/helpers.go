@@ -12,9 +12,17 @@ import (
 	"github.com/vibraniumlabs/terraform-provider-vibeoncall/internal/client"
 )
 
+const listPageSize = 100
+
 var numericIDPattern = regexp.MustCompile(`^[1-9][0-9]*$`)
 
 var numericID = stringvalidator.RegexMatches(numericIDPattern, "must be a numeric ID")
+
+// Matches the characters JavaScript's String.prototype.trim removes, which the API applies to names, descriptions and searches.
+var noSurroundingWhitespace = stringvalidator.RegexMatches(
+	regexp.MustCompile(`(?s)^[^\s\x0B\p{Z}\x{FEFF}](.*[^\s\x0B\p{Z}\x{FEFF}])?$`),
+	"must not be empty or start or end with whitespace",
+)
 
 func isNumericID(s string) bool {
 	return numericIDPattern.MatchString(s)

@@ -751,8 +751,17 @@ components:
             - integer
             - "null"
           exclusiveMinimum: 0
-          description: Team ID, or null for a global schedule.
+          description: "Deprecated: use teamIds. The lowest owning team ID, or null for a global schedule."
           format: int32
+          deprecated: true
+        teamIds:
+          type: array
+          items:
+            type: integer
+            exclusiveMinimum: 0
+            format: int32
+          maxItems: 100
+          description: Every owning team ID in ascending order. Empty for a global schedule.
         rotations:
           type: array
           items:
@@ -766,9 +775,27 @@ components:
         - name
         - timezone
         - teamId
+        - teamIds
         - rotations
         - id
       additionalProperties: false
+    PublicScheduleListResponse:
+      type: object
+      properties:
+        schedules:
+          type: array
+          items:
+            $ref: "#/components/schemas/PublicScheduleResponse"
+        total:
+          type: integer
+          minimum: 0
+          format: int32
+        hasMore:
+          type: boolean
+      required:
+        - schedules
+        - total
+        - hasMore
     PublicScheduleRotationInput:
       type: object
       properties:
@@ -812,8 +839,17 @@ components:
             - integer
             - "null"
           exclusiveMinimum: 0
-          description: Team ID, or null for a global schedule. Omission also creates a global schedule.
+          description: "Deprecated: use teamIds. A single owning team ID, or null for a global schedule. Cannot be sent with teamIds."
           format: int32
+          deprecated: true
+        teamIds:
+          type: array
+          items:
+            type: integer
+            exclusiveMinimum: 0
+            format: int32
+          maxItems: 100
+          description: Owning team IDs. An empty array, or omitting both teamIds and teamId, creates a global schedule.
         rotations:
           type: array
           items:
@@ -835,6 +871,20 @@ components:
           type: string
           minLength: 1
           description: IANA time zone for this schedule, such as America/New_York.
+      additionalProperties: false
+    ReplacePublicScheduleTeamsRequest:
+      type: object
+      properties:
+        teamIds:
+          type: array
+          items:
+            type: integer
+            exclusiveMinimum: 0
+            format: int32
+          maxItems: 100
+          description: The complete set of owning team IDs. An empty array makes the schedule global.
+      required:
+        - teamIds
       additionalProperties: false
     PublicRotationIdResponse:
       type: object
@@ -3917,11 +3967,74 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
   /schedules:
+    get:
+      tags:
+        - Schedules
+      summary: List schedules
+      description: Lists schedules in the API key organization, newest first. teamId narrows the list to one team.
+      operationId: listSchedules
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+            description: Maximum number of items to return (default 20, max 100).
+            format: int32
+          required: false
+          name: limit
+          in: query
+        - schema:
+            type:
+              - integer
+              - "null"
+            minimum: 0
+            default: 0
+            description: Number of items to skip before starting to collect the result set.
+            format: int32
+          required: false
+          name: offset
+          in: query
+        - schema:
+            type: integer
+            exclusiveMinimum: 0
+            description: Return only schedules this team owns, including those it shares with other teams. Omit for every schedule, global ones included.
+            format: int32
+          required: false
+          name: teamId
+          in: query
+      responses:
+        "200":
+          description: Paginated schedules and rotations.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicScheduleListResponse"
+        "400":
+          description: Invalid query parameters.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorResponse"
+        "401":
+          description: Missing or invalid API key.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
     post:
       tags:
         - Schedules
       summary: Create a schedule
-      description: Creates a global schedule when teamId is null or omitted, or a schedule for a team in the API key organization. At least one rotation is required.
+      description: Creates a schedule owned by the teamIds in the API key organization, or a global schedule when no team is given. At least one rotation is required.
       operationId: createSchedule
       security:
         - ApiKeyAuth: []
@@ -3980,7 +4093,7 @@ paths:
       tags:
         - Schedules
       summary: Update schedule details
-      description: Updates name or timezone. Omitted fields retain their current values. The schedule stays with its current team. Edit rotations with the rotation routes.
+      description: Updates name or timezone. Omitted fields retain their current values. Change owning teams with PUT /schedules/{id}/teams and rotations with the rotation routes.
       operationId: updateSchedule
       security:
         - ApiKeyAuth: []
@@ -4141,6 +4254,74 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: Schedule, rotation, team, or participant not found in the API key organization.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /schedules/{id}/teams:
+    put:
+      tags:
+        - Schedules
+      summary: Replace a schedule's owning teams
+      description: Replaces the complete set of teams that own the schedule. Requires schedule.manageTeamOwnership; it does not change the schedule configuration or rotations. Sending the current set changes nothing.
+      operationId: replaceScheduleTeams
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - schema:
+            type: integer
+            exclusiveMinimum: 0
+            description: Schedule ID.
+            format: int32
+          required: true
+          name: id
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReplacePublicScheduleTeamsRequest"
+      responses:
+        "200":
+          description: Schedule with its new owning teams.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicScheduleResponse"
+        "400":
+          description: Invalid schedule, rotation, or override input.
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: "#/components/schemas/ValidationErrorResponse"
+                  - $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Missing or invalid API key.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: "Permission denied: the API key is read-only, or its access does not include an action this request needs."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiKeyDenialResponse"
+        "404":
+          description: Schedule, rotation, team, or participant not found in the API key organization.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Schedule name already in use.
           content:
             application/json:
               schema:

@@ -37,6 +37,24 @@ func (e AssignTeamMemberRequestRole) Valid() bool {
 	}
 }
 
+// Defines values for ChatPlatform.
+const (
+	MicrosoftTeams ChatPlatform = "microsoftTeams"
+	Slack          ChatPlatform = "slack"
+)
+
+// Valid indicates whether the value is a known member of the ChatPlatform enum.
+func (e ChatPlatform) Valid() bool {
+	switch e {
+	case MicrosoftTeams:
+		return true
+	case Slack:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for MemberStatus.
 const (
 	MemberStatusActive  MemberStatus = "active"
@@ -199,6 +217,35 @@ type AssignTeamMemberRequest struct {
 // AssignTeamMemberRequestRole Team membership role. Defaults to member.
 type AssignTeamMemberRequestRole string
 
+// ChatChannel defines model for ChatChannel.
+type ChatChannel struct {
+	// Id Platform channel ID, as accepted by `announcementChannels` on maintenance windows (Slack `C…` or Microsoft Teams `19:…@thread.tacv2`).
+	Id string `json:"id"`
+
+	// Name Channel display name.
+	Name string `json:"name"`
+}
+
+// ChatChannelsListResponse defines model for ChatChannelsListResponse.
+type ChatChannelsListResponse struct {
+	Channels []ChatChannel `json:"channels"`
+
+	// HasMore Whether more channels are available beyond the current page.
+	HasMore bool `json:"hasMore"`
+
+	// MicrosoftTeamsTeam The Microsoft Teams team the channels belong to; null for Slack organizations.
+	MicrosoftTeamsTeam nullable.Nullable[MicrosoftTeamsTeam] `json:"microsoftTeamsTeam"`
+
+	// Platform The chat platform the organization is connected to: `slack` or `microsoftTeams`.
+	Platform ChatPlatform `json:"platform"`
+
+	// Total Total number of channels matching the filters.
+	Total int32 `json:"total"`
+}
+
+// ChatPlatform The chat platform the organization is connected to: `slack` or `microsoftTeams`.
+type ChatPlatform string
+
 // CreateTeamRequest defines model for CreateTeamRequest.
 type CreateTeamRequest struct {
 	Description      nullable.Nullable[string] `json:"description,omitempty"`
@@ -211,6 +258,32 @@ type CreateTeamRequest struct {
 type ErrorResponse struct {
 	// Message Human-readable error message.
 	Message string `json:"message"`
+}
+
+// Label defines model for Label.
+type Label struct {
+	// AlertUsageCount Number of alerts using this label.
+	AlertUsageCount int32 `json:"alertUsageCount"`
+
+	// Color Hex color code (e.g. #FF0000).
+	Color string `json:"color"`
+
+	// Id Unique identifier of the label.
+	Id int32 `json:"id"`
+
+	// IncidentUsageCount Number of incidents using this label.
+	IncidentUsageCount int32 `json:"incidentUsageCount"`
+
+	// Name Display name of the label.
+	Name string `json:"name"`
+
+	// UsageCount Total number of incidents and alerts using this label.
+	UsageCount int32 `json:"usageCount"`
+}
+
+// LabelsListResponse defines model for LabelsListResponse.
+type LabelsListResponse struct {
+	Labels []Label `json:"labels"`
 }
 
 // Member defines model for Member.
@@ -277,6 +350,25 @@ type MembersListResponse struct {
 	Members []Member `json:"members"`
 
 	// Total Total number of members matching the filters.
+	Total int32 `json:"total"`
+}
+
+// MicrosoftTeamsTeam defines model for MicrosoftTeamsTeam.
+type MicrosoftTeamsTeam struct {
+	// Id Microsoft Teams team ID.
+	Id string `json:"id"`
+
+	// Name Microsoft Teams team display name.
+	Name string `json:"name"`
+}
+
+// MicrosoftTeamsTeamsListResponse defines model for MicrosoftTeamsTeamsListResponse.
+type MicrosoftTeamsTeamsListResponse struct {
+	// HasMore Whether more teams are available beyond the current page.
+	HasMore bool                 `json:"hasMore"`
+	Teams   []MicrosoftTeamsTeam `json:"teams"`
+
+	// Total Total number of joined teams matching the filters.
 	Total int32 `json:"total"`
 }
 
@@ -467,6 +559,31 @@ type ValidationErrorResponse struct {
 	} `json:"error"`
 }
 
+// ListChatChannelsParams defines parameters for ListChatChannels.
+type ListChatChannelsParams struct {
+	Limit                *int32  `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset               *int32  `form:"offset,omitempty" json:"offset,omitempty"`
+	Search               *string `form:"search,omitempty" json:"search,omitempty"`
+	MicrosoftTeamsTeamId *string `form:"microsoftTeamsTeamId,omitempty" json:"microsoftTeamsTeamId,omitempty"`
+}
+
+// ListChatChannels400JSONResponseBody defines parameters for ListChatChannels.
+type ListChatChannels400JSONResponseBody struct {
+	union json.RawMessage
+}
+
+// ListMicrosoftTeamsTeamsParams defines parameters for ListMicrosoftTeamsTeams.
+type ListMicrosoftTeamsTeamsParams struct {
+	Limit  *int32  `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset *int32  `form:"offset,omitempty" json:"offset,omitempty"`
+	Search *string `form:"search,omitempty" json:"search,omitempty"`
+}
+
+// ListMicrosoftTeamsTeams400JSONResponseBody defines parameters for ListMicrosoftTeamsTeams.
+type ListMicrosoftTeamsTeams400JSONResponseBody struct {
+	union json.RawMessage
+}
+
 // ListMembersParams defines parameters for ListMembers.
 type ListMembersParams struct {
 	Limit    *int32                     `form:"limit,omitempty" json:"limit,omitempty"`
@@ -500,6 +617,130 @@ type UpdateTeamJSONRequestBody = UpdateTeamRequest
 
 // AssignTeamMemberJSONRequestBody defines body for AssignTeamMember for application/json ContentType.
 type AssignTeamMemberJSONRequestBody = AssignTeamMemberRequest
+
+// AsValidationErrorResponse returns the union data inside the ListChatChannels400JSONResponseBody as a ValidationErrorResponse
+func (t ListChatChannels400JSONResponseBody) AsValidationErrorResponse() (ValidationErrorResponse, error) {
+	var body ValidationErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromValidationErrorResponse overwrites any union data inside the ListChatChannels400JSONResponseBody as the provided ValidationErrorResponse
+func (t *ListChatChannels400JSONResponseBody) FromValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeValidationErrorResponse performs a merge with any union data inside the ListChatChannels400JSONResponseBody, using the provided ValidationErrorResponse
+func (t *ListChatChannels400JSONResponseBody) MergeValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsErrorResponse returns the union data inside the ListChatChannels400JSONResponseBody as a ErrorResponse
+func (t ListChatChannels400JSONResponseBody) AsErrorResponse() (ErrorResponse, error) {
+	var body ErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorResponse overwrites any union data inside the ListChatChannels400JSONResponseBody as the provided ErrorResponse
+func (t *ListChatChannels400JSONResponseBody) FromErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorResponse performs a merge with any union data inside the ListChatChannels400JSONResponseBody, using the provided ErrorResponse
+func (t *ListChatChannels400JSONResponseBody) MergeErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t ListChatChannels400JSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *ListChatChannels400JSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsValidationErrorResponse returns the union data inside the ListMicrosoftTeamsTeams400JSONResponseBody as a ValidationErrorResponse
+func (t ListMicrosoftTeamsTeams400JSONResponseBody) AsValidationErrorResponse() (ValidationErrorResponse, error) {
+	var body ValidationErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromValidationErrorResponse overwrites any union data inside the ListMicrosoftTeamsTeams400JSONResponseBody as the provided ValidationErrorResponse
+func (t *ListMicrosoftTeamsTeams400JSONResponseBody) FromValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeValidationErrorResponse performs a merge with any union data inside the ListMicrosoftTeamsTeams400JSONResponseBody, using the provided ValidationErrorResponse
+func (t *ListMicrosoftTeamsTeams400JSONResponseBody) MergeValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsErrorResponse returns the union data inside the ListMicrosoftTeamsTeams400JSONResponseBody as a ErrorResponse
+func (t ListMicrosoftTeamsTeams400JSONResponseBody) AsErrorResponse() (ErrorResponse, error) {
+	var body ErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorResponse overwrites any union data inside the ListMicrosoftTeamsTeams400JSONResponseBody as the provided ErrorResponse
+func (t *ListMicrosoftTeamsTeams400JSONResponseBody) FromErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorResponse performs a merge with any union data inside the ListMicrosoftTeamsTeams400JSONResponseBody, using the provided ErrorResponse
+func (t *ListMicrosoftTeamsTeams400JSONResponseBody) MergeErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t ListMicrosoftTeamsTeams400JSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *ListMicrosoftTeamsTeams400JSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
 
 // RequestEditorFn is the function signature for the RequestEditor callback function
 type RequestEditorFn func(ctx context.Context, req *http.Request) error
@@ -574,6 +815,27 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 
 // The interface specification for the client above.
 type ClientInterface interface {
+
+	// ListChatChannels List chat channels
+	//
+	// Returns the channels of the chat platform the organization is connected to, sorted by name. On Slack every workspace channel is listed. On Microsoft Teams, channels belong to a team, so `microsoftTeamsTeamId` is required; list the teams with GET /integrations/chat/microsoft-teams/teams. Use the returned channel `id` values as `announcementChannels` on maintenance windows.
+	//
+	// Corresponds with GET /integrations/chat/channels (the `ListChatChannels` operationId).
+	ListChatChannels(ctx context.Context, params *ListChatChannelsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListMicrosoftTeamsTeams List Microsoft Teams teams
+	//
+	// Returns the Microsoft Teams teams the integration has joined, sorted by name. Pass a team `id` as `microsoftTeamsTeamId` to GET /integrations/chat/channels to list its channels. Only available to organizations connected to Microsoft Teams.
+	//
+	// Corresponds with GET /integrations/chat/microsoft-teams/teams (the `ListMicrosoftTeamsTeams` operationId).
+	ListMicrosoftTeamsTeams(ctx context.Context, params *ListMicrosoftTeamsTeamsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListLabels List labels
+	//
+	// Returns all labels for the organization associated with the API key. Use the returned IDs with the `labelIds` filter on the incidents and alerts endpoints.
+	//
+	// Corresponds with GET /labels (the `ListLabels` operationId).
+	ListLabels(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ListMembers List members of the organization
 	//
@@ -684,6 +946,57 @@ type ClientInterface interface {
 	//
 	// Corresponds with GET /teams/{teamShortId}/on-call (the `GetTeamCurrentOnCall` operationId).
 	GetTeamCurrentOnCall(ctx context.Context, teamShortId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+}
+
+// ListChatChannels List chat channels
+//
+// Returns the channels of the chat platform the organization is connected to, sorted by name. On Slack every workspace channel is listed. On Microsoft Teams, channels belong to a team, so `microsoftTeamsTeamId` is required; list the teams with GET /integrations/chat/microsoft-teams/teams. Use the returned channel `id` values as `announcementChannels` on maintenance windows.
+//
+// Corresponds with GET /integrations/chat/channels (the `ListChatChannels` operationId).
+func (c *Client) ListChatChannels(ctx context.Context, params *ListChatChannelsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListChatChannelsRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListMicrosoftTeamsTeams List Microsoft Teams teams
+//
+// Returns the Microsoft Teams teams the integration has joined, sorted by name. Pass a team `id` as `microsoftTeamsTeamId` to GET /integrations/chat/channels to list its channels. Only available to organizations connected to Microsoft Teams.
+//
+// Corresponds with GET /integrations/chat/microsoft-teams/teams (the `ListMicrosoftTeamsTeams` operationId).
+func (c *Client) ListMicrosoftTeamsTeams(ctx context.Context, params *ListMicrosoftTeamsTeamsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListMicrosoftTeamsTeamsRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListLabels List labels
+//
+// Returns all labels for the organization associated with the API key. Use the returned IDs with the `labelIds` filter on the incidents and alerts endpoints.
+//
+// Corresponds with GET /labels (the `ListLabels` operationId).
+func (c *Client) ListLabels(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListLabelsRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
 }
 
 // ListMembers List members of the organization
@@ -934,6 +1247,201 @@ func (c *Client) GetTeamCurrentOnCall(ctx context.Context, teamShortId string, r
 		return nil, err
 	}
 	return c.Client.Do(req)
+}
+
+// NewListChatChannelsRequest constructs an http.Request for the ListChatChannels method
+func NewListChatChannelsRequest(server string, params *ListChatChannelsParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/integrations/chat/channels")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "limit", *params.Limit, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: "int32"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Offset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "offset", *params.Offset, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: "int32"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Search != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "search", *params.Search, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.MicrosoftTeamsTeamId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "microsoftTeamsTeamId", *params.MicrosoftTeamsTeamId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewListMicrosoftTeamsTeamsRequest constructs an http.Request for the ListMicrosoftTeamsTeams method
+func NewListMicrosoftTeamsTeamsRequest(server string, params *ListMicrosoftTeamsTeamsParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/integrations/chat/microsoft-teams/teams")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "limit", *params.Limit, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: "int32"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Offset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "offset", *params.Offset, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: "int32"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Search != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "search", *params.Search, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewListLabelsRequest constructs an http.Request for the ListLabels method
+func NewListLabelsRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/labels")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
 }
 
 // NewListMembersRequest constructs an http.Request for the ListMembers method
@@ -1544,6 +2052,33 @@ func WithBaseURL(baseURL string) ClientOption {
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
 
+	// ListChatChannelsWithResponse List chat channels
+	//
+	// Returns the channels of the chat platform the organization is connected to, sorted by name. On Slack every workspace channel is listed. On Microsoft Teams, channels belong to a team, so `microsoftTeamsTeamId` is required; list the teams with GET /integrations/chat/microsoft-teams/teams. Use the returned channel `id` values as `announcementChannels` on maintenance windows.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /integrations/chat/channels (the `ListChatChannels` operationId).
+	ListChatChannelsWithResponse(ctx context.Context, params *ListChatChannelsParams, reqEditors ...RequestEditorFn) (*ListChatChannelsResponse, error)
+
+	// ListMicrosoftTeamsTeamsWithResponse List Microsoft Teams teams
+	//
+	// Returns the Microsoft Teams teams the integration has joined, sorted by name. Pass a team `id` as `microsoftTeamsTeamId` to GET /integrations/chat/channels to list its channels. Only available to organizations connected to Microsoft Teams.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /integrations/chat/microsoft-teams/teams (the `ListMicrosoftTeamsTeams` operationId).
+	ListMicrosoftTeamsTeamsWithResponse(ctx context.Context, params *ListMicrosoftTeamsTeamsParams, reqEditors ...RequestEditorFn) (*ListMicrosoftTeamsTeamsResponse, error)
+
+	// ListLabelsWithResponse List labels
+	//
+	// Returns all labels for the organization associated with the API key. Use the returned IDs with the `labelIds` filter on the incidents and alerts endpoints.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /labels (the `ListLabels` operationId).
+	ListLabelsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListLabelsResponse, error)
+
 	// ListMembersWithResponse List members of the organization
 	//
 	// Returns a paginated list of every member of the organization associated with the API key, including members who belong to no team. Filters combine with AND; values within one repeatable filter combine with OR. Ordered by creation time, oldest first.
@@ -1669,6 +2204,213 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with GET /teams/{teamShortId}/on-call (the `GetTeamCurrentOnCall` operationId).
 	GetTeamCurrentOnCallWithResponse(ctx context.Context, teamShortId string, reqEditors ...RequestEditorFn) (*GetTeamCurrentOnCallResponse, error)
+}
+
+type ListChatChannelsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *ChatChannelsListResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ListChatChannels400JSONResponseBody
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponse
+	// JSON429 the response for an HTTP 429 `application/json` response
+	JSON429 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r ListChatChannelsResponse) GetJSON200() *ChatChannelsListResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r ListChatChannelsResponse) GetJSON400() *ListChatChannels400JSONResponseBody {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r ListChatChannelsResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r ListChatChannelsResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r ListChatChannelsResponse) GetJSON409() *ErrorResponse {
+	return r.JSON409
+}
+
+// GetJSON429 returns the response for an HTTP 429 `application/json` response
+func (r ListChatChannelsResponse) GetJSON429() *ErrorResponse {
+	return r.JSON429
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r ListChatChannelsResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r ListChatChannelsResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r ListChatChannelsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListChatChannelsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r ListChatChannelsResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type ListMicrosoftTeamsTeamsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *MicrosoftTeamsTeamsListResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ListMicrosoftTeamsTeams400JSONResponseBody
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r ListMicrosoftTeamsTeamsResponse) GetJSON200() *MicrosoftTeamsTeamsListResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r ListMicrosoftTeamsTeamsResponse) GetJSON400() *ListMicrosoftTeamsTeams400JSONResponseBody {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r ListMicrosoftTeamsTeamsResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r ListMicrosoftTeamsTeamsResponse) GetJSON409() *ErrorResponse {
+	return r.JSON409
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r ListMicrosoftTeamsTeamsResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r ListMicrosoftTeamsTeamsResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r ListMicrosoftTeamsTeamsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListMicrosoftTeamsTeamsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r ListMicrosoftTeamsTeamsResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type ListLabelsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *LabelsListResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r ListLabelsResponse) GetJSON200() *LabelsListResponse {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r ListLabelsResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r ListLabelsResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r ListLabelsResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r ListLabelsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListLabelsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r ListLabelsResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
 }
 
 type ListMembersResponse struct {
@@ -2465,6 +3207,51 @@ func (r GetTeamCurrentOnCallResponse) ContentType() string {
 	return ""
 }
 
+// ListChatChannelsWithResponse List chat channels
+//
+// Returns the channels of the chat platform the organization is connected to, sorted by name. On Slack every workspace channel is listed. On Microsoft Teams, channels belong to a team, so `microsoftTeamsTeamId` is required; list the teams with GET /integrations/chat/microsoft-teams/teams. Use the returned channel `id` values as `announcementChannels` on maintenance windows.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /integrations/chat/channels (the `ListChatChannels` operationId).
+func (c *ClientWithResponses) ListChatChannelsWithResponse(ctx context.Context, params *ListChatChannelsParams, reqEditors ...RequestEditorFn) (*ListChatChannelsResponse, error) {
+	rsp, err := c.ListChatChannels(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListChatChannelsResponse(rsp)
+}
+
+// ListMicrosoftTeamsTeamsWithResponse List Microsoft Teams teams
+//
+// Returns the Microsoft Teams teams the integration has joined, sorted by name. Pass a team `id` as `microsoftTeamsTeamId` to GET /integrations/chat/channels to list its channels. Only available to organizations connected to Microsoft Teams.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /integrations/chat/microsoft-teams/teams (the `ListMicrosoftTeamsTeams` operationId).
+func (c *ClientWithResponses) ListMicrosoftTeamsTeamsWithResponse(ctx context.Context, params *ListMicrosoftTeamsTeamsParams, reqEditors ...RequestEditorFn) (*ListMicrosoftTeamsTeamsResponse, error) {
+	rsp, err := c.ListMicrosoftTeamsTeams(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListMicrosoftTeamsTeamsResponse(rsp)
+}
+
+// ListLabelsWithResponse List labels
+//
+// Returns all labels for the organization associated with the API key. Use the returned IDs with the `labelIds` filter on the incidents and alerts endpoints.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /labels (the `ListLabels` operationId).
+func (c *ClientWithResponses) ListLabelsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListLabelsResponse, error) {
+	rsp, err := c.ListLabels(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListLabelsResponse(rsp)
+}
+
 // ListMembersWithResponse List members of the organization
 //
 // Returns a paginated list of every member of the organization associated with the API key, including members who belong to no team. Filters combine with AND; values within one repeatable filter combine with OR. Ordered by creation time, oldest first.
@@ -2673,6 +3460,168 @@ func (c *ClientWithResponses) GetTeamCurrentOnCallWithResponse(ctx context.Conte
 		return nil, err
 	}
 	return ParseGetTeamCurrentOnCallResponse(rsp)
+}
+
+// ParseListChatChannelsResponse parses an HTTP response from a ListChatChannelsWithResponse call
+func ParseListChatChannelsResponse(rsp *http.Response) (*ListChatChannelsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListChatChannelsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ChatChannelsListResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ListChatChannels400JSONResponseBody
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListMicrosoftTeamsTeamsResponse parses an HTTP response from a ListMicrosoftTeamsTeamsWithResponse call
+func ParseListMicrosoftTeamsTeamsResponse(rsp *http.Response) (*ListMicrosoftTeamsTeamsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListMicrosoftTeamsTeamsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest MicrosoftTeamsTeamsListResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ListMicrosoftTeamsTeams400JSONResponseBody
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListLabelsResponse parses an HTTP response from a ListLabelsWithResponse call
+func ParseListLabelsResponse(rsp *http.Response) (*ListLabelsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListLabelsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest LabelsListResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
 }
 
 // ParseListMembersResponse parses an HTTP response from a ListMembersWithResponse call

@@ -13,8 +13,6 @@ import (
 	"github.com/vibraniumlabs/terraform-provider-vibeoncall/internal/client"
 )
 
-const memberPageSize = 100
-
 var _ datasource.DataSourceWithConfigure = &MemberDataSource{}
 
 func NewMemberDataSource() datasource.DataSource {
@@ -73,7 +71,7 @@ func (d *MemberDataSource) Read(ctx context.Context, req datasource.ReadRequest,
 
 	email := data.Email.ValueString()
 	var matches []client.Member
-	limit := int32(memberPageSize)
+	limit := int32(listPageSize)
 	for offset := int32(0); ; offset += limit {
 		res, err := d.client.ListMembersWithResponse(ctx, &client.ListMembersParams{Search: &email, Limit: &limit, Offset: &offset})
 		if err != nil {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"sort"
 	"strconv"
 	"strings"
@@ -30,12 +31,27 @@ type fakeUser struct {
 	Status   string  `json:"status"`
 }
 
+type fakeLabel struct {
+	ID    int    `json:"id"`
+	Name  string `json:"name"`
+	Color string `json:"color"`
+}
+
+type fakeChatChannel struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
 type fakeAPI struct {
-	mu          sync.Mutex
-	nextTeamID  int
-	teams       map[int]*fakeTeam
-	users       []fakeUser
-	memberships map[int]map[int]string
+	mu           sync.Mutex
+	nextTeamID   int
+	teams        map[int]*fakeTeam
+	users        []fakeUser
+	memberships  map[int]map[int]string
+	labels       []fakeLabel
+	chatChannels []fakeChatChannel
+	chatQuery    url.Values
+	afterTeams   func()
 }
 
 func strPtr(s string) *string { return &s }
@@ -102,6 +118,12 @@ func (a *fakeAPI) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch {
 	case len(parts) == 1 && parts[0] == "members" && r.Method == http.MethodGet:
 		a.listMembers(w, r)
+	case len(parts) == 1 && parts[0] == "teams" && r.Method == http.MethodGet:
+		a.listTeams(w, r)
+	case len(parts) == 1 && parts[0] == "labels" && r.Method == http.MethodGet:
+		a.listLabels(w)
+	case r.URL.Path == "/integrations/chat/channels" && r.Method == http.MethodGet:
+		a.listChatChannels(w, r)
 	case len(parts) == 1 && parts[0] == "teams" && r.Method == http.MethodPost:
 		team := &fakeTeam{ID: a.nextTeamID, ShortID: fmt.Sprintf("VP-TEAM-%d", a.nextTeamID)}
 		a.nextTeamID++
@@ -185,16 +207,46 @@ func (a *fakeAPI) serveTeamMembers(w http.ResponseWriter, r *http.Request, team 
 	}
 }
 
-func (a *fakeAPI) listMembers(w http.ResponseWriter, r *http.Request) {
-	q := r.URL.Query()
-	search := strings.ToLower(q.Get("search"))
-	limit, _ := strconv.Atoi(q.Get("limit"))
-	if limit == 0 {
-		limit = 20
-	}
-	offset, _ := strconv.Atoi(q.Get("offset"))
+func pageBounds(r *http.Request, n int) (start, end int) {
+	limit, _ := strconv.Atoi(r.URL.Query().Get("limit"))
+	offset, _ := strconv.Atoi(r.URL.Query().Get("offset"))
+	return min(offset, n), min(offset+limit, n)
+}
 
-	var matched []map[string]any
+func (a *fakeAPI) listTeams(w http.ResponseWriter, r *http.Request) {
+	teams := make([]*fakeTeam, 0, len(a.teams))
+	for _, team := range a.teams {
+		teams = append(teams, team)
+	}
+	sort.Slice(teams, func(i, j int) bool { return teams[i].ID < teams[j].ID })
+	start, end := pageBounds(r, len(teams))
+	writeJSON(w, http.StatusOK, map[string]any{"teams": teams[start:end], "total": len(teams), "hasMore": end < len(teams)})
+	if a.afterTeams != nil {
+		a.afterTeams()
+	}
+}
+
+func (a *fakeAPI) listLabels(w http.ResponseWriter) {
+	writeJSON(w, http.StatusOK, map[string]any{"labels": a.labels})
+}
+
+func (a *fakeAPI) listChatChannels(w http.ResponseWriter, r *http.Request) {
+	a.chatQuery = r.URL.Query()
+	search := strings.ToLower(a.chatQuery.Get("search"))
+	matched := []fakeChatChannel{}
+	for _, c := range a.chatChannels {
+		if strings.Contains(strings.ToLower(c.Name), search) {
+			matched = append(matched, c)
+		}
+	}
+	start, end := pageBounds(r, len(matched))
+	writeJSON(w, http.StatusOK, map[string]any{"channels": matched[start:end], "total": len(matched), "hasMore": end < len(matched)})
+}
+
+func (a *fakeAPI) listMembers(w http.ResponseWriter, r *http.Request) {
+	search := strings.ToLower(r.URL.Query().Get("search"))
+
+	matched := []map[string]any{}
 	for _, u := range a.users {
 		name := ""
 		if u.FullName != nil {
@@ -207,12 +259,8 @@ func (a *fakeAPI) listMembers(w http.ResponseWriter, r *http.Request) {
 			})
 		}
 	}
-	end := min(offset+limit, len(matched))
-	page := []map[string]any{}
-	if offset < len(matched) {
-		page = matched[offset:end]
-	}
-	writeJSON(w, http.StatusOK, map[string]any{"members": page, "total": len(matched), "hasMore": end < len(matched)})
+	start, end := pageBounds(r, len(matched))
+	writeJSON(w, http.StatusOK, map[string]any{"members": matched[start:end], "total": len(matched), "hasMore": end < len(matched)})
 }
 
 func applyTeamBody(team *fakeTeam, body map[string]json.RawMessage) {

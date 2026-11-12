@@ -3,7 +3,6 @@ package provider
 import (
 	"context"
 	"net/http"
-	"regexp"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -16,12 +15,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	"github.com/vibraniumlabs/terraform-provider-vibeoncall/internal/client"
-)
-
-// Matches the characters JavaScript's String.prototype.trim removes, which the API applies to names and descriptions.
-var noSurroundingWhitespace = stringvalidator.RegexMatches(
-	regexp.MustCompile(`(?s)^[^\s\x0B\p{Z}\x{FEFF}](.*[^\s\x0B\p{Z}\x{FEFF}])?$`),
-	"must not be empty or start or end with whitespace",
 )
 
 var (

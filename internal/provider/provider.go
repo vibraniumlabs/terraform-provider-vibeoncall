@@ -73,11 +73,14 @@ func (p *VibeOnCallProvider) Configure(ctx context.Context, req provider.Configu
 	}
 	baseURL := firstNonEmpty(data.BaseURL.ValueString(), os.Getenv("VIBEONCALL_BASE_URL"), defaultBaseURL)
 
-	c, err := client.NewClientWithResponses(baseURL, client.WithRequestEditorFn(func(ctx context.Context, r *http.Request) error {
-		r.Header.Set("Authorization", "Bearer "+apiKey)
-		r.Header.Set("User-Agent", "terraform-provider-vibeoncall/"+p.version)
-		return nil
-	}))
+	c, err := client.NewClientWithResponses(baseURL,
+		client.WithHTTPClient(&http.Client{Transport: newRetryTransport(http.DefaultTransport)}),
+		client.WithRequestEditorFn(func(ctx context.Context, r *http.Request) error {
+			r.Header.Set("Authorization", "Bearer "+apiKey)
+			r.Header.Set("User-Agent", "terraform-provider-vibeoncall/"+p.version)
+			return nil
+		}),
+	)
 	if err != nil {
 		resp.Diagnostics.AddError("Unable to create API client", err.Error())
 		return
@@ -96,6 +99,9 @@ func (p *VibeOnCallProvider) Resources(ctx context.Context) []func() resource.Re
 func (p *VibeOnCallProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
 		NewMemberDataSource,
+		NewTeamDataSource,
+		NewLabelDataSource,
+		NewChatChannelDataSource,
 	}
 }
 
