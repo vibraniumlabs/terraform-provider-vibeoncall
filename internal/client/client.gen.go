@@ -20,6 +20,99 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
+// Defines values for AlertSummaryCanonicalSeverity.
+const (
+	AlertSummaryCanonicalSeveritySEV0   AlertSummaryCanonicalSeverity = "SEV0"
+	AlertSummaryCanonicalSeveritySEV1   AlertSummaryCanonicalSeverity = "SEV1"
+	AlertSummaryCanonicalSeveritySEV2   AlertSummaryCanonicalSeverity = "SEV2"
+	AlertSummaryCanonicalSeveritySEV3   AlertSummaryCanonicalSeverity = "SEV3"
+	AlertSummaryCanonicalSeveritySEV4   AlertSummaryCanonicalSeverity = "SEV4"
+	AlertSummaryCanonicalSeveritySEV5   AlertSummaryCanonicalSeverity = "SEV5"
+	AlertSummaryCanonicalSeveritySIGNAL AlertSummaryCanonicalSeverity = "SIGNAL"
+)
+
+// Valid indicates whether the value is a known member of the AlertSummaryCanonicalSeverity enum.
+func (e AlertSummaryCanonicalSeverity) Valid() bool {
+	switch e {
+	case AlertSummaryCanonicalSeveritySEV0:
+		return true
+	case AlertSummaryCanonicalSeveritySEV1:
+		return true
+	case AlertSummaryCanonicalSeveritySEV2:
+		return true
+	case AlertSummaryCanonicalSeveritySEV3:
+		return true
+	case AlertSummaryCanonicalSeveritySEV4:
+		return true
+	case AlertSummaryCanonicalSeveritySEV5:
+		return true
+	case AlertSummaryCanonicalSeveritySIGNAL:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AlertSummarySeverity0.
+const (
+	AlertSummarySeverity0SEV0   AlertSummarySeverity0 = "SEV0"
+	AlertSummarySeverity0SEV1   AlertSummarySeverity0 = "SEV1"
+	AlertSummarySeverity0SEV2   AlertSummarySeverity0 = "SEV2"
+	AlertSummarySeverity0SEV3   AlertSummarySeverity0 = "SEV3"
+	AlertSummarySeverity0SEV4   AlertSummarySeverity0 = "SEV4"
+	AlertSummarySeverity0SEV5   AlertSummarySeverity0 = "SEV5"
+	AlertSummarySeverity0SIGNAL AlertSummarySeverity0 = "SIGNAL"
+)
+
+// Valid indicates whether the value is a known member of the AlertSummarySeverity0 enum.
+func (e AlertSummarySeverity0) Valid() bool {
+	switch e {
+	case AlertSummarySeverity0SEV0:
+		return true
+	case AlertSummarySeverity0SEV1:
+		return true
+	case AlertSummarySeverity0SEV2:
+		return true
+	case AlertSummarySeverity0SEV3:
+		return true
+	case AlertSummarySeverity0SEV4:
+		return true
+	case AlertSummarySeverity0SEV5:
+		return true
+	case AlertSummarySeverity0SIGNAL:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AlertSummarySeverity1.
+const (
+	Critical AlertSummarySeverity1 = "critical"
+	Info     AlertSummarySeverity1 = "info"
+	Major    AlertSummarySeverity1 = "major"
+	Minor    AlertSummarySeverity1 = "minor"
+	Warning  AlertSummarySeverity1 = "warning"
+)
+
+// Valid indicates whether the value is a known member of the AlertSummarySeverity1 enum.
+func (e AlertSummarySeverity1) Valid() bool {
+	switch e {
+	case Critical:
+		return true
+	case Info:
+		return true
+	case Major:
+		return true
+	case Minor:
+		return true
+	case Warning:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for AssignTeamMemberRequestRole.
 const (
 	AssignTeamMemberRequestRoleAdmin  AssignTeamMemberRequestRole = "admin"
@@ -50,6 +143,396 @@ func (e ChatPlatform) Valid() bool {
 	case MicrosoftTeams:
 		return true
 	case Slack:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CreateMaintenanceWindowRequestConditionsLogicalOperator.
+const (
+	CreateMaintenanceWindowRequestConditionsLogicalOperatorAND CreateMaintenanceWindowRequestConditionsLogicalOperator = "AND"
+	CreateMaintenanceWindowRequestConditionsLogicalOperatorOR  CreateMaintenanceWindowRequestConditionsLogicalOperator = "OR"
+)
+
+// Valid indicates whether the value is a known member of the CreateMaintenanceWindowRequestConditionsLogicalOperator enum.
+func (e CreateMaintenanceWindowRequestConditionsLogicalOperator) Valid() bool {
+	switch e {
+	case CreateMaintenanceWindowRequestConditionsLogicalOperatorAND:
+		return true
+	case CreateMaintenanceWindowRequestConditionsLogicalOperatorOR:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MaintenanceWindowConditionsLogicalOperator.
+const (
+	MaintenanceWindowConditionsLogicalOperatorAND MaintenanceWindowConditionsLogicalOperator = "AND"
+	MaintenanceWindowConditionsLogicalOperatorOR  MaintenanceWindowConditionsLogicalOperator = "OR"
+)
+
+// Valid indicates whether the value is a known member of the MaintenanceWindowConditionsLogicalOperator enum.
+func (e MaintenanceWindowConditionsLogicalOperator) Valid() bool {
+	switch e {
+	case MaintenanceWindowConditionsLogicalOperatorAND:
+		return true
+	case MaintenanceWindowConditionsLogicalOperatorOR:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MaintenanceWindowCondition4Conditions4Conditions4Conditions4Operator.
+const (
+	MaintenanceWindowCondition4Conditions4Conditions4Conditions4OperatorAND MaintenanceWindowCondition4Conditions4Conditions4Conditions4Operator = "AND"
+	MaintenanceWindowCondition4Conditions4Conditions4Conditions4OperatorOR  MaintenanceWindowCondition4Conditions4Conditions4Conditions4Operator = "OR"
+)
+
+// Valid indicates whether the value is a known member of the MaintenanceWindowCondition4Conditions4Conditions4Conditions4Operator enum.
+func (e MaintenanceWindowCondition4Conditions4Conditions4Conditions4Operator) Valid() bool {
+	switch e {
+	case MaintenanceWindowCondition4Conditions4Conditions4Conditions4OperatorAND:
+		return true
+	case MaintenanceWindowCondition4Conditions4Conditions4Conditions4OperatorOR:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MaintenanceWindowCondition4Conditions4Conditions4Conditions4Type.
+const (
+	MaintenanceWindowCondition4Conditions4Conditions4Conditions4TypeGroup MaintenanceWindowCondition4Conditions4Conditions4Conditions4Type = "group"
+)
+
+// Valid indicates whether the value is a known member of the MaintenanceWindowCondition4Conditions4Conditions4Conditions4Type enum.
+func (e MaintenanceWindowCondition4Conditions4Conditions4Conditions4Type) Valid() bool {
+	switch e {
+	case MaintenanceWindowCondition4Conditions4Conditions4Conditions4TypeGroup:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MaintenanceWindowCondition4Conditions4Conditions4Operator.
+const (
+	MaintenanceWindowCondition4Conditions4Conditions4OperatorAND MaintenanceWindowCondition4Conditions4Conditions4Operator = "AND"
+	MaintenanceWindowCondition4Conditions4Conditions4OperatorOR  MaintenanceWindowCondition4Conditions4Conditions4Operator = "OR"
+)
+
+// Valid indicates whether the value is a known member of the MaintenanceWindowCondition4Conditions4Conditions4Operator enum.
+func (e MaintenanceWindowCondition4Conditions4Conditions4Operator) Valid() bool {
+	switch e {
+	case MaintenanceWindowCondition4Conditions4Conditions4OperatorAND:
+		return true
+	case MaintenanceWindowCondition4Conditions4Conditions4OperatorOR:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MaintenanceWindowCondition4Conditions4Conditions4Type.
+const (
+	MaintenanceWindowCondition4Conditions4Conditions4TypeGroup MaintenanceWindowCondition4Conditions4Conditions4Type = "group"
+)
+
+// Valid indicates whether the value is a known member of the MaintenanceWindowCondition4Conditions4Conditions4Type enum.
+func (e MaintenanceWindowCondition4Conditions4Conditions4Type) Valid() bool {
+	switch e {
+	case MaintenanceWindowCondition4Conditions4Conditions4TypeGroup:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MaintenanceWindowCondition4Conditions4Operator.
+const (
+	MaintenanceWindowCondition4Conditions4OperatorAND MaintenanceWindowCondition4Conditions4Operator = "AND"
+	MaintenanceWindowCondition4Conditions4OperatorOR  MaintenanceWindowCondition4Conditions4Operator = "OR"
+)
+
+// Valid indicates whether the value is a known member of the MaintenanceWindowCondition4Conditions4Operator enum.
+func (e MaintenanceWindowCondition4Conditions4Operator) Valid() bool {
+	switch e {
+	case MaintenanceWindowCondition4Conditions4OperatorAND:
+		return true
+	case MaintenanceWindowCondition4Conditions4OperatorOR:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MaintenanceWindowCondition4Conditions4Type.
+const (
+	MaintenanceWindowCondition4Conditions4TypeGroup MaintenanceWindowCondition4Conditions4Type = "group"
+)
+
+// Valid indicates whether the value is a known member of the MaintenanceWindowCondition4Conditions4Type enum.
+func (e MaintenanceWindowCondition4Conditions4Type) Valid() bool {
+	switch e {
+	case MaintenanceWindowCondition4Conditions4TypeGroup:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MaintenanceWindowCondition4Operator.
+const (
+	MaintenanceWindowCondition4OperatorAND MaintenanceWindowCondition4Operator = "AND"
+	MaintenanceWindowCondition4OperatorOR  MaintenanceWindowCondition4Operator = "OR"
+)
+
+// Valid indicates whether the value is a known member of the MaintenanceWindowCondition4Operator enum.
+func (e MaintenanceWindowCondition4Operator) Valid() bool {
+	switch e {
+	case MaintenanceWindowCondition4OperatorAND:
+		return true
+	case MaintenanceWindowCondition4OperatorOR:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MaintenanceWindowCondition4Type.
+const (
+	MaintenanceWindowCondition4TypeGroup MaintenanceWindowCondition4Type = "group"
+)
+
+// Valid indicates whether the value is a known member of the MaintenanceWindowCondition4Type enum.
+func (e MaintenanceWindowCondition4Type) Valid() bool {
+	switch e {
+	case MaintenanceWindowCondition4TypeGroup:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MaintenanceWindowFieldConditionRuleOperator.
+const (
+	Contains     MaintenanceWindowFieldConditionRuleOperator = "contains"
+	ExactMatch   MaintenanceWindowFieldConditionRuleOperator = "exact_match"
+	MatchesRegex MaintenanceWindowFieldConditionRuleOperator = "matches_regex"
+	NotContains  MaintenanceWindowFieldConditionRuleOperator = "not_contains"
+)
+
+// Valid indicates whether the value is a known member of the MaintenanceWindowFieldConditionRuleOperator enum.
+func (e MaintenanceWindowFieldConditionRuleOperator) Valid() bool {
+	switch e {
+	case Contains:
+		return true
+	case ExactMatch:
+		return true
+	case MatchesRegex:
+		return true
+	case NotContains:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MaintenanceWindowFieldConditionType.
+const (
+	Field MaintenanceWindowFieldConditionType = "field"
+)
+
+// Valid indicates whether the value is a known member of the MaintenanceWindowFieldConditionType enum.
+func (e MaintenanceWindowFieldConditionType) Valid() bool {
+	switch e {
+	case Field:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MaintenanceWindowProviderConditionRuleOperator.
+const (
+	OneOf MaintenanceWindowProviderConditionRuleOperator = "one_of"
+)
+
+// Valid indicates whether the value is a known member of the MaintenanceWindowProviderConditionRuleOperator enum.
+func (e MaintenanceWindowProviderConditionRuleOperator) Valid() bool {
+	switch e {
+	case OneOf:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MaintenanceWindowProviderConditionRuleProviders.
+const (
+	Azuremonitor MaintenanceWindowProviderConditionRuleProviders = "azuremonitor"
+	Cloudamqp    MaintenanceWindowProviderConditionRuleProviders = "cloudamqp"
+	Cloudwatch   MaintenanceWindowProviderConditionRuleProviders = "cloudwatch"
+	Coralogix    MaintenanceWindowProviderConditionRuleProviders = "coralogix"
+	Datadog      MaintenanceWindowProviderConditionRuleProviders = "datadog"
+	Email        MaintenanceWindowProviderConditionRuleProviders = "email"
+	Embraceio    MaintenanceWindowProviderConditionRuleProviders = "embraceio"
+	Grafana      MaintenanceWindowProviderConditionRuleProviders = "grafana"
+	Heartbeat    MaintenanceWindowProviderConditionRuleProviders = "heartbeat"
+	Http         MaintenanceWindowProviderConditionRuleProviders = "http"
+	Newrelic     MaintenanceWindowProviderConditionRuleProviders = "newrelic"
+	Opsgenie     MaintenanceWindowProviderConditionRuleProviders = "opsgenie"
+	Prometheus   MaintenanceWindowProviderConditionRuleProviders = "prometheus"
+	Sentry       MaintenanceWindowProviderConditionRuleProviders = "sentry"
+	Sns          MaintenanceWindowProviderConditionRuleProviders = "sns"
+)
+
+// Valid indicates whether the value is a known member of the MaintenanceWindowProviderConditionRuleProviders enum.
+func (e MaintenanceWindowProviderConditionRuleProviders) Valid() bool {
+	switch e {
+	case Azuremonitor:
+		return true
+	case Cloudamqp:
+		return true
+	case Cloudwatch:
+		return true
+	case Coralogix:
+		return true
+	case Datadog:
+		return true
+	case Email:
+		return true
+	case Embraceio:
+		return true
+	case Grafana:
+		return true
+	case Heartbeat:
+		return true
+	case Http:
+		return true
+	case Newrelic:
+		return true
+	case Opsgenie:
+		return true
+	case Prometheus:
+		return true
+	case Sentry:
+		return true
+	case Sns:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MaintenanceWindowProviderConditionType.
+const (
+	Provider MaintenanceWindowProviderConditionType = "provider"
+)
+
+// Valid indicates whether the value is a known member of the MaintenanceWindowProviderConditionType enum.
+func (e MaintenanceWindowProviderConditionType) Valid() bool {
+	switch e {
+	case Provider:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MaintenanceWindowSeverityConditionRuleOperator.
+const (
+	EqualTo            MaintenanceWindowSeverityConditionRuleOperator = "equal_to"
+	GreaterThan        MaintenanceWindowSeverityConditionRuleOperator = "greater_than"
+	GreaterThanOrEqual MaintenanceWindowSeverityConditionRuleOperator = "greater_than_or_equal"
+	LessThan           MaintenanceWindowSeverityConditionRuleOperator = "less_than"
+	LessThanOrEqual    MaintenanceWindowSeverityConditionRuleOperator = "less_than_or_equal"
+)
+
+// Valid indicates whether the value is a known member of the MaintenanceWindowSeverityConditionRuleOperator enum.
+func (e MaintenanceWindowSeverityConditionRuleOperator) Valid() bool {
+	switch e {
+	case EqualTo:
+		return true
+	case GreaterThan:
+		return true
+	case GreaterThanOrEqual:
+		return true
+	case LessThan:
+		return true
+	case LessThanOrEqual:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MaintenanceWindowSeverityConditionType.
+const (
+	Severity MaintenanceWindowSeverityConditionType = "severity"
+)
+
+// Valid indicates whether the value is a known member of the MaintenanceWindowSeverityConditionType enum.
+func (e MaintenanceWindowSeverityConditionType) Valid() bool {
+	switch e {
+	case Severity:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MaintenanceWindowStatus.
+const (
+	MaintenanceWindowStatusActive   MaintenanceWindowStatus = "active"
+	MaintenanceWindowStatusEnded    MaintenanceWindowStatus = "ended"
+	MaintenanceWindowStatusUpcoming MaintenanceWindowStatus = "upcoming"
+)
+
+// Valid indicates whether the value is a known member of the MaintenanceWindowStatus enum.
+func (e MaintenanceWindowStatus) Valid() bool {
+	switch e {
+	case MaintenanceWindowStatusActive:
+		return true
+	case MaintenanceWindowStatusEnded:
+		return true
+	case MaintenanceWindowStatusUpcoming:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MaintenanceWindowTimeConditionRuleOperator.
+const (
+	DayInBetween  MaintenanceWindowTimeConditionRuleOperator = "day_in_between"
+	WeekInBetween MaintenanceWindowTimeConditionRuleOperator = "week_in_between"
+)
+
+// Valid indicates whether the value is a known member of the MaintenanceWindowTimeConditionRuleOperator enum.
+func (e MaintenanceWindowTimeConditionRuleOperator) Valid() bool {
+	switch e {
+	case DayInBetween:
+		return true
+	case WeekInBetween:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MaintenanceWindowTimeConditionType.
+const (
+	Time MaintenanceWindowTimeConditionType = "time"
+)
+
+// Valid indicates whether the value is a known member of the MaintenanceWindowTimeConditionType enum.
+func (e MaintenanceWindowTimeConditionType) Valid() bool {
+	switch e {
+	case Time:
 		return true
 	default:
 		return false
@@ -320,6 +803,39 @@ func (e TeamOnCallResponseResolution) Valid() bool {
 	}
 }
 
+// Defines values for UpdateMaintenanceWindowRequestConditionsLogicalOperator.
+const (
+	UpdateMaintenanceWindowRequestConditionsLogicalOperatorAND UpdateMaintenanceWindowRequestConditionsLogicalOperator = "AND"
+	UpdateMaintenanceWindowRequestConditionsLogicalOperatorOR  UpdateMaintenanceWindowRequestConditionsLogicalOperator = "OR"
+)
+
+// Valid indicates whether the value is a known member of the UpdateMaintenanceWindowRequestConditionsLogicalOperator enum.
+func (e UpdateMaintenanceWindowRequestConditionsLogicalOperator) Valid() bool {
+	switch e {
+	case UpdateMaintenanceWindowRequestConditionsLogicalOperatorAND:
+		return true
+	case UpdateMaintenanceWindowRequestConditionsLogicalOperatorOR:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ListMaintenanceWindowsParamsTeamId0.
+const (
+	Null ListMaintenanceWindowsParamsTeamId0 = "null"
+)
+
+// Valid indicates whether the value is a known member of the ListMaintenanceWindowsParamsTeamId0 enum.
+func (e ListMaintenanceWindowsParamsTeamId0) Valid() bool {
+	switch e {
+	case Null:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for ListMembersParamsStatus.
 const (
 	ListMembersParamsStatusActive  ListMembersParamsStatus = "active"
@@ -339,6 +855,83 @@ func (e ListMembersParamsStatus) Valid() bool {
 	default:
 		return false
 	}
+}
+
+// AlertSummary defines model for AlertSummary.
+type AlertSummary struct {
+	// CanonicalSeverity Canonical alert severity (SEV0-SEV5 or SIGNAL).
+	CanonicalSeverity nullable.Nullable[AlertSummaryCanonicalSeverity] `json:"canonicalSeverity"`
+
+	// CreatedAt ISO 8601 creation timestamp.
+	CreatedAt time.Time `json:"createdAt"`
+
+	// Description Description of the alert.
+	Description nullable.Nullable[string] `json:"description,omitempty"`
+
+	// ExternalId External identifier from the provider.
+	ExternalId string `json:"externalId"`
+
+	// Id Unique identifier of the alert.
+	Id int32 `json:"id"`
+
+	// Owner User assigned as the alert owner.
+	Owner nullable.Nullable[AlertUser] `json:"owner"`
+
+	// PagedUsers Users the alert attempted to page.
+	PagedUsers []AlertUser `json:"pagedUsers"`
+
+	// Provider Source integration / provider name.
+	Provider string `json:"provider"`
+
+	// ResponderTeams Teams paged for the alert through notification routing.
+	ResponderTeams *[]AlertTeam `json:"responderTeams,omitempty"`
+
+	// Severity Backward-compatible alert severity. Prefer canonicalSeverity for the canonical SEV0-SEV5 or SIGNAL value.
+	Severity nullable.Nullable[AlertSummary_Severity] `json:"severity,omitempty"`
+
+	// SourceUrl Deep-link URL to the alert in the provider system.
+	SourceUrl nullable.Nullable[string] `json:"sourceUrl,omitempty"`
+
+	// Status Current status of the alert.
+	Status nullable.Nullable[string] `json:"status,omitempty"`
+
+	// Team Owning team of the alert.
+	Team nullable.Nullable[AlertTeam] `json:"team,omitempty"`
+
+	// Title Title of the alert.
+	Title string `json:"title"`
+
+	// UpdatedAt ISO 8601 last-update timestamp.
+	UpdatedAt time.Time `json:"updatedAt"`
+}
+
+// AlertSummaryCanonicalSeverity Canonical alert severity (SEV0-SEV5 or SIGNAL).
+type AlertSummaryCanonicalSeverity string
+
+// AlertSummarySeverity0 defines model for AlertSummary.Severity.0.
+type AlertSummarySeverity0 string
+
+// AlertSummarySeverity1 defines model for AlertSummary.Severity.1.
+type AlertSummarySeverity1 string
+
+// AlertSummary_Severity Backward-compatible alert severity. Prefer canonicalSeverity for the canonical SEV0-SEV5 or SIGNAL value.
+type AlertSummary_Severity struct {
+	union json.RawMessage
+}
+
+// AlertTeam defines model for AlertTeam.
+type AlertTeam struct {
+	Description nullable.Nullable[string] `json:"description"`
+	Id          int                       `json:"id"`
+	Name        string                    `json:"name"`
+	ShortId     string                    `json:"shortId"`
+}
+
+// AlertUser defines model for AlertUser.
+type AlertUser struct {
+	Email    string                    `json:"email"`
+	FullName nullable.Nullable[string] `json:"fullName"`
+	Id       int                       `json:"id"`
 }
 
 // ApiKeyDenialResponse Why the API key was refused.
@@ -390,6 +983,36 @@ type ChatChannelsListResponse struct {
 
 // ChatPlatform The chat platform the organization is connected to: `slack` or `microsoftTeams`.
 type ChatPlatform string
+
+// CreateMaintenanceWindowRequest defines model for CreateMaintenanceWindowRequest.
+type CreateMaintenanceWindowRequest struct {
+	// AnnouncementChannels IDs of the chat channels to announce the window start and end in, as returned by GET /integrations/chat/channels. Every ID must belong to the connected chat platform. Omit or send null or an empty list for no announcements.
+	AnnouncementChannels nullable.Nullable[[]string] `json:"announcementChannels,omitempty"`
+
+	// Conditions Limits which in-scope alerts the window applies to. Omit or send null to suppress automatic paging for every alert in scope. Must be sent together with conditionsLogicalOperator.
+	Conditions nullable.Nullable[[]MaintenanceWindowCondition] `json:"conditions,omitempty"`
+
+	// ConditionsLogicalOperator How the top-level conditions combine. Must be sent together with conditions.
+	ConditionsLogicalOperator nullable.Nullable[CreateMaintenanceWindowRequestConditionsLogicalOperator] `json:"conditionsLogicalOperator,omitempty"`
+
+	// Description Description (max 512 characters).
+	Description nullable.Nullable[string] `json:"description,omitempty"`
+
+	// EndAt ISO 8601 end instant. Must be after startAt.
+	EndAt time.Time `json:"endAt"`
+
+	// Name Display name (max 64 characters).
+	Name string `json:"name"`
+
+	// StartAt ISO 8601 start instant. On create it must not be more than two minutes in the past.
+	StartAt time.Time `json:"startAt"`
+
+	// TeamId Team the window is scoped to. Omit or send null for a global window that applies to every team in the organization. Fixed after creation.
+	TeamId nullable.Nullable[int32] `json:"teamId,omitempty"`
+}
+
+// CreateMaintenanceWindowRequestConditionsLogicalOperator How the top-level conditions combine. Must be sent together with conditions.
+type CreateMaintenanceWindowRequestConditionsLogicalOperator string
 
 // CreatePublicEscalationPolicyRequest defines model for CreatePublicEscalationPolicyRequest.
 type CreatePublicEscalationPolicyRequest struct {
@@ -456,6 +1079,260 @@ type Label struct {
 // LabelsListResponse defines model for LabelsListResponse.
 type LabelsListResponse struct {
 	Labels []Label `json:"labels"`
+}
+
+// MaintenanceWindow defines model for MaintenanceWindow.
+type MaintenanceWindow struct {
+	// AnnouncementChannels Chat channels the window announces its start and end in; empty when it announces nowhere.
+	AnnouncementChannels []MaintenanceWindowAnnouncementChannel `json:"announcementChannels"`
+
+	// Conditions Conditions limiting which in-scope alerts the window applies to; null when it applies to all.
+	Conditions nullable.Nullable[[]MaintenanceWindowCondition] `json:"conditions"`
+
+	// ConditionsLogicalOperator How the top-level conditions combine; null when there are no conditions.
+	ConditionsLogicalOperator nullable.Nullable[MaintenanceWindowConditionsLogicalOperator] `json:"conditionsLogicalOperator"`
+
+	// CreatedAt ISO 8601 creation timestamp.
+	CreatedAt time.Time `json:"createdAt"`
+
+	// Description Description.
+	Description nullable.Nullable[string] `json:"description"`
+
+	// EndAt ISO 8601 end instant.
+	EndAt time.Time `json:"endAt"`
+
+	// Id Unique identifier of the maintenance window.
+	Id int32 `json:"id"`
+
+	// Name Display name.
+	Name string `json:"name"`
+
+	// StartAt ISO 8601 start instant.
+	StartAt time.Time `json:"startAt"`
+
+	// Status Where the window sits relative to the current time.
+	Status MaintenanceWindowStatus `json:"status"`
+
+	// TeamId ID of the team the window is scoped to, or null for a global window.
+	TeamId nullable.Nullable[int32] `json:"teamId"`
+
+	// UpdatedAt ISO 8601 last-update timestamp.
+	UpdatedAt time.Time `json:"updatedAt"`
+}
+
+// MaintenanceWindowConditionsLogicalOperator How the top-level conditions combine; null when there are no conditions.
+type MaintenanceWindowConditionsLogicalOperator string
+
+// MaintenanceWindowAnnouncementChannel defines model for MaintenanceWindowAnnouncementChannel.
+type MaintenanceWindowAnnouncementChannel struct {
+	// Id Platform channel ID.
+	Id string `json:"id"`
+
+	// Name Channel display name at the time it was set.
+	Name string `json:"name"`
+}
+
+// MaintenanceWindowCondition A leaf condition or a parenthesised group of conditions. Groups may nest up to 5 levels deep.
+type MaintenanceWindowCondition struct {
+	union json.RawMessage
+}
+
+// MaintenanceWindowCondition4 defines model for MaintenanceWindowCondition.4.
+type MaintenanceWindowCondition4 struct {
+	Conditions []MaintenanceWindowCondition_4_Conditions_Item `json:"conditions"`
+
+	// Operator How the conditions inside this group combine.
+	Operator MaintenanceWindowCondition4Operator `json:"operator"`
+	Type     MaintenanceWindowCondition4Type     `json:"type"`
+}
+
+// MaintenanceWindowCondition4Conditions4 defines model for MaintenanceWindowCondition.4.Conditions.4.
+type MaintenanceWindowCondition4Conditions4 struct {
+	Conditions []MaintenanceWindowCondition_4_Conditions_4_Conditions_Item `json:"conditions"`
+
+	// Operator How the conditions inside this group combine.
+	Operator MaintenanceWindowCondition4Conditions4Operator `json:"operator"`
+	Type     MaintenanceWindowCondition4Conditions4Type     `json:"type"`
+}
+
+// MaintenanceWindowCondition4Conditions4Conditions4 defines model for MaintenanceWindowCondition.4.Conditions.4.Conditions.4.
+type MaintenanceWindowCondition4Conditions4Conditions4 struct {
+	Conditions []MaintenanceWindowCondition_4_Conditions_4_Conditions_4_Conditions_Item `json:"conditions"`
+
+	// Operator How the conditions inside this group combine.
+	Operator MaintenanceWindowCondition4Conditions4Conditions4Operator `json:"operator"`
+	Type     MaintenanceWindowCondition4Conditions4Conditions4Type     `json:"type"`
+}
+
+// MaintenanceWindowCondition4Conditions4Conditions4Conditions4 defines model for MaintenanceWindowCondition.4.Conditions.4.Conditions.4.Conditions.4.
+type MaintenanceWindowCondition4Conditions4Conditions4Conditions4 struct {
+	Conditions []MaintenanceWindowLeafCondition `json:"conditions"`
+
+	// Operator How the conditions inside this group combine.
+	Operator MaintenanceWindowCondition4Conditions4Conditions4Conditions4Operator `json:"operator"`
+	Type     MaintenanceWindowCondition4Conditions4Conditions4Conditions4Type     `json:"type"`
+}
+
+// MaintenanceWindowCondition4Conditions4Conditions4Conditions4Operator How the conditions inside this group combine.
+type MaintenanceWindowCondition4Conditions4Conditions4Conditions4Operator string
+
+// MaintenanceWindowCondition4Conditions4Conditions4Conditions4Type defines model for MaintenanceWindowCondition.4.Conditions.4.Conditions.4.Conditions.4.Type.
+type MaintenanceWindowCondition4Conditions4Conditions4Conditions4Type string
+
+// MaintenanceWindowCondition_4_Conditions_4_Conditions_4_Conditions_Item defines model for MaintenanceWindowCondition.4.Conditions.4.Conditions.4.Conditions.Item.
+type MaintenanceWindowCondition_4_Conditions_4_Conditions_4_Conditions_Item struct {
+	union json.RawMessage
+}
+
+// MaintenanceWindowCondition4Conditions4Conditions4Operator How the conditions inside this group combine.
+type MaintenanceWindowCondition4Conditions4Conditions4Operator string
+
+// MaintenanceWindowCondition4Conditions4Conditions4Type defines model for MaintenanceWindowCondition.4.Conditions.4.Conditions.4.Type.
+type MaintenanceWindowCondition4Conditions4Conditions4Type string
+
+// MaintenanceWindowCondition_4_Conditions_4_Conditions_Item defines model for MaintenanceWindowCondition.4.Conditions.4.Conditions.Item.
+type MaintenanceWindowCondition_4_Conditions_4_Conditions_Item struct {
+	union json.RawMessage
+}
+
+// MaintenanceWindowCondition4Conditions4Operator How the conditions inside this group combine.
+type MaintenanceWindowCondition4Conditions4Operator string
+
+// MaintenanceWindowCondition4Conditions4Type defines model for MaintenanceWindowCondition.4.Conditions.4.Type.
+type MaintenanceWindowCondition4Conditions4Type string
+
+// MaintenanceWindowCondition_4_Conditions_Item defines model for MaintenanceWindowCondition.4.Conditions.Item.
+type MaintenanceWindowCondition_4_Conditions_Item struct {
+	union json.RawMessage
+}
+
+// MaintenanceWindowCondition4Operator How the conditions inside this group combine.
+type MaintenanceWindowCondition4Operator string
+
+// MaintenanceWindowCondition4Type defines model for MaintenanceWindowCondition.4.Type.
+type MaintenanceWindowCondition4Type string
+
+// MaintenanceWindowFieldCondition defines model for MaintenanceWindowFieldCondition.
+type MaintenanceWindowFieldCondition struct {
+	Rule struct {
+		ConditionValue string `json:"conditionValue"`
+
+		// FieldPath Dot-path into the payload this rule is evaluated against. Alert routing, enrichment and maintenance-window rules evaluate the incoming payload, where the source's own fields are under `details`; automation rules evaluate the stored alert, where the same fields are under `metadata`. A path that matches nothing makes the rule silently never fire.
+		FieldPath       string                                      `json:"fieldPath"`
+		IsCaseSensitive nullable.Nullable[bool]                     `json:"isCaseSensitive,omitempty"`
+		Operator        MaintenanceWindowFieldConditionRuleOperator `json:"operator"`
+	} `json:"rule"`
+	Type MaintenanceWindowFieldConditionType `json:"type"`
+}
+
+// MaintenanceWindowFieldConditionRuleOperator defines model for MaintenanceWindowFieldCondition.Rule.Operator.
+type MaintenanceWindowFieldConditionRuleOperator string
+
+// MaintenanceWindowFieldConditionType defines model for MaintenanceWindowFieldCondition.Type.
+type MaintenanceWindowFieldConditionType string
+
+// MaintenanceWindowLeafCondition One condition on the incoming alert payload. severity compares the alert severity; field matches a dot-path in the payload (source fields live under `details`); provider matches the source integration; time matches a recurring daily or weekly interval in the given timezone.
+type MaintenanceWindowLeafCondition struct {
+	union json.RawMessage
+}
+
+// MaintenanceWindowProviderCondition defines model for MaintenanceWindowProviderCondition.
+type MaintenanceWindowProviderCondition struct {
+	Rule struct {
+		Operator  MaintenanceWindowProviderConditionRuleOperator    `json:"operator"`
+		Providers []MaintenanceWindowProviderConditionRuleProviders `json:"providers"`
+	} `json:"rule"`
+	Type MaintenanceWindowProviderConditionType `json:"type"`
+}
+
+// MaintenanceWindowProviderConditionRuleOperator defines model for MaintenanceWindowProviderCondition.Rule.Operator.
+type MaintenanceWindowProviderConditionRuleOperator string
+
+// MaintenanceWindowProviderConditionRuleProviders defines model for MaintenanceWindowProviderCondition.Rule.Providers.
+type MaintenanceWindowProviderConditionRuleProviders string
+
+// MaintenanceWindowProviderConditionType defines model for MaintenanceWindowProviderCondition.Type.
+type MaintenanceWindowProviderConditionType string
+
+// MaintenanceWindowResponse defines model for MaintenanceWindowResponse.
+type MaintenanceWindowResponse struct {
+	MaintenanceWindow MaintenanceWindow `json:"maintenanceWindow"`
+}
+
+// MaintenanceWindowSeverityCondition rule.severity accepts the canonical SEV0-SEV5 or SIGNAL, or an alias such as P1 or critical.
+type MaintenanceWindowSeverityCondition struct {
+	Rule struct {
+		Operator MaintenanceWindowSeverityConditionRuleOperator `json:"operator"`
+		Severity string                                         `json:"severity"`
+	} `json:"rule"`
+	Type MaintenanceWindowSeverityConditionType `json:"type"`
+}
+
+// MaintenanceWindowSeverityConditionRuleOperator defines model for MaintenanceWindowSeverityCondition.Rule.Operator.
+type MaintenanceWindowSeverityConditionRuleOperator string
+
+// MaintenanceWindowSeverityConditionType defines model for MaintenanceWindowSeverityCondition.Type.
+type MaintenanceWindowSeverityConditionType string
+
+// MaintenanceWindowStatus Where the window sits relative to the current time.
+type MaintenanceWindowStatus string
+
+// MaintenanceWindowSuppressedAlertsResponse defines model for MaintenanceWindowSuppressedAlertsResponse.
+type MaintenanceWindowSuppressedAlertsResponse struct {
+	Alerts []AlertSummary `json:"alerts"`
+
+	// HasMore Whether more alerts are available beyond the current page.
+	HasMore bool `json:"hasMore"`
+
+	// Total Total number of alerts whose automatic paging this window suppressed.
+	Total int32 `json:"total"`
+}
+
+// MaintenanceWindowTimeCondition defines model for MaintenanceWindowTimeCondition.
+type MaintenanceWindowTimeCondition struct {
+	Rule struct {
+		Operator     MaintenanceWindowTimeConditionRuleOperator       `json:"operator"`
+		TimeInterval MaintenanceWindowTimeCondition_Rule_TimeInterval `json:"timeInterval"`
+		Timezone     string                                           `json:"timezone"`
+	} `json:"rule"`
+	Type MaintenanceWindowTimeConditionType `json:"type"`
+}
+
+// MaintenanceWindowTimeConditionRuleOperator defines model for MaintenanceWindowTimeCondition.Rule.Operator.
+type MaintenanceWindowTimeConditionRuleOperator string
+
+// MaintenanceWindowTimeConditionRuleTimeInterval0 defines model for MaintenanceWindowTimeCondition.Rule.TimeInterval.0.
+type MaintenanceWindowTimeConditionRuleTimeInterval0 struct {
+	EndHourOffset   string `json:"endHourOffset"`
+	StartHourOffset string `json:"startHourOffset"`
+}
+
+// MaintenanceWindowTimeConditionRuleTimeInterval1 defines model for MaintenanceWindowTimeCondition.Rule.TimeInterval.1.
+type MaintenanceWindowTimeConditionRuleTimeInterval1 struct {
+	WeekRanges []struct {
+		EndDay          int    `json:"endDay"`
+		EndHourOffset   string `json:"endHourOffset"`
+		StartDay        int    `json:"startDay"`
+		StartHourOffset string `json:"startHourOffset"`
+	} `json:"weekRanges"`
+}
+
+// MaintenanceWindowTimeCondition_Rule_TimeInterval defines model for MaintenanceWindowTimeCondition.Rule.TimeInterval.
+type MaintenanceWindowTimeCondition_Rule_TimeInterval struct {
+	union json.RawMessage
+}
+
+// MaintenanceWindowTimeConditionType defines model for MaintenanceWindowTimeCondition.Type.
+type MaintenanceWindowTimeConditionType string
+
+// MaintenanceWindowsListResponse defines model for MaintenanceWindowsListResponse.
+type MaintenanceWindowsListResponse struct {
+	// HasMore Whether more maintenance windows are available beyond the current page.
+	HasMore            bool                `json:"hasMore"`
+	MaintenanceWindows []MaintenanceWindow `json:"maintenanceWindows"`
+
+	// Total Total number of maintenance windows matching the filters.
+	Total int32 `json:"total"`
 }
 
 // Member defines model for Member.
@@ -1209,6 +2086,33 @@ type TeamsListResponse struct {
 	Total int32 `json:"total"`
 }
 
+// UpdateMaintenanceWindowRequest Partial update: only the fields sent are changed. The team scope is fixed at creation. To end an active window early, send endAt set to the current time. Ended windows cannot be updated; active windows cannot change startAt and must keep endAt at or after the current time.
+type UpdateMaintenanceWindowRequest struct {
+	// AnnouncementChannels IDs of the chat channels to announce the window start and end in, as returned by GET /integrations/chat/channels. Every ID must belong to the connected chat platform. Omit or send null or an empty list for no announcements.
+	AnnouncementChannels nullable.Nullable[[]string] `json:"announcementChannels,omitempty"`
+
+	// Conditions Limits which in-scope alerts the window applies to. Omit or send null to suppress automatic paging for every alert in scope. Must be sent together with conditionsLogicalOperator.
+	Conditions nullable.Nullable[[]MaintenanceWindowCondition] `json:"conditions,omitempty"`
+
+	// ConditionsLogicalOperator How the top-level conditions combine. Must be sent together with conditions.
+	ConditionsLogicalOperator nullable.Nullable[UpdateMaintenanceWindowRequestConditionsLogicalOperator] `json:"conditionsLogicalOperator,omitempty"`
+
+	// Description Description (max 512 characters).
+	Description nullable.Nullable[string] `json:"description,omitempty"`
+
+	// EndAt ISO 8601 end instant. Must be after startAt.
+	EndAt *time.Time `json:"endAt,omitempty"`
+
+	// Name Display name (max 64 characters).
+	Name *string `json:"name,omitempty"`
+
+	// StartAt ISO 8601 start instant. On create it must not be more than two minutes in the past.
+	StartAt *time.Time `json:"startAt,omitempty"`
+}
+
+// UpdateMaintenanceWindowRequestConditionsLogicalOperator How the top-level conditions combine. Must be sent together with conditions.
+type UpdateMaintenanceWindowRequestConditionsLogicalOperator string
+
 // UpdatePublicEscalationPolicyRequest defines model for UpdatePublicEscalationPolicyRequest.
 type UpdatePublicEscalationPolicyRequest struct {
 	Description *string `json:"description,omitempty"`
@@ -1305,6 +2209,38 @@ type ListMicrosoftTeamsTeamsParams struct {
 // ListMicrosoftTeamsTeams400JSONResponseBody defines parameters for ListMicrosoftTeamsTeams.
 type ListMicrosoftTeamsTeams400JSONResponseBody struct {
 	union json.RawMessage
+}
+
+// ListMaintenanceWindowsParams defines parameters for ListMaintenanceWindows.
+type ListMaintenanceWindowsParams struct {
+	Limit    *int32     `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset   *int32     `form:"offset,omitempty" json:"offset,omitempty"`
+	ActiveAt *time.Time `form:"activeAt,omitempty" json:"activeAt,omitempty"`
+	TeamId   *struct {
+		union json.RawMessage
+	} `form:"teamId,omitempty" json:"teamId,omitempty"`
+}
+
+// ListMaintenanceWindowsParamsTeamId0 defines parameters for ListMaintenanceWindows.
+type ListMaintenanceWindowsParamsTeamId0 string
+
+// ListMaintenanceWindowsParamsTeamId1 defines parameters for ListMaintenanceWindows.
+type ListMaintenanceWindowsParamsTeamId1 = int
+
+// CreateMaintenanceWindow400JSONResponseBody defines parameters for CreateMaintenanceWindow.
+type CreateMaintenanceWindow400JSONResponseBody struct {
+	union json.RawMessage
+}
+
+// UpdateMaintenanceWindow400JSONResponseBody defines parameters for UpdateMaintenanceWindow.
+type UpdateMaintenanceWindow400JSONResponseBody struct {
+	union json.RawMessage
+}
+
+// ListMaintenanceWindowSuppressedAlertsParams defines parameters for ListMaintenanceWindowSuppressedAlerts.
+type ListMaintenanceWindowSuppressedAlertsParams struct {
+	Limit  *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset *int32 `form:"offset,omitempty" json:"offset,omitempty"`
 }
 
 // ListMembersParams defines parameters for ListMembers.
@@ -1502,6 +2438,12 @@ type CreateEscalationPolicyJSONRequestBody = CreatePublicEscalationPolicyRequest
 // UpdateEscalationPolicyJSONRequestBody defines body for UpdateEscalationPolicy for application/json ContentType.
 type UpdateEscalationPolicyJSONRequestBody = UpdatePublicEscalationPolicyRequest
 
+// CreateMaintenanceWindowJSONRequestBody defines body for CreateMaintenanceWindow for application/json ContentType.
+type CreateMaintenanceWindowJSONRequestBody = CreateMaintenanceWindowRequest
+
+// UpdateMaintenanceWindowJSONRequestBody defines body for UpdateMaintenanceWindow for application/json ContentType.
+type UpdateMaintenanceWindowJSONRequestBody = UpdateMaintenanceWindowRequest
+
 // CreateScheduleJSONRequestBody defines body for CreateSchedule for application/json ContentType.
 type CreateScheduleJSONRequestBody = CreatePublicScheduleRequest
 
@@ -1549,6 +2491,804 @@ type UpdateTeamJSONRequestBody = UpdateTeamRequest
 
 // AssignTeamMemberJSONRequestBody defines body for AssignTeamMember for application/json ContentType.
 type AssignTeamMemberJSONRequestBody = AssignTeamMemberRequest
+
+// AsAlertSummarySeverity0 returns the union data inside the AlertSummary_Severity as a AlertSummarySeverity0
+func (t AlertSummary_Severity) AsAlertSummarySeverity0() (AlertSummarySeverity0, error) {
+	var body AlertSummarySeverity0
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAlertSummarySeverity0 overwrites any union data inside the AlertSummary_Severity as the provided AlertSummarySeverity0
+func (t *AlertSummary_Severity) FromAlertSummarySeverity0(v AlertSummarySeverity0) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAlertSummarySeverity0 performs a merge with any union data inside the AlertSummary_Severity, using the provided AlertSummarySeverity0
+func (t *AlertSummary_Severity) MergeAlertSummarySeverity0(v AlertSummarySeverity0) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAlertSummarySeverity1 returns the union data inside the AlertSummary_Severity as a AlertSummarySeverity1
+func (t AlertSummary_Severity) AsAlertSummarySeverity1() (AlertSummarySeverity1, error) {
+	var body AlertSummarySeverity1
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAlertSummarySeverity1 overwrites any union data inside the AlertSummary_Severity as the provided AlertSummarySeverity1
+func (t *AlertSummary_Severity) FromAlertSummarySeverity1(v AlertSummarySeverity1) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAlertSummarySeverity1 performs a merge with any union data inside the AlertSummary_Severity, using the provided AlertSummarySeverity1
+func (t *AlertSummary_Severity) MergeAlertSummarySeverity1(v AlertSummarySeverity1) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t AlertSummary_Severity) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *AlertSummary_Severity) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsMaintenanceWindowSeverityCondition returns the union data inside the MaintenanceWindowCondition as a MaintenanceWindowSeverityCondition
+func (t MaintenanceWindowCondition) AsMaintenanceWindowSeverityCondition() (MaintenanceWindowSeverityCondition, error) {
+	var body MaintenanceWindowSeverityCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMaintenanceWindowSeverityCondition overwrites any union data inside the MaintenanceWindowCondition as the provided MaintenanceWindowSeverityCondition
+func (t *MaintenanceWindowCondition) FromMaintenanceWindowSeverityCondition(v MaintenanceWindowSeverityCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMaintenanceWindowSeverityCondition performs a merge with any union data inside the MaintenanceWindowCondition, using the provided MaintenanceWindowSeverityCondition
+func (t *MaintenanceWindowCondition) MergeMaintenanceWindowSeverityCondition(v MaintenanceWindowSeverityCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsMaintenanceWindowFieldCondition returns the union data inside the MaintenanceWindowCondition as a MaintenanceWindowFieldCondition
+func (t MaintenanceWindowCondition) AsMaintenanceWindowFieldCondition() (MaintenanceWindowFieldCondition, error) {
+	var body MaintenanceWindowFieldCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMaintenanceWindowFieldCondition overwrites any union data inside the MaintenanceWindowCondition as the provided MaintenanceWindowFieldCondition
+func (t *MaintenanceWindowCondition) FromMaintenanceWindowFieldCondition(v MaintenanceWindowFieldCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMaintenanceWindowFieldCondition performs a merge with any union data inside the MaintenanceWindowCondition, using the provided MaintenanceWindowFieldCondition
+func (t *MaintenanceWindowCondition) MergeMaintenanceWindowFieldCondition(v MaintenanceWindowFieldCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsMaintenanceWindowProviderCondition returns the union data inside the MaintenanceWindowCondition as a MaintenanceWindowProviderCondition
+func (t MaintenanceWindowCondition) AsMaintenanceWindowProviderCondition() (MaintenanceWindowProviderCondition, error) {
+	var body MaintenanceWindowProviderCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMaintenanceWindowProviderCondition overwrites any union data inside the MaintenanceWindowCondition as the provided MaintenanceWindowProviderCondition
+func (t *MaintenanceWindowCondition) FromMaintenanceWindowProviderCondition(v MaintenanceWindowProviderCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMaintenanceWindowProviderCondition performs a merge with any union data inside the MaintenanceWindowCondition, using the provided MaintenanceWindowProviderCondition
+func (t *MaintenanceWindowCondition) MergeMaintenanceWindowProviderCondition(v MaintenanceWindowProviderCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsMaintenanceWindowTimeCondition returns the union data inside the MaintenanceWindowCondition as a MaintenanceWindowTimeCondition
+func (t MaintenanceWindowCondition) AsMaintenanceWindowTimeCondition() (MaintenanceWindowTimeCondition, error) {
+	var body MaintenanceWindowTimeCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMaintenanceWindowTimeCondition overwrites any union data inside the MaintenanceWindowCondition as the provided MaintenanceWindowTimeCondition
+func (t *MaintenanceWindowCondition) FromMaintenanceWindowTimeCondition(v MaintenanceWindowTimeCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMaintenanceWindowTimeCondition performs a merge with any union data inside the MaintenanceWindowCondition, using the provided MaintenanceWindowTimeCondition
+func (t *MaintenanceWindowCondition) MergeMaintenanceWindowTimeCondition(v MaintenanceWindowTimeCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsMaintenanceWindowCondition4 returns the union data inside the MaintenanceWindowCondition as a MaintenanceWindowCondition4
+func (t MaintenanceWindowCondition) AsMaintenanceWindowCondition4() (MaintenanceWindowCondition4, error) {
+	var body MaintenanceWindowCondition4
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMaintenanceWindowCondition4 overwrites any union data inside the MaintenanceWindowCondition as the provided MaintenanceWindowCondition4
+func (t *MaintenanceWindowCondition) FromMaintenanceWindowCondition4(v MaintenanceWindowCondition4) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMaintenanceWindowCondition4 performs a merge with any union data inside the MaintenanceWindowCondition, using the provided MaintenanceWindowCondition4
+func (t *MaintenanceWindowCondition) MergeMaintenanceWindowCondition4(v MaintenanceWindowCondition4) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t MaintenanceWindowCondition) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *MaintenanceWindowCondition) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsMaintenanceWindowSeverityCondition returns the union data inside the MaintenanceWindowCondition_4_Conditions_4_Conditions_4_Conditions_Item as a MaintenanceWindowSeverityCondition
+func (t MaintenanceWindowCondition_4_Conditions_4_Conditions_4_Conditions_Item) AsMaintenanceWindowSeverityCondition() (MaintenanceWindowSeverityCondition, error) {
+	var body MaintenanceWindowSeverityCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMaintenanceWindowSeverityCondition overwrites any union data inside the MaintenanceWindowCondition_4_Conditions_4_Conditions_4_Conditions_Item as the provided MaintenanceWindowSeverityCondition
+func (t *MaintenanceWindowCondition_4_Conditions_4_Conditions_4_Conditions_Item) FromMaintenanceWindowSeverityCondition(v MaintenanceWindowSeverityCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMaintenanceWindowSeverityCondition performs a merge with any union data inside the MaintenanceWindowCondition_4_Conditions_4_Conditions_4_Conditions_Item, using the provided MaintenanceWindowSeverityCondition
+func (t *MaintenanceWindowCondition_4_Conditions_4_Conditions_4_Conditions_Item) MergeMaintenanceWindowSeverityCondition(v MaintenanceWindowSeverityCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsMaintenanceWindowFieldCondition returns the union data inside the MaintenanceWindowCondition_4_Conditions_4_Conditions_4_Conditions_Item as a MaintenanceWindowFieldCondition
+func (t MaintenanceWindowCondition_4_Conditions_4_Conditions_4_Conditions_Item) AsMaintenanceWindowFieldCondition() (MaintenanceWindowFieldCondition, error) {
+	var body MaintenanceWindowFieldCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMaintenanceWindowFieldCondition overwrites any union data inside the MaintenanceWindowCondition_4_Conditions_4_Conditions_4_Conditions_Item as the provided MaintenanceWindowFieldCondition
+func (t *MaintenanceWindowCondition_4_Conditions_4_Conditions_4_Conditions_Item) FromMaintenanceWindowFieldCondition(v MaintenanceWindowFieldCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMaintenanceWindowFieldCondition performs a merge with any union data inside the MaintenanceWindowCondition_4_Conditions_4_Conditions_4_Conditions_Item, using the provided MaintenanceWindowFieldCondition
+func (t *MaintenanceWindowCondition_4_Conditions_4_Conditions_4_Conditions_Item) MergeMaintenanceWindowFieldCondition(v MaintenanceWindowFieldCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsMaintenanceWindowProviderCondition returns the union data inside the MaintenanceWindowCondition_4_Conditions_4_Conditions_4_Conditions_Item as a MaintenanceWindowProviderCondition
+func (t MaintenanceWindowCondition_4_Conditions_4_Conditions_4_Conditions_Item) AsMaintenanceWindowProviderCondition() (MaintenanceWindowProviderCondition, error) {
+	var body MaintenanceWindowProviderCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMaintenanceWindowProviderCondition overwrites any union data inside the MaintenanceWindowCondition_4_Conditions_4_Conditions_4_Conditions_Item as the provided MaintenanceWindowProviderCondition
+func (t *MaintenanceWindowCondition_4_Conditions_4_Conditions_4_Conditions_Item) FromMaintenanceWindowProviderCondition(v MaintenanceWindowProviderCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMaintenanceWindowProviderCondition performs a merge with any union data inside the MaintenanceWindowCondition_4_Conditions_4_Conditions_4_Conditions_Item, using the provided MaintenanceWindowProviderCondition
+func (t *MaintenanceWindowCondition_4_Conditions_4_Conditions_4_Conditions_Item) MergeMaintenanceWindowProviderCondition(v MaintenanceWindowProviderCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsMaintenanceWindowTimeCondition returns the union data inside the MaintenanceWindowCondition_4_Conditions_4_Conditions_4_Conditions_Item as a MaintenanceWindowTimeCondition
+func (t MaintenanceWindowCondition_4_Conditions_4_Conditions_4_Conditions_Item) AsMaintenanceWindowTimeCondition() (MaintenanceWindowTimeCondition, error) {
+	var body MaintenanceWindowTimeCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMaintenanceWindowTimeCondition overwrites any union data inside the MaintenanceWindowCondition_4_Conditions_4_Conditions_4_Conditions_Item as the provided MaintenanceWindowTimeCondition
+func (t *MaintenanceWindowCondition_4_Conditions_4_Conditions_4_Conditions_Item) FromMaintenanceWindowTimeCondition(v MaintenanceWindowTimeCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMaintenanceWindowTimeCondition performs a merge with any union data inside the MaintenanceWindowCondition_4_Conditions_4_Conditions_4_Conditions_Item, using the provided MaintenanceWindowTimeCondition
+func (t *MaintenanceWindowCondition_4_Conditions_4_Conditions_4_Conditions_Item) MergeMaintenanceWindowTimeCondition(v MaintenanceWindowTimeCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsMaintenanceWindowCondition4Conditions4Conditions4Conditions4 returns the union data inside the MaintenanceWindowCondition_4_Conditions_4_Conditions_4_Conditions_Item as a MaintenanceWindowCondition4Conditions4Conditions4Conditions4
+func (t MaintenanceWindowCondition_4_Conditions_4_Conditions_4_Conditions_Item) AsMaintenanceWindowCondition4Conditions4Conditions4Conditions4() (MaintenanceWindowCondition4Conditions4Conditions4Conditions4, error) {
+	var body MaintenanceWindowCondition4Conditions4Conditions4Conditions4
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMaintenanceWindowCondition4Conditions4Conditions4Conditions4 overwrites any union data inside the MaintenanceWindowCondition_4_Conditions_4_Conditions_4_Conditions_Item as the provided MaintenanceWindowCondition4Conditions4Conditions4Conditions4
+func (t *MaintenanceWindowCondition_4_Conditions_4_Conditions_4_Conditions_Item) FromMaintenanceWindowCondition4Conditions4Conditions4Conditions4(v MaintenanceWindowCondition4Conditions4Conditions4Conditions4) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMaintenanceWindowCondition4Conditions4Conditions4Conditions4 performs a merge with any union data inside the MaintenanceWindowCondition_4_Conditions_4_Conditions_4_Conditions_Item, using the provided MaintenanceWindowCondition4Conditions4Conditions4Conditions4
+func (t *MaintenanceWindowCondition_4_Conditions_4_Conditions_4_Conditions_Item) MergeMaintenanceWindowCondition4Conditions4Conditions4Conditions4(v MaintenanceWindowCondition4Conditions4Conditions4Conditions4) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t MaintenanceWindowCondition_4_Conditions_4_Conditions_4_Conditions_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *MaintenanceWindowCondition_4_Conditions_4_Conditions_4_Conditions_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsMaintenanceWindowSeverityCondition returns the union data inside the MaintenanceWindowCondition_4_Conditions_4_Conditions_Item as a MaintenanceWindowSeverityCondition
+func (t MaintenanceWindowCondition_4_Conditions_4_Conditions_Item) AsMaintenanceWindowSeverityCondition() (MaintenanceWindowSeverityCondition, error) {
+	var body MaintenanceWindowSeverityCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMaintenanceWindowSeverityCondition overwrites any union data inside the MaintenanceWindowCondition_4_Conditions_4_Conditions_Item as the provided MaintenanceWindowSeverityCondition
+func (t *MaintenanceWindowCondition_4_Conditions_4_Conditions_Item) FromMaintenanceWindowSeverityCondition(v MaintenanceWindowSeverityCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMaintenanceWindowSeverityCondition performs a merge with any union data inside the MaintenanceWindowCondition_4_Conditions_4_Conditions_Item, using the provided MaintenanceWindowSeverityCondition
+func (t *MaintenanceWindowCondition_4_Conditions_4_Conditions_Item) MergeMaintenanceWindowSeverityCondition(v MaintenanceWindowSeverityCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsMaintenanceWindowFieldCondition returns the union data inside the MaintenanceWindowCondition_4_Conditions_4_Conditions_Item as a MaintenanceWindowFieldCondition
+func (t MaintenanceWindowCondition_4_Conditions_4_Conditions_Item) AsMaintenanceWindowFieldCondition() (MaintenanceWindowFieldCondition, error) {
+	var body MaintenanceWindowFieldCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMaintenanceWindowFieldCondition overwrites any union data inside the MaintenanceWindowCondition_4_Conditions_4_Conditions_Item as the provided MaintenanceWindowFieldCondition
+func (t *MaintenanceWindowCondition_4_Conditions_4_Conditions_Item) FromMaintenanceWindowFieldCondition(v MaintenanceWindowFieldCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMaintenanceWindowFieldCondition performs a merge with any union data inside the MaintenanceWindowCondition_4_Conditions_4_Conditions_Item, using the provided MaintenanceWindowFieldCondition
+func (t *MaintenanceWindowCondition_4_Conditions_4_Conditions_Item) MergeMaintenanceWindowFieldCondition(v MaintenanceWindowFieldCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsMaintenanceWindowProviderCondition returns the union data inside the MaintenanceWindowCondition_4_Conditions_4_Conditions_Item as a MaintenanceWindowProviderCondition
+func (t MaintenanceWindowCondition_4_Conditions_4_Conditions_Item) AsMaintenanceWindowProviderCondition() (MaintenanceWindowProviderCondition, error) {
+	var body MaintenanceWindowProviderCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMaintenanceWindowProviderCondition overwrites any union data inside the MaintenanceWindowCondition_4_Conditions_4_Conditions_Item as the provided MaintenanceWindowProviderCondition
+func (t *MaintenanceWindowCondition_4_Conditions_4_Conditions_Item) FromMaintenanceWindowProviderCondition(v MaintenanceWindowProviderCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMaintenanceWindowProviderCondition performs a merge with any union data inside the MaintenanceWindowCondition_4_Conditions_4_Conditions_Item, using the provided MaintenanceWindowProviderCondition
+func (t *MaintenanceWindowCondition_4_Conditions_4_Conditions_Item) MergeMaintenanceWindowProviderCondition(v MaintenanceWindowProviderCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsMaintenanceWindowTimeCondition returns the union data inside the MaintenanceWindowCondition_4_Conditions_4_Conditions_Item as a MaintenanceWindowTimeCondition
+func (t MaintenanceWindowCondition_4_Conditions_4_Conditions_Item) AsMaintenanceWindowTimeCondition() (MaintenanceWindowTimeCondition, error) {
+	var body MaintenanceWindowTimeCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMaintenanceWindowTimeCondition overwrites any union data inside the MaintenanceWindowCondition_4_Conditions_4_Conditions_Item as the provided MaintenanceWindowTimeCondition
+func (t *MaintenanceWindowCondition_4_Conditions_4_Conditions_Item) FromMaintenanceWindowTimeCondition(v MaintenanceWindowTimeCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMaintenanceWindowTimeCondition performs a merge with any union data inside the MaintenanceWindowCondition_4_Conditions_4_Conditions_Item, using the provided MaintenanceWindowTimeCondition
+func (t *MaintenanceWindowCondition_4_Conditions_4_Conditions_Item) MergeMaintenanceWindowTimeCondition(v MaintenanceWindowTimeCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsMaintenanceWindowCondition4Conditions4Conditions4 returns the union data inside the MaintenanceWindowCondition_4_Conditions_4_Conditions_Item as a MaintenanceWindowCondition4Conditions4Conditions4
+func (t MaintenanceWindowCondition_4_Conditions_4_Conditions_Item) AsMaintenanceWindowCondition4Conditions4Conditions4() (MaintenanceWindowCondition4Conditions4Conditions4, error) {
+	var body MaintenanceWindowCondition4Conditions4Conditions4
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMaintenanceWindowCondition4Conditions4Conditions4 overwrites any union data inside the MaintenanceWindowCondition_4_Conditions_4_Conditions_Item as the provided MaintenanceWindowCondition4Conditions4Conditions4
+func (t *MaintenanceWindowCondition_4_Conditions_4_Conditions_Item) FromMaintenanceWindowCondition4Conditions4Conditions4(v MaintenanceWindowCondition4Conditions4Conditions4) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMaintenanceWindowCondition4Conditions4Conditions4 performs a merge with any union data inside the MaintenanceWindowCondition_4_Conditions_4_Conditions_Item, using the provided MaintenanceWindowCondition4Conditions4Conditions4
+func (t *MaintenanceWindowCondition_4_Conditions_4_Conditions_Item) MergeMaintenanceWindowCondition4Conditions4Conditions4(v MaintenanceWindowCondition4Conditions4Conditions4) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t MaintenanceWindowCondition_4_Conditions_4_Conditions_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *MaintenanceWindowCondition_4_Conditions_4_Conditions_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsMaintenanceWindowSeverityCondition returns the union data inside the MaintenanceWindowCondition_4_Conditions_Item as a MaintenanceWindowSeverityCondition
+func (t MaintenanceWindowCondition_4_Conditions_Item) AsMaintenanceWindowSeverityCondition() (MaintenanceWindowSeverityCondition, error) {
+	var body MaintenanceWindowSeverityCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMaintenanceWindowSeverityCondition overwrites any union data inside the MaintenanceWindowCondition_4_Conditions_Item as the provided MaintenanceWindowSeverityCondition
+func (t *MaintenanceWindowCondition_4_Conditions_Item) FromMaintenanceWindowSeverityCondition(v MaintenanceWindowSeverityCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMaintenanceWindowSeverityCondition performs a merge with any union data inside the MaintenanceWindowCondition_4_Conditions_Item, using the provided MaintenanceWindowSeverityCondition
+func (t *MaintenanceWindowCondition_4_Conditions_Item) MergeMaintenanceWindowSeverityCondition(v MaintenanceWindowSeverityCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsMaintenanceWindowFieldCondition returns the union data inside the MaintenanceWindowCondition_4_Conditions_Item as a MaintenanceWindowFieldCondition
+func (t MaintenanceWindowCondition_4_Conditions_Item) AsMaintenanceWindowFieldCondition() (MaintenanceWindowFieldCondition, error) {
+	var body MaintenanceWindowFieldCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMaintenanceWindowFieldCondition overwrites any union data inside the MaintenanceWindowCondition_4_Conditions_Item as the provided MaintenanceWindowFieldCondition
+func (t *MaintenanceWindowCondition_4_Conditions_Item) FromMaintenanceWindowFieldCondition(v MaintenanceWindowFieldCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMaintenanceWindowFieldCondition performs a merge with any union data inside the MaintenanceWindowCondition_4_Conditions_Item, using the provided MaintenanceWindowFieldCondition
+func (t *MaintenanceWindowCondition_4_Conditions_Item) MergeMaintenanceWindowFieldCondition(v MaintenanceWindowFieldCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsMaintenanceWindowProviderCondition returns the union data inside the MaintenanceWindowCondition_4_Conditions_Item as a MaintenanceWindowProviderCondition
+func (t MaintenanceWindowCondition_4_Conditions_Item) AsMaintenanceWindowProviderCondition() (MaintenanceWindowProviderCondition, error) {
+	var body MaintenanceWindowProviderCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMaintenanceWindowProviderCondition overwrites any union data inside the MaintenanceWindowCondition_4_Conditions_Item as the provided MaintenanceWindowProviderCondition
+func (t *MaintenanceWindowCondition_4_Conditions_Item) FromMaintenanceWindowProviderCondition(v MaintenanceWindowProviderCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMaintenanceWindowProviderCondition performs a merge with any union data inside the MaintenanceWindowCondition_4_Conditions_Item, using the provided MaintenanceWindowProviderCondition
+func (t *MaintenanceWindowCondition_4_Conditions_Item) MergeMaintenanceWindowProviderCondition(v MaintenanceWindowProviderCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsMaintenanceWindowTimeCondition returns the union data inside the MaintenanceWindowCondition_4_Conditions_Item as a MaintenanceWindowTimeCondition
+func (t MaintenanceWindowCondition_4_Conditions_Item) AsMaintenanceWindowTimeCondition() (MaintenanceWindowTimeCondition, error) {
+	var body MaintenanceWindowTimeCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMaintenanceWindowTimeCondition overwrites any union data inside the MaintenanceWindowCondition_4_Conditions_Item as the provided MaintenanceWindowTimeCondition
+func (t *MaintenanceWindowCondition_4_Conditions_Item) FromMaintenanceWindowTimeCondition(v MaintenanceWindowTimeCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMaintenanceWindowTimeCondition performs a merge with any union data inside the MaintenanceWindowCondition_4_Conditions_Item, using the provided MaintenanceWindowTimeCondition
+func (t *MaintenanceWindowCondition_4_Conditions_Item) MergeMaintenanceWindowTimeCondition(v MaintenanceWindowTimeCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsMaintenanceWindowCondition4Conditions4 returns the union data inside the MaintenanceWindowCondition_4_Conditions_Item as a MaintenanceWindowCondition4Conditions4
+func (t MaintenanceWindowCondition_4_Conditions_Item) AsMaintenanceWindowCondition4Conditions4() (MaintenanceWindowCondition4Conditions4, error) {
+	var body MaintenanceWindowCondition4Conditions4
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMaintenanceWindowCondition4Conditions4 overwrites any union data inside the MaintenanceWindowCondition_4_Conditions_Item as the provided MaintenanceWindowCondition4Conditions4
+func (t *MaintenanceWindowCondition_4_Conditions_Item) FromMaintenanceWindowCondition4Conditions4(v MaintenanceWindowCondition4Conditions4) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMaintenanceWindowCondition4Conditions4 performs a merge with any union data inside the MaintenanceWindowCondition_4_Conditions_Item, using the provided MaintenanceWindowCondition4Conditions4
+func (t *MaintenanceWindowCondition_4_Conditions_Item) MergeMaintenanceWindowCondition4Conditions4(v MaintenanceWindowCondition4Conditions4) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t MaintenanceWindowCondition_4_Conditions_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *MaintenanceWindowCondition_4_Conditions_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsMaintenanceWindowSeverityCondition returns the union data inside the MaintenanceWindowLeafCondition as a MaintenanceWindowSeverityCondition
+func (t MaintenanceWindowLeafCondition) AsMaintenanceWindowSeverityCondition() (MaintenanceWindowSeverityCondition, error) {
+	var body MaintenanceWindowSeverityCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMaintenanceWindowSeverityCondition overwrites any union data inside the MaintenanceWindowLeafCondition as the provided MaintenanceWindowSeverityCondition
+func (t *MaintenanceWindowLeafCondition) FromMaintenanceWindowSeverityCondition(v MaintenanceWindowSeverityCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMaintenanceWindowSeverityCondition performs a merge with any union data inside the MaintenanceWindowLeafCondition, using the provided MaintenanceWindowSeverityCondition
+func (t *MaintenanceWindowLeafCondition) MergeMaintenanceWindowSeverityCondition(v MaintenanceWindowSeverityCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsMaintenanceWindowFieldCondition returns the union data inside the MaintenanceWindowLeafCondition as a MaintenanceWindowFieldCondition
+func (t MaintenanceWindowLeafCondition) AsMaintenanceWindowFieldCondition() (MaintenanceWindowFieldCondition, error) {
+	var body MaintenanceWindowFieldCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMaintenanceWindowFieldCondition overwrites any union data inside the MaintenanceWindowLeafCondition as the provided MaintenanceWindowFieldCondition
+func (t *MaintenanceWindowLeafCondition) FromMaintenanceWindowFieldCondition(v MaintenanceWindowFieldCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMaintenanceWindowFieldCondition performs a merge with any union data inside the MaintenanceWindowLeafCondition, using the provided MaintenanceWindowFieldCondition
+func (t *MaintenanceWindowLeafCondition) MergeMaintenanceWindowFieldCondition(v MaintenanceWindowFieldCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsMaintenanceWindowProviderCondition returns the union data inside the MaintenanceWindowLeafCondition as a MaintenanceWindowProviderCondition
+func (t MaintenanceWindowLeafCondition) AsMaintenanceWindowProviderCondition() (MaintenanceWindowProviderCondition, error) {
+	var body MaintenanceWindowProviderCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMaintenanceWindowProviderCondition overwrites any union data inside the MaintenanceWindowLeafCondition as the provided MaintenanceWindowProviderCondition
+func (t *MaintenanceWindowLeafCondition) FromMaintenanceWindowProviderCondition(v MaintenanceWindowProviderCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMaintenanceWindowProviderCondition performs a merge with any union data inside the MaintenanceWindowLeafCondition, using the provided MaintenanceWindowProviderCondition
+func (t *MaintenanceWindowLeafCondition) MergeMaintenanceWindowProviderCondition(v MaintenanceWindowProviderCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsMaintenanceWindowTimeCondition returns the union data inside the MaintenanceWindowLeafCondition as a MaintenanceWindowTimeCondition
+func (t MaintenanceWindowLeafCondition) AsMaintenanceWindowTimeCondition() (MaintenanceWindowTimeCondition, error) {
+	var body MaintenanceWindowTimeCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMaintenanceWindowTimeCondition overwrites any union data inside the MaintenanceWindowLeafCondition as the provided MaintenanceWindowTimeCondition
+func (t *MaintenanceWindowLeafCondition) FromMaintenanceWindowTimeCondition(v MaintenanceWindowTimeCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMaintenanceWindowTimeCondition performs a merge with any union data inside the MaintenanceWindowLeafCondition, using the provided MaintenanceWindowTimeCondition
+func (t *MaintenanceWindowLeafCondition) MergeMaintenanceWindowTimeCondition(v MaintenanceWindowTimeCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t MaintenanceWindowLeafCondition) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *MaintenanceWindowLeafCondition) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsMaintenanceWindowTimeConditionRuleTimeInterval0 returns the union data inside the MaintenanceWindowTimeCondition_Rule_TimeInterval as a MaintenanceWindowTimeConditionRuleTimeInterval0
+func (t MaintenanceWindowTimeCondition_Rule_TimeInterval) AsMaintenanceWindowTimeConditionRuleTimeInterval0() (MaintenanceWindowTimeConditionRuleTimeInterval0, error) {
+	var body MaintenanceWindowTimeConditionRuleTimeInterval0
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMaintenanceWindowTimeConditionRuleTimeInterval0 overwrites any union data inside the MaintenanceWindowTimeCondition_Rule_TimeInterval as the provided MaintenanceWindowTimeConditionRuleTimeInterval0
+func (t *MaintenanceWindowTimeCondition_Rule_TimeInterval) FromMaintenanceWindowTimeConditionRuleTimeInterval0(v MaintenanceWindowTimeConditionRuleTimeInterval0) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMaintenanceWindowTimeConditionRuleTimeInterval0 performs a merge with any union data inside the MaintenanceWindowTimeCondition_Rule_TimeInterval, using the provided MaintenanceWindowTimeConditionRuleTimeInterval0
+func (t *MaintenanceWindowTimeCondition_Rule_TimeInterval) MergeMaintenanceWindowTimeConditionRuleTimeInterval0(v MaintenanceWindowTimeConditionRuleTimeInterval0) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsMaintenanceWindowTimeConditionRuleTimeInterval1 returns the union data inside the MaintenanceWindowTimeCondition_Rule_TimeInterval as a MaintenanceWindowTimeConditionRuleTimeInterval1
+func (t MaintenanceWindowTimeCondition_Rule_TimeInterval) AsMaintenanceWindowTimeConditionRuleTimeInterval1() (MaintenanceWindowTimeConditionRuleTimeInterval1, error) {
+	var body MaintenanceWindowTimeConditionRuleTimeInterval1
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMaintenanceWindowTimeConditionRuleTimeInterval1 overwrites any union data inside the MaintenanceWindowTimeCondition_Rule_TimeInterval as the provided MaintenanceWindowTimeConditionRuleTimeInterval1
+func (t *MaintenanceWindowTimeCondition_Rule_TimeInterval) FromMaintenanceWindowTimeConditionRuleTimeInterval1(v MaintenanceWindowTimeConditionRuleTimeInterval1) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMaintenanceWindowTimeConditionRuleTimeInterval1 performs a merge with any union data inside the MaintenanceWindowTimeCondition_Rule_TimeInterval, using the provided MaintenanceWindowTimeConditionRuleTimeInterval1
+func (t *MaintenanceWindowTimeCondition_Rule_TimeInterval) MergeMaintenanceWindowTimeConditionRuleTimeInterval1(v MaintenanceWindowTimeConditionRuleTimeInterval1) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t MaintenanceWindowTimeCondition_Rule_TimeInterval) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *MaintenanceWindowTimeCondition_Rule_TimeInterval) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
 
 // AsPublicEscalationPolicyTierInput0 returns the union data inside the PublicEscalationPolicyTierInput as a PublicEscalationPolicyTierInput0
 func (t PublicEscalationPolicyTierInput) AsPublicEscalationPolicyTierInput0() (PublicEscalationPolicyTierInput0, error) {
@@ -2367,6 +4107,130 @@ func (t ListMicrosoftTeamsTeams400JSONResponseBody) MarshalJSON() ([]byte, error
 }
 
 func (t *ListMicrosoftTeamsTeams400JSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsValidationErrorResponse returns the union data inside the CreateMaintenanceWindow400JSONResponseBody as a ValidationErrorResponse
+func (t CreateMaintenanceWindow400JSONResponseBody) AsValidationErrorResponse() (ValidationErrorResponse, error) {
+	var body ValidationErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromValidationErrorResponse overwrites any union data inside the CreateMaintenanceWindow400JSONResponseBody as the provided ValidationErrorResponse
+func (t *CreateMaintenanceWindow400JSONResponseBody) FromValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeValidationErrorResponse performs a merge with any union data inside the CreateMaintenanceWindow400JSONResponseBody, using the provided ValidationErrorResponse
+func (t *CreateMaintenanceWindow400JSONResponseBody) MergeValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsErrorResponse returns the union data inside the CreateMaintenanceWindow400JSONResponseBody as a ErrorResponse
+func (t CreateMaintenanceWindow400JSONResponseBody) AsErrorResponse() (ErrorResponse, error) {
+	var body ErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorResponse overwrites any union data inside the CreateMaintenanceWindow400JSONResponseBody as the provided ErrorResponse
+func (t *CreateMaintenanceWindow400JSONResponseBody) FromErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorResponse performs a merge with any union data inside the CreateMaintenanceWindow400JSONResponseBody, using the provided ErrorResponse
+func (t *CreateMaintenanceWindow400JSONResponseBody) MergeErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t CreateMaintenanceWindow400JSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *CreateMaintenanceWindow400JSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsValidationErrorResponse returns the union data inside the UpdateMaintenanceWindow400JSONResponseBody as a ValidationErrorResponse
+func (t UpdateMaintenanceWindow400JSONResponseBody) AsValidationErrorResponse() (ValidationErrorResponse, error) {
+	var body ValidationErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromValidationErrorResponse overwrites any union data inside the UpdateMaintenanceWindow400JSONResponseBody as the provided ValidationErrorResponse
+func (t *UpdateMaintenanceWindow400JSONResponseBody) FromValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeValidationErrorResponse performs a merge with any union data inside the UpdateMaintenanceWindow400JSONResponseBody, using the provided ValidationErrorResponse
+func (t *UpdateMaintenanceWindow400JSONResponseBody) MergeValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsErrorResponse returns the union data inside the UpdateMaintenanceWindow400JSONResponseBody as a ErrorResponse
+func (t UpdateMaintenanceWindow400JSONResponseBody) AsErrorResponse() (ErrorResponse, error) {
+	var body ErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorResponse overwrites any union data inside the UpdateMaintenanceWindow400JSONResponseBody as the provided ErrorResponse
+func (t *UpdateMaintenanceWindow400JSONResponseBody) FromErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorResponse performs a merge with any union data inside the UpdateMaintenanceWindow400JSONResponseBody, using the provided ErrorResponse
+func (t *UpdateMaintenanceWindow400JSONResponseBody) MergeErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t UpdateMaintenanceWindow400JSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *UpdateMaintenanceWindow400JSONResponseBody) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
@@ -3265,6 +5129,68 @@ type ClientInterface interface {
 	// Corresponds with GET /labels (the `ListLabels` operationId).
 	ListLabels(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// ListMaintenanceWindows List maintenance windows
+	//
+	// Returns a paginated list of maintenance windows for the API key organization, newest start first. A maintenance window suppresses automatic paging only: alerts matching it are still ingested and created, nothing is auto-resolved, and automation actions are evaluated separately.
+	//
+	// Corresponds with GET /maintenance-windows (the `ListMaintenanceWindows` operationId).
+	ListMaintenanceWindows(ctx context.Context, params *ListMaintenanceWindowsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateMaintenanceWindowWithBody Create a maintenance window
+	//
+	// A maintenance window suppresses automatic paging only: alerts matching it are still ingested and created, nothing is auto-resolved, and automation actions are evaluated separately. Announcements are optional: when announcementChannels is set, the window posts a message to those Slack or Microsoft Teams channels when it starts and when it ends. They do not affect which alerts the window suppresses. The API key grants organization-wide access: it can manage both global windows (no team) and windows scoped to any team in the organization.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /maintenance-windows (the `CreateMaintenanceWindow` operationId).
+	CreateMaintenanceWindowWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateMaintenanceWindow Create a maintenance window
+	//
+	// A maintenance window suppresses automatic paging only: alerts matching it are still ingested and created, nothing is auto-resolved, and automation actions are evaluated separately. Announcements are optional: when announcementChannels is set, the window posts a message to those Slack or Microsoft Teams channels when it starts and when it ends. They do not affect which alerts the window suppresses. The API key grants organization-wide access: it can manage both global windows (no team) and windows scoped to any team in the organization.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /maintenance-windows (the `CreateMaintenanceWindow` operationId).
+	CreateMaintenanceWindow(ctx context.Context, body CreateMaintenanceWindowJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteMaintenanceWindow Delete a maintenance window
+	//
+	// Soft-deletes the window; this is also how a window is cancelled. The API key grants organization-wide access: it can manage both global windows (no team) and windows scoped to any team in the organization.
+	//
+	// Corresponds with DELETE /maintenance-windows/{id} (the `DeleteMaintenanceWindow` operationId).
+	DeleteMaintenanceWindow(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetMaintenanceWindow Get a maintenance window
+	//
+	// Corresponds with GET /maintenance-windows/{id} (the `GetMaintenanceWindow` operationId).
+	GetMaintenanceWindow(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateMaintenanceWindowWithBody Update a maintenance window
+	//
+	// Partial update. To end an active window early, send `{"endAt": "<now>"}`. Announcements are optional: when announcementChannels is set, the window posts a message to those Slack or Microsoft Teams channels when it starts and when it ends. They do not affect which alerts the window suppresses. The API key grants organization-wide access: it can manage both global windows (no team) and windows scoped to any team in the organization.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PATCH /maintenance-windows/{id} (the `UpdateMaintenanceWindow` operationId).
+	UpdateMaintenanceWindowWithBody(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateMaintenanceWindow Update a maintenance window
+	//
+	// Partial update. To end an active window early, send `{"endAt": "<now>"}`. Announcements are optional: when announcementChannels is set, the window posts a message to those Slack or Microsoft Teams channels when it starts and when it ends. They do not affect which alerts the window suppresses. The API key grants organization-wide access: it can manage both global windows (no team) and windows scoped to any team in the organization.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PATCH /maintenance-windows/{id} (the `UpdateMaintenanceWindow` operationId).
+	UpdateMaintenanceWindow(ctx context.Context, id int32, body UpdateMaintenanceWindowJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListMaintenanceWindowSuppressedAlerts List alerts whose automatic paging a maintenance window suppressed
+	//
+	// Returns the alerts this window held back from automatically paging, most recently suppressed first.
+	//
+	// Corresponds with GET /maintenance-windows/{id}/suppressed-alerts (the `ListMaintenanceWindowSuppressedAlerts` operationId).
+	ListMaintenanceWindowSuppressedAlerts(ctx context.Context, id int32, params *ListMaintenanceWindowSuppressedAlertsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// ListMembers List members of the organization
 	//
 	// Returns a paginated list of every member of the organization associated with the API key, including members who belong to no team. Filters combine with AND; values within one repeatable filter combine with OR. Ordered by creation time, oldest first.
@@ -3842,6 +5768,148 @@ func (c *Client) ListMicrosoftTeamsTeams(ctx context.Context, params *ListMicros
 // Corresponds with GET /labels (the `ListLabels` operationId).
 func (c *Client) ListLabels(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewListLabelsRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListMaintenanceWindows List maintenance windows
+//
+// Returns a paginated list of maintenance windows for the API key organization, newest start first. A maintenance window suppresses automatic paging only: alerts matching it are still ingested and created, nothing is auto-resolved, and automation actions are evaluated separately.
+//
+// Corresponds with GET /maintenance-windows (the `ListMaintenanceWindows` operationId).
+func (c *Client) ListMaintenanceWindows(ctx context.Context, params *ListMaintenanceWindowsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListMaintenanceWindowsRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateMaintenanceWindowWithBody Create a maintenance window
+//
+// A maintenance window suppresses automatic paging only: alerts matching it are still ingested and created, nothing is auto-resolved, and automation actions are evaluated separately. Announcements are optional: when announcementChannels is set, the window posts a message to those Slack or Microsoft Teams channels when it starts and when it ends. They do not affect which alerts the window suppresses. The API key grants organization-wide access: it can manage both global windows (no team) and windows scoped to any team in the organization.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /maintenance-windows (the `CreateMaintenanceWindow` operationId).
+func (c *Client) CreateMaintenanceWindowWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateMaintenanceWindowRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateMaintenanceWindow Create a maintenance window
+//
+// A maintenance window suppresses automatic paging only: alerts matching it are still ingested and created, nothing is auto-resolved, and automation actions are evaluated separately. Announcements are optional: when announcementChannels is set, the window posts a message to those Slack or Microsoft Teams channels when it starts and when it ends. They do not affect which alerts the window suppresses. The API key grants organization-wide access: it can manage both global windows (no team) and windows scoped to any team in the organization.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /maintenance-windows (the `CreateMaintenanceWindow` operationId).
+func (c *Client) CreateMaintenanceWindow(ctx context.Context, body CreateMaintenanceWindowJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateMaintenanceWindowRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DeleteMaintenanceWindow Delete a maintenance window
+//
+// Soft-deletes the window; this is also how a window is cancelled. The API key grants organization-wide access: it can manage both global windows (no team) and windows scoped to any team in the organization.
+//
+// Corresponds with DELETE /maintenance-windows/{id} (the `DeleteMaintenanceWindow` operationId).
+func (c *Client) DeleteMaintenanceWindow(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteMaintenanceWindowRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetMaintenanceWindow Get a maintenance window
+//
+// Corresponds with GET /maintenance-windows/{id} (the `GetMaintenanceWindow` operationId).
+func (c *Client) GetMaintenanceWindow(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetMaintenanceWindowRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateMaintenanceWindowWithBody Update a maintenance window
+//
+// Partial update. To end an active window early, send `{"endAt": "<now>"}`. Announcements are optional: when announcementChannels is set, the window posts a message to those Slack or Microsoft Teams channels when it starts and when it ends. They do not affect which alerts the window suppresses. The API key grants organization-wide access: it can manage both global windows (no team) and windows scoped to any team in the organization.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PATCH /maintenance-windows/{id} (the `UpdateMaintenanceWindow` operationId).
+func (c *Client) UpdateMaintenanceWindowWithBody(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateMaintenanceWindowRequestWithBody(c.Server, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateMaintenanceWindow Update a maintenance window
+//
+// Partial update. To end an active window early, send `{"endAt": "<now>"}`. Announcements are optional: when announcementChannels is set, the window posts a message to those Slack or Microsoft Teams channels when it starts and when it ends. They do not affect which alerts the window suppresses. The API key grants organization-wide access: it can manage both global windows (no team) and windows scoped to any team in the organization.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PATCH /maintenance-windows/{id} (the `UpdateMaintenanceWindow` operationId).
+func (c *Client) UpdateMaintenanceWindow(ctx context.Context, id int32, body UpdateMaintenanceWindowJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateMaintenanceWindowRequest(c.Server, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListMaintenanceWindowSuppressedAlerts List alerts whose automatic paging a maintenance window suppressed
+//
+// Returns the alerts this window held back from automatically paging, most recently suppressed first.
+//
+// Corresponds with GET /maintenance-windows/{id}/suppressed-alerts (the `ListMaintenanceWindowSuppressedAlerts` operationId).
+func (c *Client) ListMaintenanceWindowSuppressedAlerts(ctx context.Context, id int32, params *ListMaintenanceWindowSuppressedAlertsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListMaintenanceWindowSuppressedAlertsRequest(c.Server, id, params)
 	if err != nil {
 		return nil, err
 	}
@@ -5200,6 +7268,324 @@ func NewListLabelsRequest(server string) (*http.Request, error) {
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewListMaintenanceWindowsRequest constructs an http.Request for the ListMaintenanceWindows method
+func NewListMaintenanceWindowsRequest(server string, params *ListMaintenanceWindowsParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/maintenance-windows")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "limit", *params.Limit, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: "int32"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Offset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "offset", *params.Offset, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: "int32"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.ActiveAt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "activeAt", *params.ActiveAt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: "date-time"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.TeamId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "teamId", *params.TeamId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCreateMaintenanceWindowRequest calls the generic CreateMaintenanceWindow builder with application/json body
+func NewCreateMaintenanceWindowRequest(server string, body CreateMaintenanceWindowJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateMaintenanceWindowRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewCreateMaintenanceWindowRequestWithBody constructs an http.Request for the CreateMaintenanceWindow method, with any body, and a specified content type
+func NewCreateMaintenanceWindowRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/maintenance-windows")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteMaintenanceWindowRequest constructs an http.Request for the DeleteMaintenanceWindow method
+func NewDeleteMaintenanceWindowRequest(server string, id int32) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/maintenance-windows/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetMaintenanceWindowRequest constructs an http.Request for the GetMaintenanceWindow method
+func NewGetMaintenanceWindowRequest(server string, id int32) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/maintenance-windows/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateMaintenanceWindowRequest calls the generic UpdateMaintenanceWindow builder with application/json body
+func NewUpdateMaintenanceWindowRequest(server string, id int32, body UpdateMaintenanceWindowJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateMaintenanceWindowRequestWithBody(server, id, "application/json", bodyReader)
+}
+
+// NewUpdateMaintenanceWindowRequestWithBody constructs an http.Request for the UpdateMaintenanceWindow method, with any body, and a specified content type
+func NewUpdateMaintenanceWindowRequestWithBody(server string, id int32, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/maintenance-windows/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPatch, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewListMaintenanceWindowSuppressedAlertsRequest constructs an http.Request for the ListMaintenanceWindowSuppressedAlerts method
+func NewListMaintenanceWindowSuppressedAlertsRequest(server string, id int32, params *ListMaintenanceWindowSuppressedAlertsParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/maintenance-windows/%s/suppressed-alerts", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "limit", *params.Limit, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: "int32"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Offset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "offset", *params.Offset, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: "int32"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
 	}
 
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
@@ -7246,6 +9632,76 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with GET /labels (the `ListLabels` operationId).
 	ListLabelsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListLabelsResponse, error)
 
+	// ListMaintenanceWindowsWithResponse List maintenance windows
+	//
+	// Returns a paginated list of maintenance windows for the API key organization, newest start first. A maintenance window suppresses automatic paging only: alerts matching it are still ingested and created, nothing is auto-resolved, and automation actions are evaluated separately.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /maintenance-windows (the `ListMaintenanceWindows` operationId).
+	ListMaintenanceWindowsWithResponse(ctx context.Context, params *ListMaintenanceWindowsParams, reqEditors ...RequestEditorFn) (*ListMaintenanceWindowsResponse, error)
+
+	// CreateMaintenanceWindowWithBodyWithResponse Create a maintenance window
+	//
+	// A maintenance window suppresses automatic paging only: alerts matching it are still ingested and created, nothing is auto-resolved, and automation actions are evaluated separately. Announcements are optional: when announcementChannels is set, the window posts a message to those Slack or Microsoft Teams channels when it starts and when it ends. They do not affect which alerts the window suppresses. The API key grants organization-wide access: it can manage both global windows (no team) and windows scoped to any team in the organization.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /maintenance-windows (the `CreateMaintenanceWindow` operationId).
+	CreateMaintenanceWindowWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateMaintenanceWindowResponse, error)
+
+	// CreateMaintenanceWindowWithResponse Create a maintenance window
+	//
+	// A maintenance window suppresses automatic paging only: alerts matching it are still ingested and created, nothing is auto-resolved, and automation actions are evaluated separately. Announcements are optional: when announcementChannels is set, the window posts a message to those Slack or Microsoft Teams channels when it starts and when it ends. They do not affect which alerts the window suppresses. The API key grants organization-wide access: it can manage both global windows (no team) and windows scoped to any team in the organization.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /maintenance-windows (the `CreateMaintenanceWindow` operationId).
+	CreateMaintenanceWindowWithResponse(ctx context.Context, body CreateMaintenanceWindowJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateMaintenanceWindowResponse, error)
+
+	// DeleteMaintenanceWindowWithResponse Delete a maintenance window
+	//
+	// Soft-deletes the window; this is also how a window is cancelled. The API key grants organization-wide access: it can manage both global windows (no team) and windows scoped to any team in the organization.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /maintenance-windows/{id} (the `DeleteMaintenanceWindow` operationId).
+	DeleteMaintenanceWindowWithResponse(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*DeleteMaintenanceWindowResponse, error)
+
+	// GetMaintenanceWindowWithResponse Get a maintenance window
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /maintenance-windows/{id} (the `GetMaintenanceWindow` operationId).
+	GetMaintenanceWindowWithResponse(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*GetMaintenanceWindowResponse, error)
+
+	// UpdateMaintenanceWindowWithBodyWithResponse Update a maintenance window
+	//
+	// Partial update. To end an active window early, send `{"endAt": "<now>"}`. Announcements are optional: when announcementChannels is set, the window posts a message to those Slack or Microsoft Teams channels when it starts and when it ends. They do not affect which alerts the window suppresses. The API key grants organization-wide access: it can manage both global windows (no team) and windows scoped to any team in the organization.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PATCH /maintenance-windows/{id} (the `UpdateMaintenanceWindow` operationId).
+	UpdateMaintenanceWindowWithBodyWithResponse(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateMaintenanceWindowResponse, error)
+
+	// UpdateMaintenanceWindowWithResponse Update a maintenance window
+	//
+	// Partial update. To end an active window early, send `{"endAt": "<now>"}`. Announcements are optional: when announcementChannels is set, the window posts a message to those Slack or Microsoft Teams channels when it starts and when it ends. They do not affect which alerts the window suppresses. The API key grants organization-wide access: it can manage both global windows (no team) and windows scoped to any team in the organization.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PATCH /maintenance-windows/{id} (the `UpdateMaintenanceWindow` operationId).
+	UpdateMaintenanceWindowWithResponse(ctx context.Context, id int32, body UpdateMaintenanceWindowJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateMaintenanceWindowResponse, error)
+
+	// ListMaintenanceWindowSuppressedAlertsWithResponse List alerts whose automatic paging a maintenance window suppressed
+	//
+	// Returns the alerts this window held back from automatically paging, most recently suppressed first.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /maintenance-windows/{id}/suppressed-alerts (the `ListMaintenanceWindowSuppressedAlerts` operationId).
+	ListMaintenanceWindowSuppressedAlertsWithResponse(ctx context.Context, id int32, params *ListMaintenanceWindowSuppressedAlertsParams, reqEditors ...RequestEditorFn) (*ListMaintenanceWindowSuppressedAlertsResponse, error)
+
 	// ListMembersWithResponse List members of the organization
 	//
 	// Returns a paginated list of every member of the organization associated with the API key, including members who belong to no team. Filters combine with AND; values within one repeatable filter combine with OR. Ordered by creation time, oldest first.
@@ -8271,6 +10727,455 @@ func (r ListLabelsResponse) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r ListLabelsResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type ListMaintenanceWindowsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *MaintenanceWindowsListResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationErrorResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r ListMaintenanceWindowsResponse) GetJSON200() *MaintenanceWindowsListResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r ListMaintenanceWindowsResponse) GetJSON400() *ValidationErrorResponse {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r ListMaintenanceWindowsResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r ListMaintenanceWindowsResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r ListMaintenanceWindowsResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r ListMaintenanceWindowsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListMaintenanceWindowsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r ListMaintenanceWindowsResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type CreateMaintenanceWindowResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON201 the response for an HTTP 201 `application/json` response
+	JSON201 *MaintenanceWindowResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *CreateMaintenanceWindow400JSONResponseBody
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ApiKeyDenialResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponse
+	// JSON429 the response for an HTTP 429 `application/json` response
+	JSON429 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON201 returns the response for an HTTP 201 `application/json` response
+func (r CreateMaintenanceWindowResponse) GetJSON201() *MaintenanceWindowResponse {
+	return r.JSON201
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r CreateMaintenanceWindowResponse) GetJSON400() *CreateMaintenanceWindow400JSONResponseBody {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r CreateMaintenanceWindowResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r CreateMaintenanceWindowResponse) GetJSON403() *ApiKeyDenialResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r CreateMaintenanceWindowResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r CreateMaintenanceWindowResponse) GetJSON409() *ErrorResponse {
+	return r.JSON409
+}
+
+// GetJSON429 returns the response for an HTTP 429 `application/json` response
+func (r CreateMaintenanceWindowResponse) GetJSON429() *ErrorResponse {
+	return r.JSON429
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r CreateMaintenanceWindowResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r CreateMaintenanceWindowResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateMaintenanceWindowResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateMaintenanceWindowResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r CreateMaintenanceWindowResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type DeleteMaintenanceWindowResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationErrorResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ApiKeyDenialResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r DeleteMaintenanceWindowResponse) GetJSON400() *ValidationErrorResponse {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r DeleteMaintenanceWindowResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r DeleteMaintenanceWindowResponse) GetJSON403() *ApiKeyDenialResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r DeleteMaintenanceWindowResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r DeleteMaintenanceWindowResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r DeleteMaintenanceWindowResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteMaintenanceWindowResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteMaintenanceWindowResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r DeleteMaintenanceWindowResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetMaintenanceWindowResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *MaintenanceWindowResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationErrorResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetMaintenanceWindowResponse) GetJSON200() *MaintenanceWindowResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r GetMaintenanceWindowResponse) GetJSON400() *ValidationErrorResponse {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r GetMaintenanceWindowResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r GetMaintenanceWindowResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r GetMaintenanceWindowResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r GetMaintenanceWindowResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetMaintenanceWindowResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetMaintenanceWindowResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetMaintenanceWindowResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type UpdateMaintenanceWindowResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *MaintenanceWindowResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *UpdateMaintenanceWindow400JSONResponseBody
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ApiKeyDenialResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponse
+	// JSON429 the response for an HTTP 429 `application/json` response
+	JSON429 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r UpdateMaintenanceWindowResponse) GetJSON200() *MaintenanceWindowResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r UpdateMaintenanceWindowResponse) GetJSON400() *UpdateMaintenanceWindow400JSONResponseBody {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r UpdateMaintenanceWindowResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r UpdateMaintenanceWindowResponse) GetJSON403() *ApiKeyDenialResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r UpdateMaintenanceWindowResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r UpdateMaintenanceWindowResponse) GetJSON409() *ErrorResponse {
+	return r.JSON409
+}
+
+// GetJSON429 returns the response for an HTTP 429 `application/json` response
+func (r UpdateMaintenanceWindowResponse) GetJSON429() *ErrorResponse {
+	return r.JSON429
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r UpdateMaintenanceWindowResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r UpdateMaintenanceWindowResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateMaintenanceWindowResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateMaintenanceWindowResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r UpdateMaintenanceWindowResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type ListMaintenanceWindowSuppressedAlertsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *MaintenanceWindowSuppressedAlertsResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationErrorResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r ListMaintenanceWindowSuppressedAlertsResponse) GetJSON200() *MaintenanceWindowSuppressedAlertsResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r ListMaintenanceWindowSuppressedAlertsResponse) GetJSON400() *ValidationErrorResponse {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r ListMaintenanceWindowSuppressedAlertsResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r ListMaintenanceWindowSuppressedAlertsResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r ListMaintenanceWindowSuppressedAlertsResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r ListMaintenanceWindowSuppressedAlertsResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r ListMaintenanceWindowSuppressedAlertsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListMaintenanceWindowSuppressedAlertsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r ListMaintenanceWindowSuppressedAlertsResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -11070,6 +13975,124 @@ func (c *ClientWithResponses) ListLabelsWithResponse(ctx context.Context, reqEdi
 	return ParseListLabelsResponse(rsp)
 }
 
+// ListMaintenanceWindowsWithResponse List maintenance windows
+//
+// Returns a paginated list of maintenance windows for the API key organization, newest start first. A maintenance window suppresses automatic paging only: alerts matching it are still ingested and created, nothing is auto-resolved, and automation actions are evaluated separately.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /maintenance-windows (the `ListMaintenanceWindows` operationId).
+func (c *ClientWithResponses) ListMaintenanceWindowsWithResponse(ctx context.Context, params *ListMaintenanceWindowsParams, reqEditors ...RequestEditorFn) (*ListMaintenanceWindowsResponse, error) {
+	rsp, err := c.ListMaintenanceWindows(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListMaintenanceWindowsResponse(rsp)
+}
+
+// CreateMaintenanceWindowWithBodyWithResponse Create a maintenance window
+//
+// A maintenance window suppresses automatic paging only: alerts matching it are still ingested and created, nothing is auto-resolved, and automation actions are evaluated separately. Announcements are optional: when announcementChannels is set, the window posts a message to those Slack or Microsoft Teams channels when it starts and when it ends. They do not affect which alerts the window suppresses. The API key grants organization-wide access: it can manage both global windows (no team) and windows scoped to any team in the organization.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /maintenance-windows (the `CreateMaintenanceWindow` operationId).
+func (c *ClientWithResponses) CreateMaintenanceWindowWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateMaintenanceWindowResponse, error) {
+	rsp, err := c.CreateMaintenanceWindowWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateMaintenanceWindowResponse(rsp)
+}
+
+// CreateMaintenanceWindowWithResponse Create a maintenance window
+//
+// A maintenance window suppresses automatic paging only: alerts matching it are still ingested and created, nothing is auto-resolved, and automation actions are evaluated separately. Announcements are optional: when announcementChannels is set, the window posts a message to those Slack or Microsoft Teams channels when it starts and when it ends. They do not affect which alerts the window suppresses. The API key grants organization-wide access: it can manage both global windows (no team) and windows scoped to any team in the organization.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /maintenance-windows (the `CreateMaintenanceWindow` operationId).
+func (c *ClientWithResponses) CreateMaintenanceWindowWithResponse(ctx context.Context, body CreateMaintenanceWindowJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateMaintenanceWindowResponse, error) {
+	rsp, err := c.CreateMaintenanceWindow(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateMaintenanceWindowResponse(rsp)
+}
+
+// DeleteMaintenanceWindowWithResponse Delete a maintenance window
+//
+// Soft-deletes the window; this is also how a window is cancelled. The API key grants organization-wide access: it can manage both global windows (no team) and windows scoped to any team in the organization.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /maintenance-windows/{id} (the `DeleteMaintenanceWindow` operationId).
+func (c *ClientWithResponses) DeleteMaintenanceWindowWithResponse(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*DeleteMaintenanceWindowResponse, error) {
+	rsp, err := c.DeleteMaintenanceWindow(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteMaintenanceWindowResponse(rsp)
+}
+
+// GetMaintenanceWindowWithResponse Get a maintenance window
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /maintenance-windows/{id} (the `GetMaintenanceWindow` operationId).
+func (c *ClientWithResponses) GetMaintenanceWindowWithResponse(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*GetMaintenanceWindowResponse, error) {
+	rsp, err := c.GetMaintenanceWindow(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetMaintenanceWindowResponse(rsp)
+}
+
+// UpdateMaintenanceWindowWithBodyWithResponse Update a maintenance window
+//
+// Partial update. To end an active window early, send `{"endAt": "<now>"}`. Announcements are optional: when announcementChannels is set, the window posts a message to those Slack or Microsoft Teams channels when it starts and when it ends. They do not affect which alerts the window suppresses. The API key grants organization-wide access: it can manage both global windows (no team) and windows scoped to any team in the organization.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PATCH /maintenance-windows/{id} (the `UpdateMaintenanceWindow` operationId).
+func (c *ClientWithResponses) UpdateMaintenanceWindowWithBodyWithResponse(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateMaintenanceWindowResponse, error) {
+	rsp, err := c.UpdateMaintenanceWindowWithBody(ctx, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateMaintenanceWindowResponse(rsp)
+}
+
+// UpdateMaintenanceWindowWithResponse Update a maintenance window
+//
+// Partial update. To end an active window early, send `{"endAt": "<now>"}`. Announcements are optional: when announcementChannels is set, the window posts a message to those Slack or Microsoft Teams channels when it starts and when it ends. They do not affect which alerts the window suppresses. The API key grants organization-wide access: it can manage both global windows (no team) and windows scoped to any team in the organization.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PATCH /maintenance-windows/{id} (the `UpdateMaintenanceWindow` operationId).
+func (c *ClientWithResponses) UpdateMaintenanceWindowWithResponse(ctx context.Context, id int32, body UpdateMaintenanceWindowJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateMaintenanceWindowResponse, error) {
+	rsp, err := c.UpdateMaintenanceWindow(ctx, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateMaintenanceWindowResponse(rsp)
+}
+
+// ListMaintenanceWindowSuppressedAlertsWithResponse List alerts whose automatic paging a maintenance window suppressed
+//
+// Returns the alerts this window held back from automatically paging, most recently suppressed first.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /maintenance-windows/{id}/suppressed-alerts (the `ListMaintenanceWindowSuppressedAlerts` operationId).
+func (c *ClientWithResponses) ListMaintenanceWindowSuppressedAlertsWithResponse(ctx context.Context, id int32, params *ListMaintenanceWindowSuppressedAlertsParams, reqEditors ...RequestEditorFn) (*ListMaintenanceWindowSuppressedAlertsResponse, error) {
+	rsp, err := c.ListMaintenanceWindowSuppressedAlerts(ctx, id, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListMaintenanceWindowSuppressedAlertsResponse(rsp)
+}
+
 // ListMembersWithResponse List members of the organization
 //
 // Returns a paginated list of every member of the organization associated with the API key, including members who belong to no team. Filters combine with AND; values within one repeatable filter combine with OR. Ordered by creation time, oldest first.
@@ -12282,6 +15305,368 @@ func ParseListLabelsResponse(rsp *http.Response) (*ListLabelsResponse, error) {
 			return nil, err
 		}
 		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListMaintenanceWindowsResponse parses an HTTP response from a ListMaintenanceWindowsWithResponse call
+func ParseListMaintenanceWindowsResponse(rsp *http.Response) (*ListMaintenanceWindowsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListMaintenanceWindowsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest MaintenanceWindowsListResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateMaintenanceWindowResponse parses an HTTP response from a CreateMaintenanceWindowWithResponse call
+func ParseCreateMaintenanceWindowResponse(rsp *http.Response) (*CreateMaintenanceWindowResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateMaintenanceWindowResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest MaintenanceWindowResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest CreateMaintenanceWindow400JSONResponseBody
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ApiKeyDenialResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteMaintenanceWindowResponse parses an HTTP response from a DeleteMaintenanceWindowWithResponse call
+func ParseDeleteMaintenanceWindowResponse(rsp *http.Response) (*DeleteMaintenanceWindowResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteMaintenanceWindowResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 204:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ApiKeyDenialResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetMaintenanceWindowResponse parses an HTTP response from a GetMaintenanceWindowWithResponse call
+func ParseGetMaintenanceWindowResponse(rsp *http.Response) (*GetMaintenanceWindowResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetMaintenanceWindowResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest MaintenanceWindowResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateMaintenanceWindowResponse parses an HTTP response from a UpdateMaintenanceWindowWithResponse call
+func ParseUpdateMaintenanceWindowResponse(rsp *http.Response) (*UpdateMaintenanceWindowResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateMaintenanceWindowResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest MaintenanceWindowResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest UpdateMaintenanceWindow400JSONResponseBody
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ApiKeyDenialResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListMaintenanceWindowSuppressedAlertsResponse parses an HTTP response from a ListMaintenanceWindowSuppressedAlertsWithResponse call
+func ParseListMaintenanceWindowSuppressedAlertsResponse(rsp *http.Response) (*ListMaintenanceWindowSuppressedAlertsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListMaintenanceWindowSuppressedAlertsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest MaintenanceWindowSuppressedAlertsResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest ErrorResponse
