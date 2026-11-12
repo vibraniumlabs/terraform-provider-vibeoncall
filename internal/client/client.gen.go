@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -205,6 +206,69 @@ const (
 func (e PublicScheduleRotationConfig1Type) Valid() bool {
 	switch e {
 	case Weekly:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ServiceTeamResponderSource.
+const (
+	ServiceTeamResponderSourceAdded ServiceTeamResponderSource = "added"
+	ServiceTeamResponderSourceOwner ServiceTeamResponderSource = "owner"
+)
+
+// Valid indicates whether the value is a known member of the ServiceTeamResponderSource enum.
+func (e ServiceTeamResponderSource) Valid() bool {
+	switch e {
+	case ServiceTeamResponderSourceAdded:
+		return true
+	case ServiceTeamResponderSourceOwner:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ServiceTeamResponderType.
+const (
+	Team ServiceTeamResponderType = "team"
+)
+
+// Valid indicates whether the value is a known member of the ServiceTeamResponderType enum.
+func (e ServiceTeamResponderType) Valid() bool {
+	switch e {
+	case Team:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ServiceUserResponderSource.
+const (
+	ServiceUserResponderSourceAdded ServiceUserResponderSource = "added"
+)
+
+// Valid indicates whether the value is a known member of the ServiceUserResponderSource enum.
+func (e ServiceUserResponderSource) Valid() bool {
+	switch e {
+	case ServiceUserResponderSourceAdded:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ServiceUserResponderType.
+const (
+	User ServiceUserResponderType = "user"
+)
+
+// Valid indicates whether the value is a known member of the ServiceUserResponderType enum.
+func (e ServiceUserResponderType) Valid() bool {
+	switch e {
+	case User:
 		return true
 	default:
 		return false
@@ -916,6 +980,114 @@ type SchedulesOnCallResponse struct {
 	Total int32 `json:"total"`
 }
 
+// ServiceCatalogPublicSummary defines model for ServiceCatalogPublicSummary.
+type ServiceCatalogPublicSummary struct {
+	// CreatedAt ISO 8601 creation timestamp.
+	CreatedAt time.Time `json:"createdAt"`
+
+	// DeletedAt ISO 8601 deletion timestamp, null when active.
+	DeletedAt nullable.Nullable[time.Time] `json:"deletedAt"`
+
+	// Description Service description.
+	Description nullable.Nullable[string] `json:"description"`
+
+	// ExternalProvider External source provider, if this service was imported.
+	ExternalProvider nullable.Nullable[string] `json:"externalProvider"`
+
+	// ExternalServiceId External provider identifier, if this service was imported.
+	ExternalServiceId nullable.Nullable[string] `json:"externalServiceId"`
+
+	// Id Unique identifier of the service.
+	Id int32 `json:"id"`
+
+	// Name Service display name.
+	Name string `json:"name"`
+
+	// Responders Teams and users paged for this service: its owning team first (source owner), then those added to it (source added).
+	Responders []ServiceResponder `json:"responders"`
+
+	// Stakeholders Manual stakeholder users assigned to this service.
+	Stakeholders []ServiceStakeholder `json:"stakeholders"`
+
+	// TeamId Owning team ID, if one is assigned.
+	TeamId nullable.Nullable[int32] `json:"teamId"`
+
+	// UpdatedAt ISO 8601 last-update timestamp.
+	UpdatedAt time.Time `json:"updatedAt"`
+}
+
+// ServiceResponder defines model for ServiceResponder.
+type ServiceResponder struct {
+	union json.RawMessage
+}
+
+// ServiceRespondersResponse defines model for ServiceRespondersResponse.
+type ServiceRespondersResponse struct {
+	Responders []ServiceResponder `json:"responders"`
+}
+
+// ServiceResponse defines model for ServiceResponse.
+type ServiceResponse struct {
+	Service ServiceCatalogPublicSummary `json:"service"`
+}
+
+// ServiceStakeholder defines model for ServiceStakeholder.
+type ServiceStakeholder struct {
+	Email    string                    `json:"email"`
+	FullName nullable.Nullable[string] `json:"fullName"`
+	Id       int32                     `json:"id"`
+}
+
+// ServiceStakeholdersResponse defines model for ServiceStakeholdersResponse.
+type ServiceStakeholdersResponse struct {
+	Stakeholders []ServiceStakeholder `json:"stakeholders"`
+}
+
+// ServiceTeamResponder defines model for ServiceTeamResponder.
+type ServiceTeamResponder struct {
+	// Source owner: the service's owning team, which always responds while it owns the service. added: added to the service, and removable.
+	Source ServiceTeamResponderSource `json:"source"`
+	Team   struct {
+		Id   int32  `json:"id"`
+		Name string `json:"name"`
+	} `json:"team"`
+	Type ServiceTeamResponderType `json:"type"`
+}
+
+// ServiceTeamResponderSource owner: the service's owning team, which always responds while it owns the service. added: added to the service, and removable.
+type ServiceTeamResponderSource string
+
+// ServiceTeamResponderType defines model for ServiceTeamResponder.Type.
+type ServiceTeamResponderType string
+
+// ServiceUserResponder defines model for ServiceUserResponder.
+type ServiceUserResponder struct {
+	// Source Always added: a person is added to the service, and removable; only a team owns one.
+	Source ServiceUserResponderSource `json:"source"`
+	Type   ServiceUserResponderType   `json:"type"`
+	User   struct {
+		Email    string                    `json:"email"`
+		FullName nullable.Nullable[string] `json:"fullName"`
+		Id       int32                     `json:"id"`
+	} `json:"user"`
+}
+
+// ServiceUserResponderSource Always added: a person is added to the service, and removable; only a team owns one.
+type ServiceUserResponderSource string
+
+// ServiceUserResponderType defines model for ServiceUserResponder.Type.
+type ServiceUserResponderType string
+
+// ServicesListResponse defines model for ServicesListResponse.
+type ServicesListResponse struct {
+	// HasMore Whether more services are available beyond the current page.
+	HasMore  bool                          `json:"hasMore"`
+	Services []ServiceCatalogPublicSummary `json:"services"`
+
+	// Total Total number of services matching the filters.
+	Total int32 `json:"total"`
+}
+
 // TeamMemberAssignmentResponse defines model for TeamMemberAssignmentResponse.
 type TeamMemberAssignmentResponse struct {
 	// Role Role assigned to the user.
@@ -1281,6 +1453,80 @@ type ReplaceScheduleTeams400JSONResponseBody struct {
 	union json.RawMessage
 }
 
+// ListServicesParams defines parameters for ListServices.
+type ListServicesParams struct {
+	Limit             *int32  `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset            *int32  `form:"offset,omitempty" json:"offset,omitempty"`
+	Query             *string `form:"query,omitempty" json:"query,omitempty"`
+	TeamId            *int32  `form:"teamId,omitempty" json:"teamId,omitempty"`
+	ExternalProvider  *string `form:"externalProvider,omitempty" json:"externalProvider,omitempty"`
+	ExternalServiceId *string `form:"externalServiceId,omitempty" json:"externalServiceId,omitempty"`
+}
+
+// CreateServiceJSONBody defines parameters for CreateService.
+type CreateServiceJSONBody struct {
+	// Description Service description.
+	Description       nullable.Nullable[string] `json:"description,omitempty"`
+	ExternalProvider  nullable.Nullable[string] `json:"externalProvider,omitempty"`
+	ExternalServiceId nullable.Nullable[string] `json:"externalServiceId,omitempty"`
+
+	// Name Service display name.
+	Name string `json:"name"`
+
+	// TeamId Owning team ID.
+	TeamId nullable.Nullable[int32] `json:"teamId,omitempty"`
+}
+
+// UpdateServiceJSONBody defines parameters for UpdateService.
+type UpdateServiceJSONBody struct {
+	// Description Service description.
+	Description       nullable.Nullable[string] `json:"description,omitempty"`
+	ExternalProvider  nullable.Nullable[string] `json:"externalProvider,omitempty"`
+	ExternalServiceId nullable.Nullable[string] `json:"externalServiceId,omitempty"`
+
+	// Name Service display name.
+	Name *string `json:"name,omitempty"`
+
+	// TeamId Owning team ID.
+	TeamId nullable.Nullable[int32] `json:"teamId,omitempty"`
+}
+
+// AddServiceRespondersJSONBody defines parameters for AddServiceResponders.
+type AddServiceRespondersJSONBody struct {
+	// Responders Responder teams or users to add or remove.
+	Responders []struct {
+		// TeamId Responder team ID. Provide exactly one of teamId or userId.
+		TeamId *int32 `json:"teamId,omitempty"`
+
+		// UserId Responder user ID. Provide exactly one of teamId or userId.
+		UserId *int32 `json:"userId,omitempty"`
+	} `json:"responders"`
+}
+
+// RemoveServiceRespondersJSONBody defines parameters for RemoveServiceResponders.
+type RemoveServiceRespondersJSONBody struct {
+	// Responders Responder teams or users to add or remove.
+	Responders []struct {
+		// TeamId Responder team ID. Provide exactly one of teamId or userId.
+		TeamId *int32 `json:"teamId,omitempty"`
+
+		// UserId Responder user ID. Provide exactly one of teamId or userId.
+		UserId *int32 `json:"userId,omitempty"`
+	} `json:"responders"`
+}
+
+// AddServiceStakeholdersJSONBody defines parameters for AddServiceStakeholders.
+type AddServiceStakeholdersJSONBody struct {
+	// UserIds Manual stakeholder user IDs to add or remove.
+	UserIds []int `json:"userIds"`
+}
+
+// RemoveServiceStakeholdersJSONBody defines parameters for RemoveServiceStakeholders.
+type RemoveServiceStakeholdersJSONBody struct {
+	// UserIds Manual stakeholder user IDs to add or remove.
+	UserIds []int `json:"userIds"`
+}
+
 // ListTeamsParams defines parameters for ListTeams.
 type ListTeamsParams struct {
 	Limit  *int32 `form:"limit,omitempty" json:"limit,omitempty"`
@@ -1319,6 +1565,24 @@ type UpdateScheduleRotationOverrideJSONRequestBody = PublicScheduleOverrideReque
 
 // ReplaceScheduleTeamsJSONRequestBody defines body for ReplaceScheduleTeams for application/json ContentType.
 type ReplaceScheduleTeamsJSONRequestBody = ReplacePublicScheduleTeamsRequest
+
+// CreateServiceJSONRequestBody defines body for CreateService for application/json ContentType.
+type CreateServiceJSONRequestBody CreateServiceJSONBody
+
+// UpdateServiceJSONRequestBody defines body for UpdateService for application/json ContentType.
+type UpdateServiceJSONRequestBody UpdateServiceJSONBody
+
+// AddServiceRespondersJSONRequestBody defines body for AddServiceResponders for application/json ContentType.
+type AddServiceRespondersJSONRequestBody AddServiceRespondersJSONBody
+
+// RemoveServiceRespondersJSONRequestBody defines body for RemoveServiceResponders for application/json ContentType.
+type RemoveServiceRespondersJSONRequestBody RemoveServiceRespondersJSONBody
+
+// AddServiceStakeholdersJSONRequestBody defines body for AddServiceStakeholders for application/json ContentType.
+type AddServiceStakeholdersJSONRequestBody AddServiceStakeholdersJSONBody
+
+// RemoveServiceStakeholdersJSONRequestBody defines body for RemoveServiceStakeholders for application/json ContentType.
+type RemoveServiceStakeholdersJSONRequestBody RemoveServiceStakeholdersJSONBody
 
 // CreateTeamJSONRequestBody defines body for CreateTeam for application/json ContentType.
 type CreateTeamJSONRequestBody = CreateTeamRequest
@@ -1611,6 +1875,107 @@ func (t PublicScheduleRotationConfig_1_Payload) MarshalJSON() ([]byte, error) {
 }
 
 func (t *PublicScheduleRotationConfig_1_Payload) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsServiceTeamResponder returns the union data inside the ServiceResponder as a ServiceTeamResponder
+func (t ServiceResponder) AsServiceTeamResponder() (ServiceTeamResponder, error) {
+	var body ServiceTeamResponder
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromServiceTeamResponder overwrites any union data inside the ServiceResponder as the provided ServiceTeamResponder
+func (t *ServiceResponder) FromServiceTeamResponder(v ServiceTeamResponder) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"type":"team"}`))
+	t.union = b
+	return err
+}
+
+// MergeServiceTeamResponder performs a merge with any union data inside the ServiceResponder, using the provided ServiceTeamResponder
+func (t *ServiceResponder) MergeServiceTeamResponder(v ServiceTeamResponder) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"type":"team"}`))
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsServiceUserResponder returns the union data inside the ServiceResponder as a ServiceUserResponder
+func (t ServiceResponder) AsServiceUserResponder() (ServiceUserResponder, error) {
+	var body ServiceUserResponder
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromServiceUserResponder overwrites any union data inside the ServiceResponder as the provided ServiceUserResponder
+func (t *ServiceResponder) FromServiceUserResponder(v ServiceUserResponder) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"type":"user"}`))
+	t.union = b
+	return err
+}
+
+// MergeServiceUserResponder performs a merge with any union data inside the ServiceResponder, using the provided ServiceUserResponder
+func (t *ServiceResponder) MergeServiceUserResponder(v ServiceUserResponder) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"type":"user"}`))
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t ServiceResponder) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"type"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t ServiceResponder) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "team":
+		return t.AsServiceTeamResponder()
+	case "user":
+		return t.AsServiceUserResponder()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t ServiceResponder) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *ServiceResponder) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
@@ -3146,6 +3511,117 @@ type ClientInterface interface {
 	// Corresponds with PUT /schedules/{id}/teams (the `ReplaceScheduleTeams` operationId).
 	ReplaceScheduleTeams(ctx context.Context, id int32, body ReplaceScheduleTeamsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// ListServices List service catalog services
+	//
+	// Returns a paginated list of active service catalog services for the API key organization.
+	//
+	// Corresponds with GET /services (the `ListServices` operationId).
+	ListServices(ctx context.Context, params *ListServicesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateServiceWithBody Create a service catalog service
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /services (the `CreateService` operationId).
+	CreateServiceWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateService Create a service catalog service
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /services (the `CreateService` operationId).
+	CreateService(ctx context.Context, body CreateServiceJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteService Delete a service catalog service
+	//
+	// Deletes a service catalog service. Existing alerts and incidents keep their reference to it for history, but the service no longer appears in the catalog and cannot be restored.
+	//
+	// Corresponds with DELETE /services/{id} (the `DeleteService` operationId).
+	DeleteService(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetService Get a service catalog service
+	//
+	// Corresponds with GET /services/{id} (the `GetService` operationId).
+	GetService(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateServiceWithBody Update a service catalog service
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PATCH /services/{id} (the `UpdateService` operationId).
+	UpdateServiceWithBody(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateService Update a service catalog service
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PATCH /services/{id} (the `UpdateService` operationId).
+	UpdateService(ctx context.Context, id int32, body UpdateServiceJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// AddServiceRespondersWithBody Add service responders
+	//
+	// Adds teams and users to the service's responders. The service's owning team always responds, so it is skipped if sent; change it by updating the service's `teamId`.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /services/{id}/responders/add (the `AddServiceResponders` operationId).
+	AddServiceRespondersWithBody(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// AddServiceResponders Add service responders
+	//
+	// Adds teams and users to the service's responders. The service's owning team always responds, so it is skipped if sent; change it by updating the service's `teamId`.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /services/{id}/responders/add (the `AddServiceResponders` operationId).
+	AddServiceResponders(ctx context.Context, id int32, body AddServiceRespondersJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// RemoveServiceRespondersWithBody Remove service responders
+	//
+	// Removes teams and users the service's responders were given. The service's owning team always responds, so it is skipped if sent; change it by updating the service's `teamId`.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /services/{id}/responders/remove (the `RemoveServiceResponders` operationId).
+	RemoveServiceRespondersWithBody(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// RemoveServiceResponders Remove service responders
+	//
+	// Removes teams and users the service's responders were given. The service's owning team always responds, so it is skipped if sent; change it by updating the service's `teamId`.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /services/{id}/responders/remove (the `RemoveServiceResponders` operationId).
+	RemoveServiceResponders(ctx context.Context, id int32, body RemoveServiceRespondersJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// AddServiceStakeholdersWithBody Add service stakeholders
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /services/{id}/stakeholders/add (the `AddServiceStakeholders` operationId).
+	AddServiceStakeholdersWithBody(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// AddServiceStakeholders Add service stakeholders
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /services/{id}/stakeholders/add (the `AddServiceStakeholders` operationId).
+	AddServiceStakeholders(ctx context.Context, id int32, body AddServiceStakeholdersJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// RemoveServiceStakeholdersWithBody Remove service stakeholders
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /services/{id}/stakeholders/remove (the `RemoveServiceStakeholders` operationId).
+	RemoveServiceStakeholdersWithBody(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// RemoveServiceStakeholders Remove service stakeholders
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /services/{id}/stakeholders/remove (the `RemoveServiceStakeholders` operationId).
+	RemoveServiceStakeholders(ctx context.Context, id int32, body RemoveServiceStakeholdersJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// ListTeams List teams for the organization
 	//
 	// Returns a paginated list of teams for the organization associated with the API key.
@@ -3862,6 +4338,267 @@ func (c *Client) ReplaceScheduleTeamsWithBody(ctx context.Context, id int32, con
 // Corresponds with PUT /schedules/{id}/teams (the `ReplaceScheduleTeams` operationId).
 func (c *Client) ReplaceScheduleTeams(ctx context.Context, id int32, body ReplaceScheduleTeamsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewReplaceScheduleTeamsRequest(c.Server, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListServices List service catalog services
+//
+// Returns a paginated list of active service catalog services for the API key organization.
+//
+// Corresponds with GET /services (the `ListServices` operationId).
+func (c *Client) ListServices(ctx context.Context, params *ListServicesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListServicesRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateServiceWithBody Create a service catalog service
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /services (the `CreateService` operationId).
+func (c *Client) CreateServiceWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateServiceRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateService Create a service catalog service
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /services (the `CreateService` operationId).
+func (c *Client) CreateService(ctx context.Context, body CreateServiceJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateServiceRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DeleteService Delete a service catalog service
+//
+// Deletes a service catalog service. Existing alerts and incidents keep their reference to it for history, but the service no longer appears in the catalog and cannot be restored.
+//
+// Corresponds with DELETE /services/{id} (the `DeleteService` operationId).
+func (c *Client) DeleteService(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteServiceRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetService Get a service catalog service
+//
+// Corresponds with GET /services/{id} (the `GetService` operationId).
+func (c *Client) GetService(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetServiceRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateServiceWithBody Update a service catalog service
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PATCH /services/{id} (the `UpdateService` operationId).
+func (c *Client) UpdateServiceWithBody(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateServiceRequestWithBody(c.Server, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateService Update a service catalog service
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PATCH /services/{id} (the `UpdateService` operationId).
+func (c *Client) UpdateService(ctx context.Context, id int32, body UpdateServiceJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateServiceRequest(c.Server, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// AddServiceRespondersWithBody Add service responders
+//
+// Adds teams and users to the service's responders. The service's owning team always responds, so it is skipped if sent; change it by updating the service's `teamId`.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /services/{id}/responders/add (the `AddServiceResponders` operationId).
+func (c *Client) AddServiceRespondersWithBody(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAddServiceRespondersRequestWithBody(c.Server, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// AddServiceResponders Add service responders
+//
+// Adds teams and users to the service's responders. The service's owning team always responds, so it is skipped if sent; change it by updating the service's `teamId`.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /services/{id}/responders/add (the `AddServiceResponders` operationId).
+func (c *Client) AddServiceResponders(ctx context.Context, id int32, body AddServiceRespondersJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAddServiceRespondersRequest(c.Server, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// RemoveServiceRespondersWithBody Remove service responders
+//
+// Removes teams and users the service's responders were given. The service's owning team always responds, so it is skipped if sent; change it by updating the service's `teamId`.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /services/{id}/responders/remove (the `RemoveServiceResponders` operationId).
+func (c *Client) RemoveServiceRespondersWithBody(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRemoveServiceRespondersRequestWithBody(c.Server, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// RemoveServiceResponders Remove service responders
+//
+// Removes teams and users the service's responders were given. The service's owning team always responds, so it is skipped if sent; change it by updating the service's `teamId`.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /services/{id}/responders/remove (the `RemoveServiceResponders` operationId).
+func (c *Client) RemoveServiceResponders(ctx context.Context, id int32, body RemoveServiceRespondersJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRemoveServiceRespondersRequest(c.Server, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// AddServiceStakeholdersWithBody Add service stakeholders
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /services/{id}/stakeholders/add (the `AddServiceStakeholders` operationId).
+func (c *Client) AddServiceStakeholdersWithBody(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAddServiceStakeholdersRequestWithBody(c.Server, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// AddServiceStakeholders Add service stakeholders
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /services/{id}/stakeholders/add (the `AddServiceStakeholders` operationId).
+func (c *Client) AddServiceStakeholders(ctx context.Context, id int32, body AddServiceStakeholdersJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAddServiceStakeholdersRequest(c.Server, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// RemoveServiceStakeholdersWithBody Remove service stakeholders
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /services/{id}/stakeholders/remove (the `RemoveServiceStakeholders` operationId).
+func (c *Client) RemoveServiceStakeholdersWithBody(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRemoveServiceStakeholdersRequestWithBody(c.Server, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// RemoveServiceStakeholders Remove service stakeholders
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /services/{id}/stakeholders/remove (the `RemoveServiceStakeholders` operationId).
+func (c *Client) RemoveServiceStakeholders(ctx context.Context, id int32, body RemoveServiceStakeholdersJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRemoveServiceStakeholdersRequest(c.Server, id, body)
 	if err != nil {
 		return nil, err
 	}
@@ -5547,6 +6284,463 @@ func NewReplaceScheduleTeamsRequestWithBody(server string, id int32, contentType
 	return req, nil
 }
 
+// NewListServicesRequest constructs an http.Request for the ListServices method
+func NewListServicesRequest(server string, params *ListServicesParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/services")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "limit", *params.Limit, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: "int32"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Offset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "offset", *params.Offset, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: "int32"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Query != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "query", *params.Query, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.TeamId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "teamId", *params.TeamId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: "int32"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.ExternalProvider != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "externalProvider", *params.ExternalProvider, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.ExternalServiceId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "externalServiceId", *params.ExternalServiceId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCreateServiceRequest calls the generic CreateService builder with application/json body
+func NewCreateServiceRequest(server string, body CreateServiceJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateServiceRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewCreateServiceRequestWithBody constructs an http.Request for the CreateService method, with any body, and a specified content type
+func NewCreateServiceRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/services")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteServiceRequest constructs an http.Request for the DeleteService method
+func NewDeleteServiceRequest(server string, id int32) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/services/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetServiceRequest constructs an http.Request for the GetService method
+func NewGetServiceRequest(server string, id int32) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/services/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateServiceRequest calls the generic UpdateService builder with application/json body
+func NewUpdateServiceRequest(server string, id int32, body UpdateServiceJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateServiceRequestWithBody(server, id, "application/json", bodyReader)
+}
+
+// NewUpdateServiceRequestWithBody constructs an http.Request for the UpdateService method, with any body, and a specified content type
+func NewUpdateServiceRequestWithBody(server string, id int32, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/services/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPatch, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewAddServiceRespondersRequest calls the generic AddServiceResponders builder with application/json body
+func NewAddServiceRespondersRequest(server string, id int32, body AddServiceRespondersJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewAddServiceRespondersRequestWithBody(server, id, "application/json", bodyReader)
+}
+
+// NewAddServiceRespondersRequestWithBody constructs an http.Request for the AddServiceResponders method, with any body, and a specified content type
+func NewAddServiceRespondersRequestWithBody(server string, id int32, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/services/%s/responders/add", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewRemoveServiceRespondersRequest calls the generic RemoveServiceResponders builder with application/json body
+func NewRemoveServiceRespondersRequest(server string, id int32, body RemoveServiceRespondersJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewRemoveServiceRespondersRequestWithBody(server, id, "application/json", bodyReader)
+}
+
+// NewRemoveServiceRespondersRequestWithBody constructs an http.Request for the RemoveServiceResponders method, with any body, and a specified content type
+func NewRemoveServiceRespondersRequestWithBody(server string, id int32, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/services/%s/responders/remove", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewAddServiceStakeholdersRequest calls the generic AddServiceStakeholders builder with application/json body
+func NewAddServiceStakeholdersRequest(server string, id int32, body AddServiceStakeholdersJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewAddServiceStakeholdersRequestWithBody(server, id, "application/json", bodyReader)
+}
+
+// NewAddServiceStakeholdersRequestWithBody constructs an http.Request for the AddServiceStakeholders method, with any body, and a specified content type
+func NewAddServiceStakeholdersRequestWithBody(server string, id int32, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/services/%s/stakeholders/add", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewRemoveServiceStakeholdersRequest calls the generic RemoveServiceStakeholders builder with application/json body
+func NewRemoveServiceStakeholdersRequest(server string, id int32, body RemoveServiceStakeholdersJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewRemoveServiceStakeholdersRequestWithBody(server, id, "application/json", bodyReader)
+}
+
+// NewRemoveServiceStakeholdersRequestWithBody constructs an http.Request for the RemoveServiceStakeholders method, with any body, and a specified content type
+func NewRemoveServiceStakeholdersRequestWithBody(server string, id int32, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/services/%s/stakeholders/remove", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewListTeamsRequest constructs an http.Request for the ListTeams method
 func NewListTeamsRequest(server string, params *ListTeamsParams) (*http.Request, error) {
 	var err error
@@ -6319,6 +7513,123 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with PUT /schedules/{id}/teams (the `ReplaceScheduleTeams` operationId).
 	ReplaceScheduleTeamsWithResponse(ctx context.Context, id int32, body ReplaceScheduleTeamsJSONRequestBody, reqEditors ...RequestEditorFn) (*ReplaceScheduleTeamsResponse, error)
+
+	// ListServicesWithResponse List service catalog services
+	//
+	// Returns a paginated list of active service catalog services for the API key organization.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /services (the `ListServices` operationId).
+	ListServicesWithResponse(ctx context.Context, params *ListServicesParams, reqEditors ...RequestEditorFn) (*ListServicesResponse, error)
+
+	// CreateServiceWithBodyWithResponse Create a service catalog service
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /services (the `CreateService` operationId).
+	CreateServiceWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateServiceResponse, error)
+
+	// CreateServiceWithResponse Create a service catalog service
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /services (the `CreateService` operationId).
+	CreateServiceWithResponse(ctx context.Context, body CreateServiceJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateServiceResponse, error)
+
+	// DeleteServiceWithResponse Delete a service catalog service
+	//
+	// Deletes a service catalog service. Existing alerts and incidents keep their reference to it for history, but the service no longer appears in the catalog and cannot be restored.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /services/{id} (the `DeleteService` operationId).
+	DeleteServiceWithResponse(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*DeleteServiceResponse, error)
+
+	// GetServiceWithResponse Get a service catalog service
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /services/{id} (the `GetService` operationId).
+	GetServiceWithResponse(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*GetServiceResponse, error)
+
+	// UpdateServiceWithBodyWithResponse Update a service catalog service
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PATCH /services/{id} (the `UpdateService` operationId).
+	UpdateServiceWithBodyWithResponse(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateServiceResponse, error)
+
+	// UpdateServiceWithResponse Update a service catalog service
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PATCH /services/{id} (the `UpdateService` operationId).
+	UpdateServiceWithResponse(ctx context.Context, id int32, body UpdateServiceJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateServiceResponse, error)
+
+	// AddServiceRespondersWithBodyWithResponse Add service responders
+	//
+	// Adds teams and users to the service's responders. The service's owning team always responds, so it is skipped if sent; change it by updating the service's `teamId`.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /services/{id}/responders/add (the `AddServiceResponders` operationId).
+	AddServiceRespondersWithBodyWithResponse(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AddServiceRespondersResponse, error)
+
+	// AddServiceRespondersWithResponse Add service responders
+	//
+	// Adds teams and users to the service's responders. The service's owning team always responds, so it is skipped if sent; change it by updating the service's `teamId`.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /services/{id}/responders/add (the `AddServiceResponders` operationId).
+	AddServiceRespondersWithResponse(ctx context.Context, id int32, body AddServiceRespondersJSONRequestBody, reqEditors ...RequestEditorFn) (*AddServiceRespondersResponse, error)
+
+	// RemoveServiceRespondersWithBodyWithResponse Remove service responders
+	//
+	// Removes teams and users the service's responders were given. The service's owning team always responds, so it is skipped if sent; change it by updating the service's `teamId`.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /services/{id}/responders/remove (the `RemoveServiceResponders` operationId).
+	RemoveServiceRespondersWithBodyWithResponse(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RemoveServiceRespondersResponse, error)
+
+	// RemoveServiceRespondersWithResponse Remove service responders
+	//
+	// Removes teams and users the service's responders were given. The service's owning team always responds, so it is skipped if sent; change it by updating the service's `teamId`.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /services/{id}/responders/remove (the `RemoveServiceResponders` operationId).
+	RemoveServiceRespondersWithResponse(ctx context.Context, id int32, body RemoveServiceRespondersJSONRequestBody, reqEditors ...RequestEditorFn) (*RemoveServiceRespondersResponse, error)
+
+	// AddServiceStakeholdersWithBodyWithResponse Add service stakeholders
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /services/{id}/stakeholders/add (the `AddServiceStakeholders` operationId).
+	AddServiceStakeholdersWithBodyWithResponse(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AddServiceStakeholdersResponse, error)
+
+	// AddServiceStakeholdersWithResponse Add service stakeholders
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /services/{id}/stakeholders/add (the `AddServiceStakeholders` operationId).
+	AddServiceStakeholdersWithResponse(ctx context.Context, id int32, body AddServiceStakeholdersJSONRequestBody, reqEditors ...RequestEditorFn) (*AddServiceStakeholdersResponse, error)
+
+	// RemoveServiceStakeholdersWithBodyWithResponse Remove service stakeholders
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /services/{id}/stakeholders/remove (the `RemoveServiceStakeholders` operationId).
+	RemoveServiceStakeholdersWithBodyWithResponse(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RemoveServiceStakeholdersResponse, error)
+
+	// RemoveServiceStakeholdersWithResponse Remove service stakeholders
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /services/{id}/stakeholders/remove (the `RemoveServiceStakeholders` operationId).
+	RemoveServiceStakeholdersWithResponse(ctx context.Context, id int32, body RemoveServiceStakeholdersJSONRequestBody, reqEditors ...RequestEditorFn) (*RemoveServiceStakeholdersResponse, error)
 
 	// ListTeamsWithResponse List teams for the organization
 	//
@@ -8328,6 +9639,669 @@ func (r ReplaceScheduleTeamsResponse) ContentType() string {
 	return ""
 }
 
+type ListServicesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *ServicesListResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationErrorResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r ListServicesResponse) GetJSON200() *ServicesListResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r ListServicesResponse) GetJSON400() *ValidationErrorResponse {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r ListServicesResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r ListServicesResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r ListServicesResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r ListServicesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListServicesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r ListServicesResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type CreateServiceResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON201 the response for an HTTP 201 `application/json` response
+	JSON201 *ServiceResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationErrorResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ApiKeyDenialResponse
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON201 returns the response for an HTTP 201 `application/json` response
+func (r CreateServiceResponse) GetJSON201() *ServiceResponse {
+	return r.JSON201
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r CreateServiceResponse) GetJSON400() *ValidationErrorResponse {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r CreateServiceResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r CreateServiceResponse) GetJSON403() *ApiKeyDenialResponse {
+	return r.JSON403
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r CreateServiceResponse) GetJSON409() *ErrorResponse {
+	return r.JSON409
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r CreateServiceResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r CreateServiceResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateServiceResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateServiceResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r CreateServiceResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type DeleteServiceResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationErrorResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ApiKeyDenialResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r DeleteServiceResponse) GetJSON400() *ValidationErrorResponse {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r DeleteServiceResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r DeleteServiceResponse) GetJSON403() *ApiKeyDenialResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r DeleteServiceResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r DeleteServiceResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r DeleteServiceResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteServiceResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteServiceResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r DeleteServiceResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetServiceResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *ServiceResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationErrorResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetServiceResponse) GetJSON200() *ServiceResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r GetServiceResponse) GetJSON400() *ValidationErrorResponse {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r GetServiceResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r GetServiceResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r GetServiceResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r GetServiceResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetServiceResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetServiceResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetServiceResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type UpdateServiceResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *ServiceResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationErrorResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ApiKeyDenialResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r UpdateServiceResponse) GetJSON200() *ServiceResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r UpdateServiceResponse) GetJSON400() *ValidationErrorResponse {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r UpdateServiceResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r UpdateServiceResponse) GetJSON403() *ApiKeyDenialResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r UpdateServiceResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r UpdateServiceResponse) GetJSON409() *ErrorResponse {
+	return r.JSON409
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r UpdateServiceResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r UpdateServiceResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateServiceResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateServiceResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r UpdateServiceResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type AddServiceRespondersResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *ServiceRespondersResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationErrorResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ApiKeyDenialResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r AddServiceRespondersResponse) GetJSON200() *ServiceRespondersResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r AddServiceRespondersResponse) GetJSON400() *ValidationErrorResponse {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r AddServiceRespondersResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r AddServiceRespondersResponse) GetJSON403() *ApiKeyDenialResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r AddServiceRespondersResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r AddServiceRespondersResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r AddServiceRespondersResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r AddServiceRespondersResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r AddServiceRespondersResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r AddServiceRespondersResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type RemoveServiceRespondersResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *ServiceRespondersResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationErrorResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ApiKeyDenialResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r RemoveServiceRespondersResponse) GetJSON200() *ServiceRespondersResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r RemoveServiceRespondersResponse) GetJSON400() *ValidationErrorResponse {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r RemoveServiceRespondersResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r RemoveServiceRespondersResponse) GetJSON403() *ApiKeyDenialResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r RemoveServiceRespondersResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r RemoveServiceRespondersResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r RemoveServiceRespondersResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r RemoveServiceRespondersResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r RemoveServiceRespondersResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r RemoveServiceRespondersResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type AddServiceStakeholdersResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *ServiceStakeholdersResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationErrorResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ApiKeyDenialResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r AddServiceStakeholdersResponse) GetJSON200() *ServiceStakeholdersResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r AddServiceStakeholdersResponse) GetJSON400() *ValidationErrorResponse {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r AddServiceStakeholdersResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r AddServiceStakeholdersResponse) GetJSON403() *ApiKeyDenialResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r AddServiceStakeholdersResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r AddServiceStakeholdersResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r AddServiceStakeholdersResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r AddServiceStakeholdersResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r AddServiceStakeholdersResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r AddServiceStakeholdersResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type RemoveServiceStakeholdersResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *ServiceStakeholdersResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationErrorResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ApiKeyDenialResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r RemoveServiceStakeholdersResponse) GetJSON200() *ServiceStakeholdersResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r RemoveServiceStakeholdersResponse) GetJSON400() *ValidationErrorResponse {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r RemoveServiceStakeholdersResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r RemoveServiceStakeholdersResponse) GetJSON403() *ApiKeyDenialResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r RemoveServiceStakeholdersResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r RemoveServiceStakeholdersResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r RemoveServiceStakeholdersResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r RemoveServiceStakeholdersResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r RemoveServiceStakeholdersResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r RemoveServiceStakeholdersResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
 type ListTeamsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -9512,6 +11486,213 @@ func (c *ClientWithResponses) ReplaceScheduleTeamsWithResponse(ctx context.Conte
 		return nil, err
 	}
 	return ParseReplaceScheduleTeamsResponse(rsp)
+}
+
+// ListServicesWithResponse List service catalog services
+//
+// Returns a paginated list of active service catalog services for the API key organization.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /services (the `ListServices` operationId).
+func (c *ClientWithResponses) ListServicesWithResponse(ctx context.Context, params *ListServicesParams, reqEditors ...RequestEditorFn) (*ListServicesResponse, error) {
+	rsp, err := c.ListServices(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListServicesResponse(rsp)
+}
+
+// CreateServiceWithBodyWithResponse Create a service catalog service
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /services (the `CreateService` operationId).
+func (c *ClientWithResponses) CreateServiceWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateServiceResponse, error) {
+	rsp, err := c.CreateServiceWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateServiceResponse(rsp)
+}
+
+// CreateServiceWithResponse Create a service catalog service
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /services (the `CreateService` operationId).
+func (c *ClientWithResponses) CreateServiceWithResponse(ctx context.Context, body CreateServiceJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateServiceResponse, error) {
+	rsp, err := c.CreateService(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateServiceResponse(rsp)
+}
+
+// DeleteServiceWithResponse Delete a service catalog service
+//
+// Deletes a service catalog service. Existing alerts and incidents keep their reference to it for history, but the service no longer appears in the catalog and cannot be restored.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /services/{id} (the `DeleteService` operationId).
+func (c *ClientWithResponses) DeleteServiceWithResponse(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*DeleteServiceResponse, error) {
+	rsp, err := c.DeleteService(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteServiceResponse(rsp)
+}
+
+// GetServiceWithResponse Get a service catalog service
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /services/{id} (the `GetService` operationId).
+func (c *ClientWithResponses) GetServiceWithResponse(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*GetServiceResponse, error) {
+	rsp, err := c.GetService(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetServiceResponse(rsp)
+}
+
+// UpdateServiceWithBodyWithResponse Update a service catalog service
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PATCH /services/{id} (the `UpdateService` operationId).
+func (c *ClientWithResponses) UpdateServiceWithBodyWithResponse(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateServiceResponse, error) {
+	rsp, err := c.UpdateServiceWithBody(ctx, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateServiceResponse(rsp)
+}
+
+// UpdateServiceWithResponse Update a service catalog service
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PATCH /services/{id} (the `UpdateService` operationId).
+func (c *ClientWithResponses) UpdateServiceWithResponse(ctx context.Context, id int32, body UpdateServiceJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateServiceResponse, error) {
+	rsp, err := c.UpdateService(ctx, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateServiceResponse(rsp)
+}
+
+// AddServiceRespondersWithBodyWithResponse Add service responders
+//
+// Adds teams and users to the service's responders. The service's owning team always responds, so it is skipped if sent; change it by updating the service's `teamId`.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /services/{id}/responders/add (the `AddServiceResponders` operationId).
+func (c *ClientWithResponses) AddServiceRespondersWithBodyWithResponse(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AddServiceRespondersResponse, error) {
+	rsp, err := c.AddServiceRespondersWithBody(ctx, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAddServiceRespondersResponse(rsp)
+}
+
+// AddServiceRespondersWithResponse Add service responders
+//
+// Adds teams and users to the service's responders. The service's owning team always responds, so it is skipped if sent; change it by updating the service's `teamId`.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /services/{id}/responders/add (the `AddServiceResponders` operationId).
+func (c *ClientWithResponses) AddServiceRespondersWithResponse(ctx context.Context, id int32, body AddServiceRespondersJSONRequestBody, reqEditors ...RequestEditorFn) (*AddServiceRespondersResponse, error) {
+	rsp, err := c.AddServiceResponders(ctx, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAddServiceRespondersResponse(rsp)
+}
+
+// RemoveServiceRespondersWithBodyWithResponse Remove service responders
+//
+// Removes teams and users the service's responders were given. The service's owning team always responds, so it is skipped if sent; change it by updating the service's `teamId`.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /services/{id}/responders/remove (the `RemoveServiceResponders` operationId).
+func (c *ClientWithResponses) RemoveServiceRespondersWithBodyWithResponse(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RemoveServiceRespondersResponse, error) {
+	rsp, err := c.RemoveServiceRespondersWithBody(ctx, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRemoveServiceRespondersResponse(rsp)
+}
+
+// RemoveServiceRespondersWithResponse Remove service responders
+//
+// Removes teams and users the service's responders were given. The service's owning team always responds, so it is skipped if sent; change it by updating the service's `teamId`.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /services/{id}/responders/remove (the `RemoveServiceResponders` operationId).
+func (c *ClientWithResponses) RemoveServiceRespondersWithResponse(ctx context.Context, id int32, body RemoveServiceRespondersJSONRequestBody, reqEditors ...RequestEditorFn) (*RemoveServiceRespondersResponse, error) {
+	rsp, err := c.RemoveServiceResponders(ctx, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRemoveServiceRespondersResponse(rsp)
+}
+
+// AddServiceStakeholdersWithBodyWithResponse Add service stakeholders
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /services/{id}/stakeholders/add (the `AddServiceStakeholders` operationId).
+func (c *ClientWithResponses) AddServiceStakeholdersWithBodyWithResponse(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AddServiceStakeholdersResponse, error) {
+	rsp, err := c.AddServiceStakeholdersWithBody(ctx, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAddServiceStakeholdersResponse(rsp)
+}
+
+// AddServiceStakeholdersWithResponse Add service stakeholders
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /services/{id}/stakeholders/add (the `AddServiceStakeholders` operationId).
+func (c *ClientWithResponses) AddServiceStakeholdersWithResponse(ctx context.Context, id int32, body AddServiceStakeholdersJSONRequestBody, reqEditors ...RequestEditorFn) (*AddServiceStakeholdersResponse, error) {
+	rsp, err := c.AddServiceStakeholders(ctx, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAddServiceStakeholdersResponse(rsp)
+}
+
+// RemoveServiceStakeholdersWithBodyWithResponse Remove service stakeholders
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /services/{id}/stakeholders/remove (the `RemoveServiceStakeholders` operationId).
+func (c *ClientWithResponses) RemoveServiceStakeholdersWithBodyWithResponse(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RemoveServiceStakeholdersResponse, error) {
+	rsp, err := c.RemoveServiceStakeholdersWithBody(ctx, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRemoveServiceStakeholdersResponse(rsp)
+}
+
+// RemoveServiceStakeholdersWithResponse Remove service stakeholders
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /services/{id}/stakeholders/remove (the `RemoveServiceStakeholders` operationId).
+func (c *ClientWithResponses) RemoveServiceStakeholdersWithResponse(ctx context.Context, id int32, body RemoveServiceStakeholdersJSONRequestBody, reqEditors ...RequestEditorFn) (*RemoveServiceStakeholdersResponse, error) {
+	rsp, err := c.RemoveServiceStakeholders(ctx, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRemoveServiceStakeholdersResponse(rsp)
 }
 
 // ListTeamsWithResponse List teams for the organization
@@ -11202,6 +13383,537 @@ func ParseReplaceScheduleTeamsResponse(rsp *http.Response) (*ReplaceScheduleTeam
 			return nil, err
 		}
 		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListServicesResponse parses an HTTP response from a ListServicesWithResponse call
+func ParseListServicesResponse(rsp *http.Response) (*ListServicesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListServicesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ServicesListResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateServiceResponse parses an HTTP response from a CreateServiceWithResponse call
+func ParseCreateServiceResponse(rsp *http.Response) (*CreateServiceResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateServiceResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest ServiceResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ApiKeyDenialResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteServiceResponse parses an HTTP response from a DeleteServiceWithResponse call
+func ParseDeleteServiceResponse(rsp *http.Response) (*DeleteServiceResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteServiceResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 204:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ApiKeyDenialResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetServiceResponse parses an HTTP response from a GetServiceWithResponse call
+func ParseGetServiceResponse(rsp *http.Response) (*GetServiceResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetServiceResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ServiceResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateServiceResponse parses an HTTP response from a UpdateServiceWithResponse call
+func ParseUpdateServiceResponse(rsp *http.Response) (*UpdateServiceResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateServiceResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ServiceResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ApiKeyDenialResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseAddServiceRespondersResponse parses an HTTP response from a AddServiceRespondersWithResponse call
+func ParseAddServiceRespondersResponse(rsp *http.Response) (*AddServiceRespondersResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &AddServiceRespondersResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ServiceRespondersResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ApiKeyDenialResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseRemoveServiceRespondersResponse parses an HTTP response from a RemoveServiceRespondersWithResponse call
+func ParseRemoveServiceRespondersResponse(rsp *http.Response) (*RemoveServiceRespondersResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &RemoveServiceRespondersResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ServiceRespondersResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ApiKeyDenialResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseAddServiceStakeholdersResponse parses an HTTP response from a AddServiceStakeholdersWithResponse call
+func ParseAddServiceStakeholdersResponse(rsp *http.Response) (*AddServiceStakeholdersResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &AddServiceStakeholdersResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ServiceStakeholdersResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ApiKeyDenialResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseRemoveServiceStakeholdersResponse parses an HTTP response from a RemoveServiceStakeholdersWithResponse call
+func ParseRemoveServiceStakeholdersResponse(rsp *http.Response) (*RemoveServiceStakeholdersResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &RemoveServiceStakeholdersResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ServiceStakeholdersResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ApiKeyDenialResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest ErrorResponse
