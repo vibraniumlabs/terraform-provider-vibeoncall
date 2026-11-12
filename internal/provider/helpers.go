@@ -1,12 +1,14 @@
 package provider
 
 import (
+	"context"
 	"fmt"
 	"regexp"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/oapi-codegen/nullable"
 
@@ -18,6 +20,28 @@ const listPageSize = 100
 var numericIDPattern = regexp.MustCompile(`^[1-9][0-9]*$`)
 
 var numericID = stringvalidator.RegexMatches(numericIDPattern, "must be a numeric ID")
+
+var int32NumericID validator.String = int32IDValidator{}
+
+type int32IDValidator struct{}
+
+func (int32IDValidator) Description(context.Context) string {
+	return "must be a numeric ID of at most 2147483647"
+}
+
+func (v int32IDValidator) MarkdownDescription(ctx context.Context) string {
+	return v.Description(ctx)
+}
+
+func (v int32IDValidator) ValidateString(ctx context.Context, req validator.StringRequest, resp *validator.StringResponse) {
+	if req.ConfigValue.IsNull() || req.ConfigValue.IsUnknown() {
+		return
+	}
+	s := req.ConfigValue.ValueString()
+	if _, err := strconv.ParseInt(s, 10, 32); err != nil || !isNumericID(s) {
+		resp.Diagnostics.AddAttributeError(req.Path, "Invalid ID", fmt.Sprintf("%q %s.", s, v.Description(ctx)))
+	}
+}
 
 // Matches the characters JavaScript's String.prototype.trim removes, which the API applies to names, descriptions and searches.
 var noSurroundingWhitespace = stringvalidator.RegexMatches(
