@@ -3,6 +3,7 @@ package provider
 import (
 	"fmt"
 	"regexp"
+	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
@@ -26,6 +27,15 @@ var noSurroundingWhitespace = stringvalidator.RegexMatches(
 
 func isNumericID(s string) bool {
 	return numericIDPattern.MatchString(s)
+}
+
+func int32ID(v types.String, attr string, diags *diag.Diagnostics) (int32, bool) {
+	id, err := strconv.ParseInt(v.ValueString(), 10, 32)
+	if err != nil {
+		diags.AddError("Invalid "+attr, err.Error())
+		return 0, false
+	}
+	return int32(id), true
 }
 
 func clientFromProviderData(providerData any, diags *diag.Diagnostics) *client.ClientWithResponses {
