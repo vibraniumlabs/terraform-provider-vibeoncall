@@ -11,6 +11,10 @@ description: |-
 
 ~> **Note** Team names are not unique. Creating this resource for a team that already exists in the app creates a second team with the same name; import the existing team instead.
 
+~> **Note** Don't set `members` on a team whose members are also managed with `vibeoncall_team_membership`. Each would remove what the other adds on every apply. Pick one per team.
+
+~> **Note** If a member can't be added while the team is being created, the team is still created but marked tainted, so the next apply replaces it with a new ID. To keep the team, fix the member and run `terraform untaint` on it before applying again.
+
 ## Example Usage
 
 {{ tffile .ExampleFile }}
