@@ -94,12 +94,12 @@ func (r *EscalationPolicyResource) Schema(ctx context.Context, req resource.Sche
 			"name": schema.StringAttribute{
 				MarkdownDescription: "Policy name, unique within its team.",
 				Required:            true,
-				Validators:          []validator.String{stringvalidator.LengthAtMost(255), noSurroundingWhitespace},
+				Validators:          []validator.String{utf16LengthAtMost(255), noSurroundingWhitespace},
 			},
 			"description": schema.StringAttribute{
 				MarkdownDescription: "Policy description. Remove the argument to clear it.",
 				Optional:            true,
-				Validators:          []validator.String{stringvalidator.LengthBetween(1, 1000)},
+				Validators:          []validator.String{stringvalidator.LengthAtLeast(1), utf16LengthAtMost(1000)},
 			},
 			"team_id": schema.StringAttribute{
 				MarkdownDescription: "Numeric ID of the owning team. Omit for a global policy. Changing it replaces the policy.",

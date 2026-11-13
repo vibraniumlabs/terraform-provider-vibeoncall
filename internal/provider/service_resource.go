@@ -8,7 +8,6 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/resourcevalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
-	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -80,12 +79,12 @@ func (r *ServiceResource) Schema(ctx context.Context, req resource.SchemaRequest
 			"name": schema.StringAttribute{
 				MarkdownDescription: "Service name, unique within the organization regardless of case.",
 				Required:            true,
-				Validators:          []validator.String{stringvalidator.UTF8LengthAtMost(255), noSurroundingWhitespace},
+				Validators:          []validator.String{utf16LengthAtMost(255), noSurroundingWhitespace},
 			},
 			"description": schema.StringAttribute{
 				MarkdownDescription: "Service description. Remove the argument to clear it.",
 				Optional:            true,
-				Validators:          []validator.String{stringvalidator.UTF8LengthAtMost(1000), noSurroundingWhitespace},
+				Validators:          []validator.String{utf16LengthAtMost(1000), noSurroundingWhitespace},
 			},
 			"team_id": schema.StringAttribute{
 				MarkdownDescription: "Numeric ID of the owning team, which always responds to the service.",
@@ -95,12 +94,12 @@ func (r *ServiceResource) Schema(ctx context.Context, req resource.SchemaRequest
 			"external_provider": schema.StringAttribute{
 				MarkdownDescription: "Provider the service is imported from, such as `backstage`. Set together with `external_service_id`.",
 				Optional:            true,
-				Validators:          []validator.String{stringvalidator.UTF8LengthAtMost(32), noSurroundingWhitespace},
+				Validators:          []validator.String{utf16LengthAtMost(32), noSurroundingWhitespace},
 			},
 			"external_service_id": schema.StringAttribute{
 				MarkdownDescription: "The service's identifier in `external_provider`, unique per provider within the organization. Set together with `external_provider`.",
 				Optional:            true,
-				Validators:          []validator.String{stringvalidator.UTF8LengthAtMost(128), noSurroundingWhitespace},
+				Validators:          []validator.String{utf16LengthAtMost(128), noSurroundingWhitespace},
 			},
 			"responder_team_ids":   idSetAttribute("Numeric IDs of teams added as responders. The owning team responds without being listed; list it as well to keep it responding after `team_id` changes."),
 			"responder_user_ids":   idSetAttribute("Numeric IDs of users added as responders. For a member of the owning team, use `vibeoncall_team_membership.<name>.user_id`, so Terraform removes the user from this service before it removes them from the team. For anyone else, use `data.vibeoncall_member.<name>.id`."),

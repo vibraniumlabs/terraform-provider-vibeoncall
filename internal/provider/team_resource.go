@@ -77,7 +77,7 @@ func (r *TeamResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 			"name": schema.StringAttribute{
 				MarkdownDescription: "Team name.",
 				Required:            true,
-				Validators:          []validator.String{stringvalidator.LengthAtMost(255), noSurroundingWhitespace},
+				Validators:          []validator.String{utf16LengthAtMost(255), noSurroundingWhitespace},
 			},
 			"description": schema.StringAttribute{
 				MarkdownDescription: "Team description. Remove the argument to clear it.",

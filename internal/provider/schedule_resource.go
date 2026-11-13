@@ -150,7 +150,7 @@ func (r *ScheduleResource) Schema(ctx context.Context, req resource.SchemaReques
 			"name": schema.StringAttribute{
 				MarkdownDescription: "Schedule name, unique within the organization.",
 				Required:            true,
-				Validators:          []validator.String{stringvalidator.LengthAtMost(255), noSurroundingWhitespace},
+				Validators:          []validator.String{utf16LengthAtMost(255), noSurroundingWhitespace},
 			},
 			"time_zone": schema.StringAttribute{
 				MarkdownDescription: "IANA time zone the rotation times are in, such as `America/New_York`.",
@@ -178,7 +178,7 @@ func (r *ScheduleResource) Schema(ctx context.Context, req resource.SchemaReques
 						"name": schema.StringAttribute{
 							MarkdownDescription: "Rotation name.",
 							Required:            true,
-							Validators:          []validator.String{stringvalidator.LengthAtMost(255), noSurroundingWhitespace},
+							Validators:          []validator.String{utf16LengthAtMost(255), noSurroundingWhitespace},
 						},
 						"start_date": schema.StringAttribute{
 							MarkdownDescription: "First date the rotation takes effect, in `YYYY-MM-DD` format. The first participant is on call from this date, so it and the participant order together decide who is on call now.",

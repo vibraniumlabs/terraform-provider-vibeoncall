@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
+	"unicode/utf16"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
@@ -40,6 +41,30 @@ func (v int32IDValidator) ValidateString(ctx context.Context, req validator.Stri
 	s := req.ConfigValue.ValueString()
 	if _, err := strconv.ParseInt(s, 10, 32); err != nil || !isNumericID(s) {
 		resp.Diagnostics.AddAttributeError(req.Path, "Invalid ID", fmt.Sprintf("%q %s.", s, v.Description(ctx)))
+	}
+}
+
+// The API checks lengths with JavaScript's String length, which counts UTF-16 code units: an emoji counts as two.
+func utf16LengthAtMost(limit int) validator.String {
+	return utf16LengthValidator{max: limit}
+}
+
+type utf16LengthValidator struct{ max int }
+
+func (v utf16LengthValidator) Description(context.Context) string {
+	return fmt.Sprintf("must be at most %d UTF-16 code units long, where characters such as emoji count as two", v.max)
+}
+
+func (v utf16LengthValidator) MarkdownDescription(ctx context.Context) string {
+	return v.Description(ctx)
+}
+
+func (v utf16LengthValidator) ValidateString(ctx context.Context, req validator.StringRequest, resp *validator.StringResponse) {
+	if req.ConfigValue.IsNull() || req.ConfigValue.IsUnknown() {
+		return
+	}
+	if n := len(utf16.Encode([]rune(req.ConfigValue.ValueString()))); n > v.max {
+		resp.Diagnostics.AddAttributeError(req.Path, "Invalid Attribute Value Length", fmt.Sprintf("Attribute %s %s, got: %d", req.Path, v.Description(ctx), n))
 	}
 }
 

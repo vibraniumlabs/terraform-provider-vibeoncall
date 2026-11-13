@@ -175,12 +175,12 @@ func (r *MaintenanceWindowResource) Schema(ctx context.Context, req resource.Sch
 			"name": schema.StringAttribute{
 				MarkdownDescription: "Window name.",
 				Required:            true,
-				Validators:          []validator.String{stringvalidator.LengthAtMost(64), noSurroundingWhitespace},
+				Validators:          []validator.String{utf16LengthAtMost(64), noSurroundingWhitespace},
 			},
 			"description": schema.StringAttribute{
 				MarkdownDescription: "Window description. Remove the argument to clear it.",
 				Optional:            true,
-				Validators:          []validator.String{stringvalidator.LengthAtMost(512), noSurroundingWhitespace},
+				Validators:          []validator.String{utf16LengthAtMost(512), noSurroundingWhitespace},
 			},
 			"team_id": schema.StringAttribute{
 				MarkdownDescription: "Numeric ID of the team whose alerts the window covers. Omit for a global window that covers every team. Changing it replaces the window, which fails once `start_at` has passed.",
