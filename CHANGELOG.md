@@ -8,6 +8,7 @@ FEATURES:
 * **New Resource:** `vibeoncall_team_default_escalation_policy`
 * **New Resource:** `vibeoncall_schedule`
 * **New Resource:** `vibeoncall_service`
+* **New Resource:** `vibeoncall_maintenance_window`
 * **New Data Source:** `vibeoncall_member`
 * **New Data Source:** `vibeoncall_team`
 * **New Data Source:** `vibeoncall_label`

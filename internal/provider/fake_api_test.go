@@ -12,6 +12,7 @@ import (
 	"strings"
 	"sync"
 	"testing"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
@@ -91,6 +92,9 @@ type fakeAPI struct {
 	nextRotID     int
 	schedules     map[int]*fakeSchedule
 	rotationPuts  int
+	nextWindowID  int
+	windows       map[int]*fakeWindow
+	windowPatch   map[string]json.RawMessage
 }
 
 func strPtr(s string) *string { return &s }
@@ -101,6 +105,7 @@ func newFakeAPI(t *testing.T, users ...fakeUser) (*fakeAPI, *httptest.Server) {
 		nextPolicyID: 1, nextTierID: 1, policies: map[int]*fakePolicy{}, teamDefaults: map[int]int{},
 		nextSchedID: 1, nextRotID: 1, schedules: map[int]*fakeSchedule{},
 		nextServiceID: 1, services: map[int]*fakeService{},
+		nextWindowID: 1, windows: map[int]*fakeWindow{},
 	}
 	srv := httptest.NewServer(api)
 	t.Cleanup(srv.Close)
@@ -180,6 +185,8 @@ func (a *fakeAPI) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		a.serveEscalationPolicies(w, r, parts[1:], body)
 	case parts[0] == "schedules":
 		a.serveSchedules(w, r, parts[1:], body)
+	case parts[0] == "maintenance-windows":
+		a.serveMaintenanceWindows(w, r, parts[1:], body)
 	case len(parts) >= 2 && parts[0] == "teams":
 		team := a.findTeam(parts[1])
 		if team == nil {
@@ -337,6 +344,9 @@ func (a *fakeAPI) checkNothingLeft(*terraform.State) error {
 	}
 	if len(a.services) > 0 {
 		return fmt.Errorf("%d services left after destroy", len(a.services))
+	}
+	if len(a.windows) > 0 {
+		return fmt.Errorf("%d maintenance windows left after destroy", len(a.windows))
 	}
 	for teamID, members := range a.memberships {
 		if len(members) > 0 {
@@ -782,4 +792,159 @@ func (a *fakeAPI) removeSchedule(id int) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 	delete(a.schedules, id)
+}
+
+type fakeWindow struct {
+	ID          int
+	Name        string
+	Description *string
+	TeamID      *int
+	StartAt     time.Time
+	EndAt       time.Time
+	Conditions  json.RawMessage
+	Operator    *string
+	Channels    []string
+}
+
+func (a *fakeAPI) windowJSON(mw *fakeWindow) map[string]any {
+	channels := []map[string]string{}
+	for _, id := range mw.Channels {
+		if c := a.findChatChannel(id); c != nil {
+			channels = append(channels, map[string]string{"id": c.ID, "name": c.Name})
+		}
+	}
+	conditions := mw.Conditions
+	if len(conditions) == 0 {
+		conditions = json.RawMessage("null")
+	}
+	return map[string]any{
+		"maintenanceWindow": map[string]any{
+			"id": mw.ID, "name": mw.Name, "description": mw.Description, "teamId": mw.TeamID,
+			"startAt": mw.StartAt.UTC().Format("2006-01-02T15:04:05.000Z"), "endAt": mw.EndAt.UTC().Format("2006-01-02T15:04:05.000Z"),
+			"conditions": conditions, "conditionsLogicalOperator": mw.Operator,
+			"announcementChannels": channels, "createdAt": "2026-01-01T00:00:00.000Z", "updatedAt": "2026-01-01T00:00:00.000Z",
+		},
+	}
+}
+
+func (a *fakeAPI) serveMaintenanceWindows(w http.ResponseWriter, r *http.Request, rest []string, body map[string]json.RawMessage) {
+	if len(rest) == 0 && r.Method == http.MethodPost {
+		mw := &fakeWindow{ID: a.nextWindowID}
+		if raw, ok := body["teamId"]; ok {
+			_ = json.Unmarshal(raw, &mw.TeamID)
+		}
+		if mw.TeamID != nil && a.teams[*mw.TeamID] == nil {
+			notFound(w)
+			return
+		}
+		if !a.applyWindowBody(w, mw, body) {
+			return
+		}
+		a.nextWindowID++
+		a.windows[mw.ID] = mw
+		writeJSON(w, http.StatusCreated, a.windowJSON(mw))
+		return
+	}
+
+	id := 0
+	if len(rest) == 1 {
+		id, _ = strconv.Atoi(rest[0])
+	}
+	mw := a.windows[id]
+	if mw == nil {
+		notFound(w)
+		return
+	}
+	switch r.Method {
+	case http.MethodGet:
+		writeJSON(w, http.StatusOK, a.windowJSON(mw))
+	case http.MethodPatch:
+		a.windowPatch = body
+		if !mw.EndAt.After(time.Now()) {
+			writeJSON(w, http.StatusBadRequest, map[string]string{"message": "Ended maintenance windows cannot be updated"})
+			return
+		}
+		updated := *mw
+		if !a.applyWindowBody(w, &updated, body) {
+			return
+		}
+		*mw = updated
+		writeJSON(w, http.StatusOK, a.windowJSON(mw))
+	case http.MethodDelete:
+		delete(a.windows, id)
+		w.WriteHeader(http.StatusNoContent)
+	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
+	}
+}
+
+func (a *fakeAPI) applyWindowBody(w http.ResponseWriter, mw *fakeWindow, body map[string]json.RawMessage) bool {
+	if raw, ok := body["name"]; ok {
+		_ = json.Unmarshal(raw, &mw.Name)
+	}
+	if raw, ok := body["description"]; ok {
+		mw.Description = nil
+		_ = json.Unmarshal(raw, &mw.Description)
+	}
+	if raw, ok := body["startAt"]; ok {
+		_ = json.Unmarshal(raw, &mw.StartAt)
+	}
+	if raw, ok := body["endAt"]; ok {
+		_ = json.Unmarshal(raw, &mw.EndAt)
+	}
+	if raw, ok := body["conditions"]; ok {
+		mw.Conditions = raw
+		if string(raw) == "null" {
+			mw.Conditions = nil
+		}
+	}
+	if raw, ok := body["conditionsLogicalOperator"]; ok {
+		mw.Operator = nil
+		_ = json.Unmarshal(raw, &mw.Operator)
+	}
+	if raw, ok := body["announcementChannels"]; ok {
+		mw.Channels = nil
+		_ = json.Unmarshal(raw, &mw.Channels)
+		for _, id := range mw.Channels {
+			if a.findChatChannel(id) == nil {
+				writeJSON(w, http.StatusBadRequest, map[string]string{"message": fmt.Sprintf("Channel %s is not on the connected chat platform", id)})
+				return false
+			}
+		}
+	}
+	if (mw.Conditions == nil) != (mw.Operator == nil) {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"message": "conditions and conditionsLogicalOperator must both be provided or both be null"})
+		return false
+	}
+	return true
+}
+
+func (a *fakeAPI) findChatChannel(id string) *fakeChatChannel {
+	for i := range a.chatChannels {
+		if a.chatChannels[i].ID == id {
+			return &a.chatChannels[i]
+		}
+	}
+	return nil
+}
+
+func (a *fakeAPI) putWindow(mw *fakeWindow) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	mw.ID = a.nextWindowID
+	a.nextWindowID++
+	a.windows[mw.ID] = mw
+}
+
+func (a *fakeAPI) removeWindow(id int) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	delete(a.windows, id)
+}
+
+func (a *fakeAPI) setWindowConditions(id int, operator, conditions string) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.windows[id].Operator = &operator
+	a.windows[id].Conditions = json.RawMessage(conditions)
 }
