@@ -112,10 +112,10 @@ func conditionAttributes() map[string]schema.Attribute {
 					Validators: []validator.Set{
 						setvalidator.SizeAtLeast(1),
 						setvalidator.ValueStringsAre(stringvalidator.OneOf(
-							string(client.Opsgenie), string(client.Grafana), string(client.Datadog), string(client.Coralogix),
-							string(client.Newrelic), string(client.Prometheus), string(client.Cloudwatch), string(client.Sns),
-							string(client.Heartbeat), string(client.Email), string(client.Sentry), string(client.Embraceio),
-							string(client.Http), string(client.Azuremonitor), string(client.Cloudamqp),
+							string(client.MaintenanceWindowProviderConditionRuleProvidersOpsgenie), string(client.MaintenanceWindowProviderConditionRuleProvidersGrafana), string(client.MaintenanceWindowProviderConditionRuleProvidersDatadog), string(client.MaintenanceWindowProviderConditionRuleProvidersCoralogix),
+							string(client.MaintenanceWindowProviderConditionRuleProvidersNewrelic), string(client.MaintenanceWindowProviderConditionRuleProvidersPrometheus), string(client.MaintenanceWindowProviderConditionRuleProvidersCloudwatch), string(client.MaintenanceWindowProviderConditionRuleProvidersSns),
+							string(client.MaintenanceWindowProviderConditionRuleProvidersHeartbeat), string(client.MaintenanceWindowProviderConditionRuleProvidersEmail), string(client.MaintenanceWindowProviderConditionRuleProvidersSentry), string(client.MaintenanceWindowProviderConditionRuleProvidersEmbraceio),
+							string(client.MaintenanceWindowProviderConditionRuleProvidersHttp), string(client.MaintenanceWindowProviderConditionRuleProvidersAzuremonitor), string(client.MaintenanceWindowProviderConditionRuleProvidersCloudamqp),
 						)),
 					},
 				},

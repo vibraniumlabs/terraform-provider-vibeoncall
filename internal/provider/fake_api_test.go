@@ -96,6 +96,9 @@ type fakeAPI struct {
 	nextWindowID  int
 	windows       map[int]*fakeWindow
 	windowPatch   map[string]json.RawMessage
+	nextSourceID  int
+	sources       map[int]*fakeSource
+	routings      map[int]*int
 }
 
 func strPtr(s string) *string { return &s }
@@ -107,6 +110,7 @@ func newFakeAPI(t *testing.T, users ...fakeUser) (*fakeAPI, *httptest.Server) {
 		nextSchedID: 1, nextRotID: 1, schedules: map[int]*fakeSchedule{},
 		nextServiceID: 1, services: map[int]*fakeService{},
 		nextWindowID: 1, windows: map[int]*fakeWindow{},
+		nextSourceID: 1, sources: map[int]*fakeSource{}, routings: map[int]*int{},
 	}
 	srv := httptest.NewServer(api)
 	t.Cleanup(srv.Close)
@@ -210,6 +214,8 @@ func (a *fakeAPI) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		a.serveSchedules(w, r, parts[1:], body)
 	case parts[0] == "maintenance-windows":
 		a.serveMaintenanceWindows(w, r, parts[1:], body)
+	case parts[0] == "alert-sources":
+		a.serveAlertSources(w, r, parts[1:], body)
 	case len(parts) >= 2 && parts[0] == "teams":
 		team := a.findTeam(parts[1])
 		if team == nil {
@@ -235,6 +241,10 @@ func (a *fakeAPI) serveTeam(w http.ResponseWriter, r *http.Request, team *fakeTe
 		applyTeamBody(team, body)
 		writeJSON(w, http.StatusOK, team)
 	case http.MethodDelete:
+		if a.teamOwnsSources(team.ID) {
+			writeJSON(w, http.StatusConflict, map[string]string{"message": "The team still owns alert sources"})
+			return
+		}
 		delete(a.teams, team.ID)
 		delete(a.memberships, team.ID)
 		writeJSON(w, http.StatusOK, map[string]bool{"success": true})
@@ -371,6 +381,9 @@ func (a *fakeAPI) checkNothingLeft(*terraform.State) error {
 	}
 	if len(a.windows) > 0 {
 		return fmt.Errorf("%d maintenance windows left after destroy", len(a.windows))
+	}
+	if len(a.sources) > 0 {
+		return fmt.Errorf("%d alert sources left after destroy", len(a.sources))
 	}
 	for teamID, members := range a.memberships {
 		if len(members) > 0 {

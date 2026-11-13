@@ -20,6 +20,60 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
+// Defines values for AlertSourceProvider.
+const (
+	AlertSourceProviderAzuremonitor AlertSourceProvider = "azuremonitor"
+	AlertSourceProviderCloudamqp    AlertSourceProvider = "cloudamqp"
+	AlertSourceProviderCloudwatch   AlertSourceProvider = "cloudwatch"
+	AlertSourceProviderCoralogix    AlertSourceProvider = "coralogix"
+	AlertSourceProviderDatadog      AlertSourceProvider = "datadog"
+	AlertSourceProviderEmail        AlertSourceProvider = "email"
+	AlertSourceProviderEmbraceio    AlertSourceProvider = "embraceio"
+	AlertSourceProviderGrafana      AlertSourceProvider = "grafana"
+	AlertSourceProviderHttp         AlertSourceProvider = "http"
+	AlertSourceProviderNewrelic     AlertSourceProvider = "newrelic"
+	AlertSourceProviderOpsgenie     AlertSourceProvider = "opsgenie"
+	AlertSourceProviderPrometheus   AlertSourceProvider = "prometheus"
+	AlertSourceProviderSentry       AlertSourceProvider = "sentry"
+	AlertSourceProviderSns          AlertSourceProvider = "sns"
+)
+
+// Valid indicates whether the value is a known member of the AlertSourceProvider enum.
+func (e AlertSourceProvider) Valid() bool {
+	switch e {
+	case AlertSourceProviderAzuremonitor:
+		return true
+	case AlertSourceProviderCloudamqp:
+		return true
+	case AlertSourceProviderCloudwatch:
+		return true
+	case AlertSourceProviderCoralogix:
+		return true
+	case AlertSourceProviderDatadog:
+		return true
+	case AlertSourceProviderEmail:
+		return true
+	case AlertSourceProviderEmbraceio:
+		return true
+	case AlertSourceProviderGrafana:
+		return true
+	case AlertSourceProviderHttp:
+		return true
+	case AlertSourceProviderNewrelic:
+		return true
+	case AlertSourceProviderOpsgenie:
+		return true
+	case AlertSourceProviderPrometheus:
+		return true
+	case AlertSourceProviderSentry:
+		return true
+	case AlertSourceProviderSns:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for AlertSummaryCanonicalSeverity.
 const (
 	AlertSummaryCanonicalSeveritySEV0   AlertSummaryCanonicalSeverity = "SEV0"
@@ -143,6 +197,60 @@ func (e ChatPlatform) Valid() bool {
 	case MicrosoftTeams:
 		return true
 	case Slack:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CreateAlertSourceRequestProvider.
+const (
+	CreateAlertSourceRequestProviderAzuremonitor CreateAlertSourceRequestProvider = "azuremonitor"
+	CreateAlertSourceRequestProviderCloudamqp    CreateAlertSourceRequestProvider = "cloudamqp"
+	CreateAlertSourceRequestProviderCloudwatch   CreateAlertSourceRequestProvider = "cloudwatch"
+	CreateAlertSourceRequestProviderCoralogix    CreateAlertSourceRequestProvider = "coralogix"
+	CreateAlertSourceRequestProviderDatadog      CreateAlertSourceRequestProvider = "datadog"
+	CreateAlertSourceRequestProviderEmail        CreateAlertSourceRequestProvider = "email"
+	CreateAlertSourceRequestProviderEmbraceio    CreateAlertSourceRequestProvider = "embraceio"
+	CreateAlertSourceRequestProviderGrafana      CreateAlertSourceRequestProvider = "grafana"
+	CreateAlertSourceRequestProviderHttp         CreateAlertSourceRequestProvider = "http"
+	CreateAlertSourceRequestProviderNewrelic     CreateAlertSourceRequestProvider = "newrelic"
+	CreateAlertSourceRequestProviderOpsgenie     CreateAlertSourceRequestProvider = "opsgenie"
+	CreateAlertSourceRequestProviderPrometheus   CreateAlertSourceRequestProvider = "prometheus"
+	CreateAlertSourceRequestProviderSentry       CreateAlertSourceRequestProvider = "sentry"
+	CreateAlertSourceRequestProviderSns          CreateAlertSourceRequestProvider = "sns"
+)
+
+// Valid indicates whether the value is a known member of the CreateAlertSourceRequestProvider enum.
+func (e CreateAlertSourceRequestProvider) Valid() bool {
+	switch e {
+	case CreateAlertSourceRequestProviderAzuremonitor:
+		return true
+	case CreateAlertSourceRequestProviderCloudamqp:
+		return true
+	case CreateAlertSourceRequestProviderCloudwatch:
+		return true
+	case CreateAlertSourceRequestProviderCoralogix:
+		return true
+	case CreateAlertSourceRequestProviderDatadog:
+		return true
+	case CreateAlertSourceRequestProviderEmail:
+		return true
+	case CreateAlertSourceRequestProviderEmbraceio:
+		return true
+	case CreateAlertSourceRequestProviderGrafana:
+		return true
+	case CreateAlertSourceRequestProviderHttp:
+		return true
+	case CreateAlertSourceRequestProviderNewrelic:
+		return true
+	case CreateAlertSourceRequestProviderOpsgenie:
+		return true
+	case CreateAlertSourceRequestProviderPrometheus:
+		return true
+	case CreateAlertSourceRequestProviderSentry:
+		return true
+	case CreateAlertSourceRequestProviderSns:
 		return true
 	default:
 		return false
@@ -373,55 +481,55 @@ func (e MaintenanceWindowProviderConditionRuleOperator) Valid() bool {
 
 // Defines values for MaintenanceWindowProviderConditionRuleProviders.
 const (
-	Azuremonitor MaintenanceWindowProviderConditionRuleProviders = "azuremonitor"
-	Cloudamqp    MaintenanceWindowProviderConditionRuleProviders = "cloudamqp"
-	Cloudwatch   MaintenanceWindowProviderConditionRuleProviders = "cloudwatch"
-	Coralogix    MaintenanceWindowProviderConditionRuleProviders = "coralogix"
-	Datadog      MaintenanceWindowProviderConditionRuleProviders = "datadog"
-	Email        MaintenanceWindowProviderConditionRuleProviders = "email"
-	Embraceio    MaintenanceWindowProviderConditionRuleProviders = "embraceio"
-	Grafana      MaintenanceWindowProviderConditionRuleProviders = "grafana"
-	Heartbeat    MaintenanceWindowProviderConditionRuleProviders = "heartbeat"
-	Http         MaintenanceWindowProviderConditionRuleProviders = "http"
-	Newrelic     MaintenanceWindowProviderConditionRuleProviders = "newrelic"
-	Opsgenie     MaintenanceWindowProviderConditionRuleProviders = "opsgenie"
-	Prometheus   MaintenanceWindowProviderConditionRuleProviders = "prometheus"
-	Sentry       MaintenanceWindowProviderConditionRuleProviders = "sentry"
-	Sns          MaintenanceWindowProviderConditionRuleProviders = "sns"
+	MaintenanceWindowProviderConditionRuleProvidersAzuremonitor MaintenanceWindowProviderConditionRuleProviders = "azuremonitor"
+	MaintenanceWindowProviderConditionRuleProvidersCloudamqp    MaintenanceWindowProviderConditionRuleProviders = "cloudamqp"
+	MaintenanceWindowProviderConditionRuleProvidersCloudwatch   MaintenanceWindowProviderConditionRuleProviders = "cloudwatch"
+	MaintenanceWindowProviderConditionRuleProvidersCoralogix    MaintenanceWindowProviderConditionRuleProviders = "coralogix"
+	MaintenanceWindowProviderConditionRuleProvidersDatadog      MaintenanceWindowProviderConditionRuleProviders = "datadog"
+	MaintenanceWindowProviderConditionRuleProvidersEmail        MaintenanceWindowProviderConditionRuleProviders = "email"
+	MaintenanceWindowProviderConditionRuleProvidersEmbraceio    MaintenanceWindowProviderConditionRuleProviders = "embraceio"
+	MaintenanceWindowProviderConditionRuleProvidersGrafana      MaintenanceWindowProviderConditionRuleProviders = "grafana"
+	MaintenanceWindowProviderConditionRuleProvidersHeartbeat    MaintenanceWindowProviderConditionRuleProviders = "heartbeat"
+	MaintenanceWindowProviderConditionRuleProvidersHttp         MaintenanceWindowProviderConditionRuleProviders = "http"
+	MaintenanceWindowProviderConditionRuleProvidersNewrelic     MaintenanceWindowProviderConditionRuleProviders = "newrelic"
+	MaintenanceWindowProviderConditionRuleProvidersOpsgenie     MaintenanceWindowProviderConditionRuleProviders = "opsgenie"
+	MaintenanceWindowProviderConditionRuleProvidersPrometheus   MaintenanceWindowProviderConditionRuleProviders = "prometheus"
+	MaintenanceWindowProviderConditionRuleProvidersSentry       MaintenanceWindowProviderConditionRuleProviders = "sentry"
+	MaintenanceWindowProviderConditionRuleProvidersSns          MaintenanceWindowProviderConditionRuleProviders = "sns"
 )
 
 // Valid indicates whether the value is a known member of the MaintenanceWindowProviderConditionRuleProviders enum.
 func (e MaintenanceWindowProviderConditionRuleProviders) Valid() bool {
 	switch e {
-	case Azuremonitor:
+	case MaintenanceWindowProviderConditionRuleProvidersAzuremonitor:
 		return true
-	case Cloudamqp:
+	case MaintenanceWindowProviderConditionRuleProvidersCloudamqp:
 		return true
-	case Cloudwatch:
+	case MaintenanceWindowProviderConditionRuleProvidersCloudwatch:
 		return true
-	case Coralogix:
+	case MaintenanceWindowProviderConditionRuleProvidersCoralogix:
 		return true
-	case Datadog:
+	case MaintenanceWindowProviderConditionRuleProvidersDatadog:
 		return true
-	case Email:
+	case MaintenanceWindowProviderConditionRuleProvidersEmail:
 		return true
-	case Embraceio:
+	case MaintenanceWindowProviderConditionRuleProvidersEmbraceio:
 		return true
-	case Grafana:
+	case MaintenanceWindowProviderConditionRuleProvidersGrafana:
 		return true
-	case Heartbeat:
+	case MaintenanceWindowProviderConditionRuleProvidersHeartbeat:
 		return true
-	case Http:
+	case MaintenanceWindowProviderConditionRuleProvidersHttp:
 		return true
-	case Newrelic:
+	case MaintenanceWindowProviderConditionRuleProvidersNewrelic:
 		return true
-	case Opsgenie:
+	case MaintenanceWindowProviderConditionRuleProvidersOpsgenie:
 		return true
-	case Prometheus:
+	case MaintenanceWindowProviderConditionRuleProvidersPrometheus:
 		return true
-	case Sentry:
+	case MaintenanceWindowProviderConditionRuleProvidersSentry:
 		return true
-	case Sns:
+	case MaintenanceWindowProviderConditionRuleProvidersSns:
 		return true
 	default:
 		return false
@@ -821,15 +929,30 @@ func (e UpdateMaintenanceWindowRequestConditionsLogicalOperator) Valid() bool {
 	}
 }
 
+// Defines values for ListAlertSourcesParamsTeamId0.
+const (
+	ListAlertSourcesParamsTeamId0Null ListAlertSourcesParamsTeamId0 = "null"
+)
+
+// Valid indicates whether the value is a known member of the ListAlertSourcesParamsTeamId0 enum.
+func (e ListAlertSourcesParamsTeamId0) Valid() bool {
+	switch e {
+	case ListAlertSourcesParamsTeamId0Null:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for ListMaintenanceWindowsParamsTeamId0.
 const (
-	Null ListMaintenanceWindowsParamsTeamId0 = "null"
+	ListMaintenanceWindowsParamsTeamId0Null ListMaintenanceWindowsParamsTeamId0 = "null"
 )
 
 // Valid indicates whether the value is a known member of the ListMaintenanceWindowsParamsTeamId0 enum.
 func (e ListMaintenanceWindowsParamsTeamId0) Valid() bool {
 	switch e {
-	case Null:
+	case ListMaintenanceWindowsParamsTeamId0Null:
 		return true
 	default:
 		return false
@@ -855,6 +978,35 @@ func (e ListMembersParamsStatus) Valid() bool {
 	default:
 		return false
 	}
+}
+
+// AlertSource defines model for AlertSource.
+type AlertSource struct {
+	AlertRoutingId nullable.Nullable[int] `json:"alertRoutingId"`
+	CreatedAt      time.Time              `json:"createdAt"`
+
+	// EmailAddress The inbound address of an email source; null otherwise.
+	EmailAddress nullable.Nullable[string] `json:"emailAddress"`
+	Id           int                       `json:"id"`
+	IsEnabled    bool                      `json:"isEnabled"`
+	Name         string                    `json:"name"`
+	Provider     AlertSourceProvider       `json:"provider"`
+	TeamId       nullable.Nullable[int]    `json:"teamId"`
+	UpdatedAt    time.Time                 `json:"updatedAt"`
+
+	// WebhookToken The secret token at the end of webhookUrl; null for an email source.
+	WebhookToken nullable.Nullable[string] `json:"webhookToken"`
+
+	// WebhookUrl Where the monitoring tool posts alerts; null for an email source.
+	WebhookUrl nullable.Nullable[string] `json:"webhookUrl"`
+}
+
+// AlertSourceProvider defines model for AlertSource.Provider.
+type AlertSourceProvider string
+
+// AlertSourceListResponse defines model for AlertSourceListResponse.
+type AlertSourceListResponse struct {
+	AlertSources []AlertSource `json:"alertSources"`
 }
 
 // AlertSummary defines model for AlertSummary.
@@ -983,6 +1135,27 @@ type ChatChannelsListResponse struct {
 
 // ChatPlatform The chat platform the organization is connected to: `slack` or `microsoftTeams`.
 type ChatPlatform string
+
+// CreateAlertSourceRequest defines model for CreateAlertSourceRequest.
+type CreateAlertSourceRequest struct {
+	// AlertRoutingId The alert routing in the same scope that handles alerts arriving on this source.
+	AlertRoutingId nullable.Nullable[int] `json:"alertRoutingId,omitempty"`
+
+	// IsEnabled A source that is off rejects what arrives on it. Defaults to true.
+	IsEnabled *bool `json:"isEnabled,omitempty"`
+
+	// Name Unique within its scope and provider.
+	Name string `json:"name"`
+
+	// Provider The monitoring tool that delivers to this source. Cannot be changed later.
+	Provider CreateAlertSourceRequestProvider `json:"provider"`
+
+	// TeamId Omit or send null for an organization-level source. Cannot be changed later.
+	TeamId nullable.Nullable[int] `json:"teamId,omitempty"`
+}
+
+// CreateAlertSourceRequestProvider The monitoring tool that delivers to this source. Cannot be changed later.
+type CreateAlertSourceRequestProvider string
 
 // CreateMaintenanceWindowRequest defines model for CreateMaintenanceWindowRequest.
 type CreateMaintenanceWindowRequest struct {
@@ -2086,6 +2259,14 @@ type TeamsListResponse struct {
 	Total int32 `json:"total"`
 }
 
+// UpdateAlertSourceRequest defines model for UpdateAlertSourceRequest.
+type UpdateAlertSourceRequest struct {
+	// AlertRoutingId The alert routing in the same scope that handles alerts arriving on this source.
+	AlertRoutingId nullable.Nullable[int] `json:"alertRoutingId,omitempty"`
+	IsEnabled      *bool                  `json:"isEnabled,omitempty"`
+	Name           *string                `json:"name,omitempty"`
+}
+
 // UpdateMaintenanceWindowRequest Partial update: only the fields sent are changed. The team scope is fixed at creation. To end an active window early, send endAt set to the current time. Ended windows cannot be updated; active windows cannot change startAt and must keep endAt at or after the current time.
 type UpdateMaintenanceWindowRequest struct {
 	// AnnouncementChannels IDs of the chat channels to announce the window start and end in, as returned by GET /integrations/chat/channels. Every ID must belong to the connected chat platform. Omit or send null or an empty list for no announcements.
@@ -2152,6 +2333,44 @@ type ValidationErrorResponse struct {
 		// Path Path to the field that caused the error.
 		Path *[]string `json:"path,omitempty"`
 	} `json:"error"`
+}
+
+// ListAlertSourcesParams defines parameters for ListAlertSources.
+type ListAlertSourcesParams struct {
+	TeamId *struct {
+		union json.RawMessage
+	} `form:"teamId,omitempty" json:"teamId,omitempty"`
+}
+
+// ListAlertSourcesParamsTeamId0 defines parameters for ListAlertSources.
+type ListAlertSourcesParamsTeamId0 string
+
+// ListAlertSourcesParamsTeamId1 defines parameters for ListAlertSources.
+type ListAlertSourcesParamsTeamId1 = int
+
+// ListAlertSources400JSONResponseBody defines parameters for ListAlertSources.
+type ListAlertSources400JSONResponseBody struct {
+	union json.RawMessage
+}
+
+// CreateAlertSource400JSONResponseBody defines parameters for CreateAlertSource.
+type CreateAlertSource400JSONResponseBody struct {
+	union json.RawMessage
+}
+
+// DeleteAlertSource400JSONResponseBody defines parameters for DeleteAlertSource.
+type DeleteAlertSource400JSONResponseBody struct {
+	union json.RawMessage
+}
+
+// GetAlertSource400JSONResponseBody defines parameters for GetAlertSource.
+type GetAlertSource400JSONResponseBody struct {
+	union json.RawMessage
+}
+
+// UpdateAlertSource400JSONResponseBody defines parameters for UpdateAlertSource.
+type UpdateAlertSource400JSONResponseBody struct {
+	union json.RawMessage
 }
 
 // ListEscalationPoliciesParams defines parameters for ListEscalationPolicies.
@@ -2431,6 +2650,12 @@ type ListTeamMembersParams struct {
 	Limit  *int32 `form:"limit,omitempty" json:"limit,omitempty"`
 	Offset *int32 `form:"offset,omitempty" json:"offset,omitempty"`
 }
+
+// CreateAlertSourceJSONRequestBody defines body for CreateAlertSource for application/json ContentType.
+type CreateAlertSourceJSONRequestBody = CreateAlertSourceRequest
+
+// UpdateAlertSourceJSONRequestBody defines body for UpdateAlertSource for application/json ContentType.
+type UpdateAlertSourceJSONRequestBody = UpdateAlertSourceRequest
 
 // CreateEscalationPolicyJSONRequestBody defines body for CreateEscalationPolicy for application/json ContentType.
 type CreateEscalationPolicyJSONRequestBody = CreatePublicEscalationPolicyRequest
@@ -3673,6 +3898,316 @@ func (t ServiceResponder) MarshalJSON() ([]byte, error) {
 }
 
 func (t *ServiceResponder) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsValidationErrorResponse returns the union data inside the ListAlertSources400JSONResponseBody as a ValidationErrorResponse
+func (t ListAlertSources400JSONResponseBody) AsValidationErrorResponse() (ValidationErrorResponse, error) {
+	var body ValidationErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromValidationErrorResponse overwrites any union data inside the ListAlertSources400JSONResponseBody as the provided ValidationErrorResponse
+func (t *ListAlertSources400JSONResponseBody) FromValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeValidationErrorResponse performs a merge with any union data inside the ListAlertSources400JSONResponseBody, using the provided ValidationErrorResponse
+func (t *ListAlertSources400JSONResponseBody) MergeValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsErrorResponse returns the union data inside the ListAlertSources400JSONResponseBody as a ErrorResponse
+func (t ListAlertSources400JSONResponseBody) AsErrorResponse() (ErrorResponse, error) {
+	var body ErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorResponse overwrites any union data inside the ListAlertSources400JSONResponseBody as the provided ErrorResponse
+func (t *ListAlertSources400JSONResponseBody) FromErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorResponse performs a merge with any union data inside the ListAlertSources400JSONResponseBody, using the provided ErrorResponse
+func (t *ListAlertSources400JSONResponseBody) MergeErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t ListAlertSources400JSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *ListAlertSources400JSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsValidationErrorResponse returns the union data inside the CreateAlertSource400JSONResponseBody as a ValidationErrorResponse
+func (t CreateAlertSource400JSONResponseBody) AsValidationErrorResponse() (ValidationErrorResponse, error) {
+	var body ValidationErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromValidationErrorResponse overwrites any union data inside the CreateAlertSource400JSONResponseBody as the provided ValidationErrorResponse
+func (t *CreateAlertSource400JSONResponseBody) FromValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeValidationErrorResponse performs a merge with any union data inside the CreateAlertSource400JSONResponseBody, using the provided ValidationErrorResponse
+func (t *CreateAlertSource400JSONResponseBody) MergeValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsErrorResponse returns the union data inside the CreateAlertSource400JSONResponseBody as a ErrorResponse
+func (t CreateAlertSource400JSONResponseBody) AsErrorResponse() (ErrorResponse, error) {
+	var body ErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorResponse overwrites any union data inside the CreateAlertSource400JSONResponseBody as the provided ErrorResponse
+func (t *CreateAlertSource400JSONResponseBody) FromErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorResponse performs a merge with any union data inside the CreateAlertSource400JSONResponseBody, using the provided ErrorResponse
+func (t *CreateAlertSource400JSONResponseBody) MergeErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t CreateAlertSource400JSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *CreateAlertSource400JSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsValidationErrorResponse returns the union data inside the DeleteAlertSource400JSONResponseBody as a ValidationErrorResponse
+func (t DeleteAlertSource400JSONResponseBody) AsValidationErrorResponse() (ValidationErrorResponse, error) {
+	var body ValidationErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromValidationErrorResponse overwrites any union data inside the DeleteAlertSource400JSONResponseBody as the provided ValidationErrorResponse
+func (t *DeleteAlertSource400JSONResponseBody) FromValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeValidationErrorResponse performs a merge with any union data inside the DeleteAlertSource400JSONResponseBody, using the provided ValidationErrorResponse
+func (t *DeleteAlertSource400JSONResponseBody) MergeValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsErrorResponse returns the union data inside the DeleteAlertSource400JSONResponseBody as a ErrorResponse
+func (t DeleteAlertSource400JSONResponseBody) AsErrorResponse() (ErrorResponse, error) {
+	var body ErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorResponse overwrites any union data inside the DeleteAlertSource400JSONResponseBody as the provided ErrorResponse
+func (t *DeleteAlertSource400JSONResponseBody) FromErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorResponse performs a merge with any union data inside the DeleteAlertSource400JSONResponseBody, using the provided ErrorResponse
+func (t *DeleteAlertSource400JSONResponseBody) MergeErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t DeleteAlertSource400JSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *DeleteAlertSource400JSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsValidationErrorResponse returns the union data inside the GetAlertSource400JSONResponseBody as a ValidationErrorResponse
+func (t GetAlertSource400JSONResponseBody) AsValidationErrorResponse() (ValidationErrorResponse, error) {
+	var body ValidationErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromValidationErrorResponse overwrites any union data inside the GetAlertSource400JSONResponseBody as the provided ValidationErrorResponse
+func (t *GetAlertSource400JSONResponseBody) FromValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeValidationErrorResponse performs a merge with any union data inside the GetAlertSource400JSONResponseBody, using the provided ValidationErrorResponse
+func (t *GetAlertSource400JSONResponseBody) MergeValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsErrorResponse returns the union data inside the GetAlertSource400JSONResponseBody as a ErrorResponse
+func (t GetAlertSource400JSONResponseBody) AsErrorResponse() (ErrorResponse, error) {
+	var body ErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorResponse overwrites any union data inside the GetAlertSource400JSONResponseBody as the provided ErrorResponse
+func (t *GetAlertSource400JSONResponseBody) FromErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorResponse performs a merge with any union data inside the GetAlertSource400JSONResponseBody, using the provided ErrorResponse
+func (t *GetAlertSource400JSONResponseBody) MergeErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t GetAlertSource400JSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *GetAlertSource400JSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsValidationErrorResponse returns the union data inside the UpdateAlertSource400JSONResponseBody as a ValidationErrorResponse
+func (t UpdateAlertSource400JSONResponseBody) AsValidationErrorResponse() (ValidationErrorResponse, error) {
+	var body ValidationErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromValidationErrorResponse overwrites any union data inside the UpdateAlertSource400JSONResponseBody as the provided ValidationErrorResponse
+func (t *UpdateAlertSource400JSONResponseBody) FromValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeValidationErrorResponse performs a merge with any union data inside the UpdateAlertSource400JSONResponseBody, using the provided ValidationErrorResponse
+func (t *UpdateAlertSource400JSONResponseBody) MergeValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsErrorResponse returns the union data inside the UpdateAlertSource400JSONResponseBody as a ErrorResponse
+func (t UpdateAlertSource400JSONResponseBody) AsErrorResponse() (ErrorResponse, error) {
+	var body ErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorResponse overwrites any union data inside the UpdateAlertSource400JSONResponseBody as the provided ErrorResponse
+func (t *UpdateAlertSource400JSONResponseBody) FromErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorResponse performs a merge with any union data inside the UpdateAlertSource400JSONResponseBody, using the provided ErrorResponse
+func (t *UpdateAlertSource400JSONResponseBody) MergeErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t UpdateAlertSource400JSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *UpdateAlertSource400JSONResponseBody) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
@@ -5053,6 +5588,63 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 // The interface specification for the client above.
 type ClientInterface interface {
 
+	// ListAlertSources List alert sources
+	//
+	// Responses carry the webhook token, so every alert source path requires alertSource.manage.
+	//
+	// Corresponds with GET /alert-sources (the `ListAlertSources` operationId).
+	ListAlertSources(ctx context.Context, params *ListAlertSourcesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateAlertSourceWithBody Create an alert source
+	//
+	// Every source gets its own webhook URL, or inbound address for an email source. Responses carry the webhook token, so every alert source path requires alertSource.manage.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /alert-sources (the `CreateAlertSource` operationId).
+	CreateAlertSourceWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateAlertSource Create an alert source
+	//
+	// Every source gets its own webhook URL, or inbound address for an email source. Responses carry the webhook token, so every alert source path requires alertSource.manage.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /alert-sources (the `CreateAlertSource` operationId).
+	CreateAlertSource(ctx context.Context, body CreateAlertSourceJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteAlertSource Delete an alert source
+	//
+	// Its webhook URL or inbound address stops accepting alerts. Alerts that already arrived keep pointing at it.
+	//
+	// Corresponds with DELETE /alert-sources/{id} (the `DeleteAlertSource` operationId).
+	DeleteAlertSource(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetAlertSource Get an alert source
+	//
+	// Responses carry the webhook token, so every alert source path requires alertSource.manage.
+	//
+	// Corresponds with GET /alert-sources/{id} (the `GetAlertSource` operationId).
+	GetAlertSource(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateAlertSourceWithBody Update an alert source
+	//
+	// Omitted fields are unchanged; send alertRoutingId null to detach the source from its routing.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PATCH /alert-sources/{id} (the `UpdateAlertSource` operationId).
+	UpdateAlertSourceWithBody(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateAlertSource Update an alert source
+	//
+	// Omitted fields are unchanged; send alertRoutingId null to detach the source from its routing.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PATCH /alert-sources/{id} (the `UpdateAlertSource` operationId).
+	UpdateAlertSource(ctx context.Context, id int32, body UpdateAlertSourceJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// ListEscalationPolicies List escalation policies
 	//
 	// Lists all global and team policies in the API key organization. teamId filters to one team.
@@ -5600,6 +6192,133 @@ type ClientInterface interface {
 	//
 	// Corresponds with GET /teams/{teamShortId}/on-call (the `GetTeamCurrentOnCall` operationId).
 	GetTeamCurrentOnCall(ctx context.Context, teamShortId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+}
+
+// ListAlertSources List alert sources
+//
+// Responses carry the webhook token, so every alert source path requires alertSource.manage.
+//
+// Corresponds with GET /alert-sources (the `ListAlertSources` operationId).
+func (c *Client) ListAlertSources(ctx context.Context, params *ListAlertSourcesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListAlertSourcesRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateAlertSourceWithBody Create an alert source
+//
+// Every source gets its own webhook URL, or inbound address for an email source. Responses carry the webhook token, so every alert source path requires alertSource.manage.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /alert-sources (the `CreateAlertSource` operationId).
+func (c *Client) CreateAlertSourceWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateAlertSourceRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateAlertSource Create an alert source
+//
+// Every source gets its own webhook URL, or inbound address for an email source. Responses carry the webhook token, so every alert source path requires alertSource.manage.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /alert-sources (the `CreateAlertSource` operationId).
+func (c *Client) CreateAlertSource(ctx context.Context, body CreateAlertSourceJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateAlertSourceRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DeleteAlertSource Delete an alert source
+//
+// Its webhook URL or inbound address stops accepting alerts. Alerts that already arrived keep pointing at it.
+//
+// Corresponds with DELETE /alert-sources/{id} (the `DeleteAlertSource` operationId).
+func (c *Client) DeleteAlertSource(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteAlertSourceRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetAlertSource Get an alert source
+//
+// Responses carry the webhook token, so every alert source path requires alertSource.manage.
+//
+// Corresponds with GET /alert-sources/{id} (the `GetAlertSource` operationId).
+func (c *Client) GetAlertSource(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetAlertSourceRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateAlertSourceWithBody Update an alert source
+//
+// Omitted fields are unchanged; send alertRoutingId null to detach the source from its routing.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PATCH /alert-sources/{id} (the `UpdateAlertSource` operationId).
+func (c *Client) UpdateAlertSourceWithBody(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateAlertSourceRequestWithBody(c.Server, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateAlertSource Update an alert source
+//
+// Omitted fields are unchanged; send alertRoutingId null to detach the source from its routing.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PATCH /alert-sources/{id} (the `UpdateAlertSource` operationId).
+func (c *Client) UpdateAlertSource(ctx context.Context, id int32, body UpdateAlertSourceJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateAlertSourceRequest(c.Server, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
 }
 
 // ListEscalationPolicies List escalation policies
@@ -6848,6 +7567,215 @@ func (c *Client) GetTeamCurrentOnCall(ctx context.Context, teamShortId string, r
 		return nil, err
 	}
 	return c.Client.Do(req)
+}
+
+// NewListAlertSourcesRequest constructs an http.Request for the ListAlertSources method
+func NewListAlertSourcesRequest(server string, params *ListAlertSourcesParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/alert-sources")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.TeamId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "teamId", *params.TeamId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCreateAlertSourceRequest calls the generic CreateAlertSource builder with application/json body
+func NewCreateAlertSourceRequest(server string, body CreateAlertSourceJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateAlertSourceRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewCreateAlertSourceRequestWithBody constructs an http.Request for the CreateAlertSource method, with any body, and a specified content type
+func NewCreateAlertSourceRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/alert-sources")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteAlertSourceRequest constructs an http.Request for the DeleteAlertSource method
+func NewDeleteAlertSourceRequest(server string, id int32) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/alert-sources/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetAlertSourceRequest constructs an http.Request for the GetAlertSource method
+func NewGetAlertSourceRequest(server string, id int32) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/alert-sources/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateAlertSourceRequest calls the generic UpdateAlertSource builder with application/json body
+func NewUpdateAlertSourceRequest(server string, id int32, body UpdateAlertSourceJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateAlertSourceRequestWithBody(server, id, "application/json", bodyReader)
+}
+
+// NewUpdateAlertSourceRequestWithBody constructs an http.Request for the UpdateAlertSource method, with any body, and a specified content type
+func NewUpdateAlertSourceRequestWithBody(server string, id int32, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/alert-sources/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPatch, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
 }
 
 // NewListEscalationPoliciesRequest constructs an http.Request for the ListEscalationPolicies method
@@ -9544,6 +10472,69 @@ func WithBaseURL(baseURL string) ClientOption {
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
 
+	// ListAlertSourcesWithResponse List alert sources
+	//
+	// Responses carry the webhook token, so every alert source path requires alertSource.manage.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /alert-sources (the `ListAlertSources` operationId).
+	ListAlertSourcesWithResponse(ctx context.Context, params *ListAlertSourcesParams, reqEditors ...RequestEditorFn) (*ListAlertSourcesResponse, error)
+
+	// CreateAlertSourceWithBodyWithResponse Create an alert source
+	//
+	// Every source gets its own webhook URL, or inbound address for an email source. Responses carry the webhook token, so every alert source path requires alertSource.manage.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /alert-sources (the `CreateAlertSource` operationId).
+	CreateAlertSourceWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateAlertSourceResponse, error)
+
+	// CreateAlertSourceWithResponse Create an alert source
+	//
+	// Every source gets its own webhook URL, or inbound address for an email source. Responses carry the webhook token, so every alert source path requires alertSource.manage.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /alert-sources (the `CreateAlertSource` operationId).
+	CreateAlertSourceWithResponse(ctx context.Context, body CreateAlertSourceJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateAlertSourceResponse, error)
+
+	// DeleteAlertSourceWithResponse Delete an alert source
+	//
+	// Its webhook URL or inbound address stops accepting alerts. Alerts that already arrived keep pointing at it.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /alert-sources/{id} (the `DeleteAlertSource` operationId).
+	DeleteAlertSourceWithResponse(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*DeleteAlertSourceResponse, error)
+
+	// GetAlertSourceWithResponse Get an alert source
+	//
+	// Responses carry the webhook token, so every alert source path requires alertSource.manage.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /alert-sources/{id} (the `GetAlertSource` operationId).
+	GetAlertSourceWithResponse(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*GetAlertSourceResponse, error)
+
+	// UpdateAlertSourceWithBodyWithResponse Update an alert source
+	//
+	// Omitted fields are unchanged; send alertRoutingId null to detach the source from its routing.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PATCH /alert-sources/{id} (the `UpdateAlertSource` operationId).
+	UpdateAlertSourceWithBodyWithResponse(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateAlertSourceResponse, error)
+
+	// UpdateAlertSourceWithResponse Update an alert source
+	//
+	// Omitted fields are unchanged; send alertRoutingId null to detach the source from its routing.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PATCH /alert-sources/{id} (the `UpdateAlertSource` operationId).
+	UpdateAlertSourceWithResponse(ctx context.Context, id int32, body UpdateAlertSourceJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateAlertSourceResponse, error)
+
 	// ListEscalationPoliciesWithResponse List escalation policies
 	//
 	// Lists all global and team policies in the API key organization. teamId filters to one team.
@@ -10151,6 +11142,386 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with GET /teams/{teamShortId}/on-call (the `GetTeamCurrentOnCall` operationId).
 	GetTeamCurrentOnCallWithResponse(ctx context.Context, teamShortId string, reqEditors ...RequestEditorFn) (*GetTeamCurrentOnCallResponse, error)
+}
+
+type ListAlertSourcesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *AlertSourceListResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ListAlertSources400JSONResponseBody
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ApiKeyDenialResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r ListAlertSourcesResponse) GetJSON200() *AlertSourceListResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r ListAlertSourcesResponse) GetJSON400() *ListAlertSources400JSONResponseBody {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r ListAlertSourcesResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r ListAlertSourcesResponse) GetJSON403() *ApiKeyDenialResponse {
+	return r.JSON403
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r ListAlertSourcesResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r ListAlertSourcesResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r ListAlertSourcesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListAlertSourcesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r ListAlertSourcesResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type CreateAlertSourceResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON201 the response for an HTTP 201 `application/json` response
+	JSON201 *AlertSource
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *CreateAlertSource400JSONResponseBody
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ApiKeyDenialResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON201 returns the response for an HTTP 201 `application/json` response
+func (r CreateAlertSourceResponse) GetJSON201() *AlertSource {
+	return r.JSON201
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r CreateAlertSourceResponse) GetJSON400() *CreateAlertSource400JSONResponseBody {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r CreateAlertSourceResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r CreateAlertSourceResponse) GetJSON403() *ApiKeyDenialResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r CreateAlertSourceResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r CreateAlertSourceResponse) GetJSON409() *ErrorResponse {
+	return r.JSON409
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r CreateAlertSourceResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r CreateAlertSourceResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateAlertSourceResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateAlertSourceResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r CreateAlertSourceResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type DeleteAlertSourceResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *DeleteAlertSource400JSONResponseBody
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ApiKeyDenialResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r DeleteAlertSourceResponse) GetJSON400() *DeleteAlertSource400JSONResponseBody {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r DeleteAlertSourceResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r DeleteAlertSourceResponse) GetJSON403() *ApiKeyDenialResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r DeleteAlertSourceResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r DeleteAlertSourceResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r DeleteAlertSourceResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteAlertSourceResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteAlertSourceResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r DeleteAlertSourceResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetAlertSourceResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *AlertSource
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *GetAlertSource400JSONResponseBody
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ApiKeyDenialResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetAlertSourceResponse) GetJSON200() *AlertSource {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r GetAlertSourceResponse) GetJSON400() *GetAlertSource400JSONResponseBody {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r GetAlertSourceResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r GetAlertSourceResponse) GetJSON403() *ApiKeyDenialResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r GetAlertSourceResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r GetAlertSourceResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r GetAlertSourceResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetAlertSourceResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetAlertSourceResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetAlertSourceResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type UpdateAlertSourceResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *AlertSource
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *UpdateAlertSource400JSONResponseBody
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ApiKeyDenialResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r UpdateAlertSourceResponse) GetJSON200() *AlertSource {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r UpdateAlertSourceResponse) GetJSON400() *UpdateAlertSource400JSONResponseBody {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r UpdateAlertSourceResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r UpdateAlertSourceResponse) GetJSON403() *ApiKeyDenialResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r UpdateAlertSourceResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r UpdateAlertSourceResponse) GetJSON409() *ErrorResponse {
+	return r.JSON409
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r UpdateAlertSourceResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r UpdateAlertSourceResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateAlertSourceResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateAlertSourceResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r UpdateAlertSourceResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
 }
 
 type ListEscalationPoliciesResponse struct {
@@ -13827,6 +15198,111 @@ func (r GetTeamCurrentOnCallResponse) ContentType() string {
 	return ""
 }
 
+// ListAlertSourcesWithResponse List alert sources
+//
+// Responses carry the webhook token, so every alert source path requires alertSource.manage.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /alert-sources (the `ListAlertSources` operationId).
+func (c *ClientWithResponses) ListAlertSourcesWithResponse(ctx context.Context, params *ListAlertSourcesParams, reqEditors ...RequestEditorFn) (*ListAlertSourcesResponse, error) {
+	rsp, err := c.ListAlertSources(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListAlertSourcesResponse(rsp)
+}
+
+// CreateAlertSourceWithBodyWithResponse Create an alert source
+//
+// Every source gets its own webhook URL, or inbound address for an email source. Responses carry the webhook token, so every alert source path requires alertSource.manage.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /alert-sources (the `CreateAlertSource` operationId).
+func (c *ClientWithResponses) CreateAlertSourceWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateAlertSourceResponse, error) {
+	rsp, err := c.CreateAlertSourceWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateAlertSourceResponse(rsp)
+}
+
+// CreateAlertSourceWithResponse Create an alert source
+//
+// Every source gets its own webhook URL, or inbound address for an email source. Responses carry the webhook token, so every alert source path requires alertSource.manage.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /alert-sources (the `CreateAlertSource` operationId).
+func (c *ClientWithResponses) CreateAlertSourceWithResponse(ctx context.Context, body CreateAlertSourceJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateAlertSourceResponse, error) {
+	rsp, err := c.CreateAlertSource(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateAlertSourceResponse(rsp)
+}
+
+// DeleteAlertSourceWithResponse Delete an alert source
+//
+// Its webhook URL or inbound address stops accepting alerts. Alerts that already arrived keep pointing at it.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /alert-sources/{id} (the `DeleteAlertSource` operationId).
+func (c *ClientWithResponses) DeleteAlertSourceWithResponse(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*DeleteAlertSourceResponse, error) {
+	rsp, err := c.DeleteAlertSource(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteAlertSourceResponse(rsp)
+}
+
+// GetAlertSourceWithResponse Get an alert source
+//
+// Responses carry the webhook token, so every alert source path requires alertSource.manage.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /alert-sources/{id} (the `GetAlertSource` operationId).
+func (c *ClientWithResponses) GetAlertSourceWithResponse(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*GetAlertSourceResponse, error) {
+	rsp, err := c.GetAlertSource(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetAlertSourceResponse(rsp)
+}
+
+// UpdateAlertSourceWithBodyWithResponse Update an alert source
+//
+// Omitted fields are unchanged; send alertRoutingId null to detach the source from its routing.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PATCH /alert-sources/{id} (the `UpdateAlertSource` operationId).
+func (c *ClientWithResponses) UpdateAlertSourceWithBodyWithResponse(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateAlertSourceResponse, error) {
+	rsp, err := c.UpdateAlertSourceWithBody(ctx, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateAlertSourceResponse(rsp)
+}
+
+// UpdateAlertSourceWithResponse Update an alert source
+//
+// Omitted fields are unchanged; send alertRoutingId null to detach the source from its routing.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PATCH /alert-sources/{id} (the `UpdateAlertSource` operationId).
+func (c *ClientWithResponses) UpdateAlertSourceWithResponse(ctx context.Context, id int32, body UpdateAlertSourceJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateAlertSourceResponse, error) {
+	rsp, err := c.UpdateAlertSource(ctx, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateAlertSourceResponse(rsp)
+}
+
 // ListEscalationPoliciesWithResponse List escalation policies
 //
 // Lists all global and team policies in the API key organization. teamId filters to one team.
@@ -14853,6 +16329,314 @@ func (c *ClientWithResponses) GetTeamCurrentOnCallWithResponse(ctx context.Conte
 		return nil, err
 	}
 	return ParseGetTeamCurrentOnCallResponse(rsp)
+}
+
+// ParseListAlertSourcesResponse parses an HTTP response from a ListAlertSourcesWithResponse call
+func ParseListAlertSourcesResponse(rsp *http.Response) (*ListAlertSourcesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListAlertSourcesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest AlertSourceListResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ListAlertSources400JSONResponseBody
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ApiKeyDenialResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateAlertSourceResponse parses an HTTP response from a CreateAlertSourceWithResponse call
+func ParseCreateAlertSourceResponse(rsp *http.Response) (*CreateAlertSourceResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateAlertSourceResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest AlertSource
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest CreateAlertSource400JSONResponseBody
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ApiKeyDenialResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteAlertSourceResponse parses an HTTP response from a DeleteAlertSourceWithResponse call
+func ParseDeleteAlertSourceResponse(rsp *http.Response) (*DeleteAlertSourceResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteAlertSourceResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 204:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest DeleteAlertSource400JSONResponseBody
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ApiKeyDenialResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetAlertSourceResponse parses an HTTP response from a GetAlertSourceWithResponse call
+func ParseGetAlertSourceResponse(rsp *http.Response) (*GetAlertSourceResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetAlertSourceResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest AlertSource
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest GetAlertSource400JSONResponseBody
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ApiKeyDenialResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateAlertSourceResponse parses an HTTP response from a UpdateAlertSourceWithResponse call
+func ParseUpdateAlertSourceResponse(rsp *http.Response) (*UpdateAlertSourceResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateAlertSourceResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest AlertSource
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest UpdateAlertSource400JSONResponseBody
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ApiKeyDenialResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
 }
 
 // ParseListEscalationPoliciesResponse parses an HTTP response from a ListEscalationPoliciesWithResponse call

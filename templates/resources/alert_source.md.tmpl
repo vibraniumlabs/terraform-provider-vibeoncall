@@ -1,0 +1,28 @@
+---
+page_title: "{{.Name}} {{.Type}} - {{.ProviderName}}"
+subcategory: ""
+description: |-
+{{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
+---
+
+# {{.Name}} ({{.Type}})
+
+{{ .Description | trimspace }}
+
+~> **Note** Every read returns the webhook token, so the API key needs the `alertSource.manage` permission even to plan or refresh this resource.
+
+Changing `type` or `team_id` replaces the source, and the new source has a new `webhook_url`. Set `create_before_destroy`, as in the example, so the old URL keeps accepting alerts until the monitoring tool's configuration, referencing `webhook_url`, moves to the new one.
+
+## Example Usage
+
+{{ tffile .ExampleFile }}
+
+{{ .SchemaMarkdown | trimspace }}
+
+## Import
+
+Import is supported using the following syntax:
+
+The [`terraform import` command](https://developer.hashicorp.com/terraform/cli/commands/import) can be used, for example:
+
+{{ codefile "shell" .ImportFile }}

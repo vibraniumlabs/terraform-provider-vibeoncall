@@ -4,7 +4,8 @@ info:
   version: 1.0.0
   description: |-
     Public REST API for accessing teams, team members, organization members, on-call schedules, escalation policies,
-    service catalog services, maintenance windows, chat channels, incidents, alerts, and automation actions.
+    service catalog services, maintenance windows, chat channels, alert sources, alert routings, incidents, alerts,
+    and automation actions.
 
     Authentication is performed via API key using the Authorization header
     with a Bearer token.
@@ -36,6 +37,10 @@ tags:
     description: Channels of the chat platform (Slack or Microsoft Teams) the organization is connected to.
   - name: Automation Actions
     description: Operations related to automation actions and execution logs.
+  - name: Alert Sources
+    description: Endpoints monitoring tools deliver alerts to, each handled by one alert routing.
+  - name: Alert Routings
+    description: "How a team handles the alerts its sources receive: ordered rules that page, or silence."
   - name: Incidents
     description: Operations related to incidents.
   - name: Alerts
@@ -2934,7 +2939,7 @@ components:
           properties:
             operator:
               type: string
-              enum:
+              enum: &a4
                 - equal_to
                 - less_than
                 - greater_than
@@ -2965,7 +2970,7 @@ components:
               description: Dot-path into the payload this rule is evaluated against. Alert routing, enrichment and maintenance-window rules evaluate the incoming payload, where the source's own fields are under `details`; automation rules evaluate the stored alert, where the same fields are under `metadata`. A path that matches nothing makes the rule silently never fire.
             operator:
               type: string
-              enum:
+              enum: &a5
                 - contains
                 - exact_match
                 - not_contains
@@ -3001,7 +3006,7 @@ components:
               type: array
               items:
                 type: string
-                enum:
+                enum: &a6
                   - opsgenie
                   - grafana
                   - datadog
@@ -3039,7 +3044,7 @@ components:
               minLength: 1
             operator:
               type: string
-              enum:
+              enum: &a7
                 - day_in_between
                 - week_in_between
             timeInterval:
@@ -3432,6 +3437,628 @@ components:
         - total
         - hasMore
         - alerts
+    AlertSource:
+      type: object
+      properties:
+        id:
+          type: integer
+          exclusiveMinimum: 0
+        name:
+          type: string
+        provider:
+          type: string
+          enum: &a3
+            - opsgenie
+            - grafana
+            - datadog
+            - coralogix
+            - newrelic
+            - prometheus
+            - cloudwatch
+            - sns
+            - email
+            - sentry
+            - embraceio
+            - http
+            - azuremonitor
+            - cloudamqp
+        teamId:
+          type:
+            - integer
+            - "null"
+          exclusiveMinimum: 0
+        alertRoutingId:
+          type:
+            - integer
+            - "null"
+          exclusiveMinimum: 0
+        isEnabled:
+          type: boolean
+        webhookUrl:
+          type:
+            - string
+            - "null"
+          description: Where the monitoring tool posts alerts; null for an email source.
+        webhookToken:
+          type:
+            - string
+            - "null"
+          description: The secret token at the end of webhookUrl; null for an email source.
+        emailAddress:
+          type:
+            - string
+            - "null"
+          description: The inbound address of an email source; null otherwise.
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - provider
+        - teamId
+        - alertRoutingId
+        - isEnabled
+        - webhookUrl
+        - webhookToken
+        - emailAddress
+        - createdAt
+        - updatedAt
+    AlertSourceListResponse:
+      type: object
+      properties:
+        alertSources:
+          type: array
+          items:
+            $ref: "#/components/schemas/AlertSource"
+      required:
+        - alertSources
+    CreateAlertSourceRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: Unique within its scope and provider.
+        provider:
+          type: string
+          enum: *a3
+          description: The monitoring tool that delivers to this source. Cannot be changed later.
+        teamId:
+          type:
+            - integer
+            - "null"
+          exclusiveMinimum: 0
+          description: Omit or send null for an organization-level source. Cannot be changed later.
+        alertRoutingId:
+          type:
+            - integer
+            - "null"
+          exclusiveMinimum: 0
+          description: The alert routing in the same scope that handles alerts arriving on this source.
+        isEnabled:
+          type: boolean
+          description: A source that is off rejects what arrives on it. Defaults to true.
+      required:
+        - name
+        - provider
+      additionalProperties: false
+    UpdateAlertSourceRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        alertRoutingId:
+          type:
+            - integer
+            - "null"
+          exclusiveMinimum: 0
+          description: The alert routing in the same scope that handles alerts arriving on this source.
+        isEnabled:
+          type: boolean
+      additionalProperties: false
+      minProperties: 1
+    AlertRoutingSeverityCondition:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - severity
+        rule:
+          type: object
+          properties:
+            operator:
+              type: string
+              enum: *a4
+            severity:
+              type: string
+          required:
+            - operator
+            - severity
+      required:
+        - type
+        - rule
+      description: rule.severity accepts the canonical SEV0-SEV5 or SIGNAL, or an alias such as P1 or critical; an alias reads back as its canonical value.
+    AlertRoutingFieldCondition:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - field
+        rule:
+          type: object
+          properties:
+            fieldPath:
+              type: string
+              minLength: 1
+              description: Dot-path into the payload this rule is evaluated against. Alert routing, enrichment and maintenance-window rules evaluate the incoming payload, where the source's own fields are under `details`; automation rules evaluate the stored alert, where the same fields are under `metadata`. A path that matches nothing makes the rule silently never fire.
+            operator:
+              type: string
+              enum: *a5
+            conditionValue:
+              type: string
+            isCaseSensitive:
+              type:
+                - boolean
+                - "null"
+          required:
+            - fieldPath
+            - operator
+            - conditionValue
+      required:
+        - type
+        - rule
+    AlertRoutingProviderCondition:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - provider
+        rule:
+          type: object
+          properties:
+            operator:
+              type: string
+              enum:
+                - one_of
+            providers:
+              type: array
+              items:
+                type: string
+                enum: *a6
+              minItems: 1
+          required:
+            - operator
+            - providers
+      required:
+        - type
+        - rule
+    AlertRoutingCountCondition:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - count
+        rule:
+          type: object
+          properties:
+            countThreshold:
+              type: integer
+              exclusiveMinimum: 0
+              minimum: 2
+            timeframe:
+              type: integer
+              exclusiveMinimum: 0
+              minimum: 60000
+              description: Milliseconds
+          required:
+            - countThreshold
+            - timeframe
+      required:
+        - type
+        - rule
+      description: Matches once countThreshold alerts arrived within timeframe milliseconds.
+    AlertRoutingTimeCondition:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - time
+        rule:
+          type: object
+          properties:
+            timezone:
+              type: string
+              minLength: 1
+            operator:
+              type: string
+              enum: *a7
+            timeInterval:
+              anyOf:
+                - type: object
+                  properties:
+                    startHourOffset:
+                      type: string
+                      pattern: ^\d{2}:\d{2}$
+                    endHourOffset:
+                      type: string
+                      pattern: ^\d{2}:\d{2}$
+                  required:
+                    - startHourOffset
+                    - endHourOffset
+                - type: object
+                  properties:
+                    weekRanges:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          startDay:
+                            type: integer
+                            minimum: 0
+                            maximum: 6
+                          endDay:
+                            type: integer
+                            minimum: 0
+                            maximum: 6
+                          startHourOffset:
+                            type: string
+                            pattern: ^\d{2}:\d{2}$
+                          endHourOffset:
+                            type: string
+                            pattern: ^\d{2}:\d{2}$
+                        required:
+                          - startDay
+                          - endDay
+                          - startHourOffset
+                          - endHourOffset
+                      minItems: 1
+                  required:
+                    - weekRanges
+          required:
+            - timezone
+            - operator
+            - timeInterval
+      required:
+        - type
+        - rule
+    AlertRoutingLeafCondition:
+      anyOf:
+        - $ref: "#/components/schemas/AlertRoutingSeverityCondition"
+        - $ref: "#/components/schemas/AlertRoutingFieldCondition"
+        - $ref: "#/components/schemas/AlertRoutingProviderCondition"
+        - $ref: "#/components/schemas/AlertRoutingCountCondition"
+        - $ref: "#/components/schemas/AlertRoutingTimeCondition"
+      description: One condition on the incoming alert payload. field matches a dot-path in the payload (source fields live under `details`).
+    AlertRoutingCondition:
+      anyOf:
+        - $ref: "#/components/schemas/AlertRoutingSeverityCondition"
+        - $ref: "#/components/schemas/AlertRoutingFieldCondition"
+        - $ref: "#/components/schemas/AlertRoutingProviderCondition"
+        - $ref: "#/components/schemas/AlertRoutingCountCondition"
+        - $ref: "#/components/schemas/AlertRoutingTimeCondition"
+        - type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - group
+            operator:
+              type: string
+              enum:
+                - AND
+                - OR
+              description: How the conditions inside this group combine.
+            conditions:
+              type: array
+              items:
+                anyOf:
+                  - $ref: "#/components/schemas/AlertRoutingSeverityCondition"
+                  - $ref: "#/components/schemas/AlertRoutingFieldCondition"
+                  - $ref: "#/components/schemas/AlertRoutingProviderCondition"
+                  - $ref: "#/components/schemas/AlertRoutingCountCondition"
+                  - $ref: "#/components/schemas/AlertRoutingTimeCondition"
+                  - type: object
+                    properties:
+                      type:
+                        type: string
+                        enum:
+                          - group
+                      operator:
+                        type: string
+                        enum:
+                          - AND
+                          - OR
+                        description: How the conditions inside this group combine.
+                      conditions:
+                        type: array
+                        items:
+                          anyOf:
+                            - $ref: "#/components/schemas/AlertRoutingSeverityCondition"
+                            - $ref: "#/components/schemas/AlertRoutingFieldCondition"
+                            - $ref: "#/components/schemas/AlertRoutingProviderCondition"
+                            - $ref: "#/components/schemas/AlertRoutingCountCondition"
+                            - $ref: "#/components/schemas/AlertRoutingTimeCondition"
+                            - type: object
+                              properties:
+                                type:
+                                  type: string
+                                  enum:
+                                    - group
+                                operator:
+                                  type: string
+                                  enum:
+                                    - AND
+                                    - OR
+                                  description: How the conditions inside this group combine.
+                                conditions:
+                                  type: array
+                                  items:
+                                    anyOf:
+                                      - $ref: "#/components/schemas/AlertRoutingSeverityCondition"
+                                      - $ref: "#/components/schemas/AlertRoutingFieldCondition"
+                                      - $ref: "#/components/schemas/AlertRoutingProviderCondition"
+                                      - $ref: "#/components/schemas/AlertRoutingCountCondition"
+                                      - $ref: "#/components/schemas/AlertRoutingTimeCondition"
+                                      - type: object
+                                        properties:
+                                          type:
+                                            type: string
+                                            enum:
+                                              - group
+                                          operator:
+                                            type: string
+                                            enum:
+                                              - AND
+                                              - OR
+                                            description: How the conditions inside this group combine.
+                                          conditions:
+                                            type: array
+                                            items:
+                                              $ref: "#/components/schemas/AlertRoutingLeafCondition"
+                                            minItems: 1
+                                        required:
+                                          - type
+                                          - operator
+                                          - conditions
+                                  minItems: 1
+                              required:
+                                - type
+                                - operator
+                                - conditions
+                        minItems: 1
+                    required:
+                      - type
+                      - operator
+                      - conditions
+              minItems: 1
+          required:
+            - type
+            - operator
+            - conditions
+      description: A leaf condition or a parenthesised group of conditions. Groups may nest up to 5 levels deep.
+    AlertRoutingEscalateAction:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - ESCALATE
+        value:
+          type: object
+          properties:
+            escalation:
+              type: array
+              items:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    enum:
+                      - escalationPolicy
+                      - schedule
+                      - user
+                  value:
+                    type: integer
+                    exclusiveMinimum: 0
+                    description: ID of the escalation policy, schedule or member.
+                required:
+                  - type
+                  - value
+                additionalProperties: false
+              minItems: 1
+            notificationUrgency:
+              type: string
+              enum:
+                - HIGH
+                - MEDIUM
+                - LOW
+            delayMs:
+              type: integer
+              minimum: 60000
+              maximum: 86400000
+          required:
+            - escalation
+          additionalProperties: false
+      required:
+        - type
+        - value
+      additionalProperties: false
+      description: Page the targets. delayMs waits before paging; notificationUrgency overrides the paging urgency.
+    AlertRoutingDoNothingAction:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - DO_NOTHING
+      required:
+        - type
+      additionalProperties: false
+      description: "Silence: create the alert without paging anyone."
+    AlertRoutingRule:
+      type: object
+      properties:
+        name:
+          type:
+            - string
+            - "null"
+        logicalOperator:
+          type: string
+          enum: &a8
+            - AND
+            - OR
+          description: How the top-level conditions combine.
+        conditions:
+          type: array
+          items:
+            $ref: "#/components/schemas/AlertRoutingCondition"
+          description: An empty list with logicalOperator AND is the fallback rule, which matches every alert.
+        action:
+          anyOf:
+            - $ref: "#/components/schemas/AlertRoutingEscalateAction"
+            - $ref: "#/components/schemas/AlertRoutingDoNothingAction"
+      required:
+        - name
+        - logicalOperator
+        - conditions
+        - action
+    AlertRouting:
+      type: object
+      properties:
+        id:
+          type: integer
+          exclusiveMinimum: 0
+        name:
+          type: string
+        description:
+          type:
+            - string
+            - "null"
+        teamId:
+          type:
+            - integer
+            - "null"
+          exclusiveMinimum: 0
+        isEnabled:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        rules:
+          type: array
+          items:
+            $ref: "#/components/schemas/AlertRoutingRule"
+          description: Rules in evaluation order.
+      required:
+        - id
+        - name
+        - description
+        - teamId
+        - isEnabled
+        - createdAt
+        - updatedAt
+        - rules
+    AlertRoutingListResponse:
+      type: object
+      properties:
+        alertRoutings:
+          type: array
+          items:
+            $ref: "#/components/schemas/AlertRouting"
+      required:
+        - alertRoutings
+    AlertRoutingRuleInput:
+      type: object
+      properties:
+        name:
+          type:
+            - string
+            - "null"
+          minLength: 1
+          maxLength: 255
+        logicalOperator:
+          type: string
+          enum: *a8
+          description: How the top-level conditions combine.
+        conditions:
+          type: array
+          items:
+            $ref: "#/components/schemas/AlertRoutingCondition"
+          description: An empty list with logicalOperator AND is the fallback rule, which matches every alert.
+        action:
+          anyOf:
+            - $ref: "#/components/schemas/AlertRoutingEscalateAction"
+            - $ref: "#/components/schemas/AlertRoutingDoNothingAction"
+      required:
+        - logicalOperator
+        - conditions
+        - action
+      additionalProperties: false
+    CreateAlertRoutingRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type:
+            - string
+            - "null"
+          maxLength: 5000
+        teamId:
+          type:
+            - integer
+            - "null"
+          exclusiveMinimum: 0
+          description: Omit or send null for an organization-level routing. Cannot be changed later.
+        isEnabled:
+          type: boolean
+          description: A routing that is off evaluates none of its rules. Defaults to true.
+        rules:
+          type: array
+          items:
+            $ref: "#/components/schemas/AlertRoutingRuleInput"
+          description: Rules in evaluation order; the first rule that matches decides. The list replaces every rule of the routing and reads back in the order sent. At most one fallback rule, and only last.
+      required:
+        - name
+      additionalProperties: false
+    UpdateAlertRoutingRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type:
+            - string
+            - "null"
+          maxLength: 5000
+        isEnabled:
+          type: boolean
+        rules:
+          type: array
+          items:
+            $ref: "#/components/schemas/AlertRoutingRuleInput"
+          description: Rules in evaluation order; the first rule that matches decides. The list replaces every rule of the routing and reads back in the order sent. At most one fallback rule, and only last.
+      additionalProperties: false
+      minProperties: 1
   parameters: {}
 paths:
   /teams:
@@ -6114,7 +6741,7 @@ paths:
                           - userId
                   minItems: 1
                   description: Responders to add to or remove from the incident.
-                  example: &a3
+                  example: &a9
                     - type: user
                       userId: 123
                     - type: team
@@ -6216,7 +6843,7 @@ paths:
                           - userId
                   minItems: 1
                   description: Responders to add to or remove from the incident.
-                  example: *a3
+                  example: *a9
               required:
                 - responders
               additionalProperties: false
@@ -6290,7 +6917,7 @@ paths:
                   minItems: 1
                   maxItems: 5
                   description: Label names to add or remove (1-5 items, 30 characters max per label).
-                  example: &a4
+                  example: &a10
                     - customer-impacting
                     - checkout
               required:
@@ -6366,7 +6993,7 @@ paths:
                   minItems: 1
                   maxItems: 5
                   description: Label names to add or remove (1-5 items, 30 characters max per label).
-                  example: *a4
+                  example: *a10
               required:
                 - labels
               additionalProperties: false
@@ -7529,7 +8156,7 @@ paths:
                   minItems: 1
                   maxItems: 5
                   description: Label names to add or remove (1-5 items, 30 characters max per label).
-                  example: &a5
+                  example: &a11
                     - OverwriteQuietHours
                     - Critical
               required:
@@ -7604,7 +8231,7 @@ paths:
                   minItems: 1
                   maxItems: 5
                   description: Label names to add or remove (1-5 items, 30 characters max per label).
-                  example: *a5
+                  example: *a11
               required:
                 - labels
       responses:
@@ -9297,6 +9924,574 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: Maintenance window not found or does not belong to the organization.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /alert-sources:
+    get:
+      tags:
+        - Alert Sources
+      security:
+        - ApiKeyAuth: []
+      operationId: listAlertSources
+      summary: List alert sources
+      description: Responses carry the webhook token, so every alert source path requires alertSource.manage.
+      parameters:
+        - schema:
+            anyOf:
+              - type: string
+                enum:
+                  - "null"
+              - type: integer
+                exclusiveMinimum: 0
+            description: Only this team's records. Send the literal `null` for organization-level records only; omit to list every scope.
+          required: false
+          name: teamId
+          in: query
+      responses:
+        "200":
+          description: Alert sources.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AlertSourceListResponse"
+        "400":
+          description: Invalid request, or an alert routing outside the source scope.
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: "#/components/schemas/ValidationErrorResponse"
+                  - $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Missing or invalid API key.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: "Permission denied: the API key is read-only, or its access does not include an action this request needs."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiKeyDenialResponse"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      tags:
+        - Alert Sources
+      security:
+        - ApiKeyAuth: []
+      operationId: createAlertSource
+      summary: Create an alert source
+      description: Every source gets its own webhook URL, or inbound address for an email source. Responses carry the webhook token, so every alert source path requires alertSource.manage.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAlertSourceRequest"
+      responses:
+        "201":
+          description: Created alert source.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AlertSource"
+        "400":
+          description: Invalid request, or an alert routing outside the source scope.
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: "#/components/schemas/ValidationErrorResponse"
+                  - $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Missing or invalid API key.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: "Permission denied: the API key is read-only, or its access does not include an action this request needs."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiKeyDenialResponse"
+        "404":
+          description: Alert source, alert routing or team not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: A source with this name and provider already exists in the scope.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /alert-sources/{id}:
+    get:
+      tags:
+        - Alert Sources
+      security:
+        - ApiKeyAuth: []
+      operationId: getAlertSource
+      summary: Get an alert source
+      description: Responses carry the webhook token, so every alert source path requires alertSource.manage.
+      parameters:
+        - schema:
+            type: integer
+            exclusiveMinimum: 0
+            description: Alert source ID.
+            format: int32
+          required: true
+          name: id
+          in: path
+      responses:
+        "200":
+          description: Alert source.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AlertSource"
+        "400":
+          description: Invalid request, or an alert routing outside the source scope.
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: "#/components/schemas/ValidationErrorResponse"
+                  - $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Missing or invalid API key.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: "Permission denied: the API key is read-only, or its access does not include an action this request needs."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiKeyDenialResponse"
+        "404":
+          description: Alert source, alert routing or team not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    patch:
+      tags:
+        - Alert Sources
+      security:
+        - ApiKeyAuth: []
+      operationId: updateAlertSource
+      summary: Update an alert source
+      description: Omitted fields are unchanged; send alertRoutingId null to detach the source from its routing.
+      parameters:
+        - schema:
+            type: integer
+            exclusiveMinimum: 0
+            description: Alert source ID.
+            format: int32
+          required: true
+          name: id
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateAlertSourceRequest"
+      responses:
+        "200":
+          description: Updated alert source.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AlertSource"
+        "400":
+          description: Invalid request, or an alert routing outside the source scope.
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: "#/components/schemas/ValidationErrorResponse"
+                  - $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Missing or invalid API key.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: "Permission denied: the API key is read-only, or its access does not include an action this request needs."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiKeyDenialResponse"
+        "404":
+          description: Alert source, alert routing or team not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: A source with this name and provider already exists in the scope.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      tags:
+        - Alert Sources
+      security:
+        - ApiKeyAuth: []
+      operationId: deleteAlertSource
+      summary: Delete an alert source
+      description: Its webhook URL or inbound address stops accepting alerts. Alerts that already arrived keep pointing at it.
+      parameters:
+        - schema:
+            type: integer
+            exclusiveMinimum: 0
+            description: Alert source ID.
+            format: int32
+          required: true
+          name: id
+          in: path
+      responses:
+        "204":
+          description: Alert source deleted.
+        "400":
+          description: Invalid request, or an alert routing outside the source scope.
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: "#/components/schemas/ValidationErrorResponse"
+                  - $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Missing or invalid API key.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: "Permission denied: the API key is read-only, or its access does not include an action this request needs."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiKeyDenialResponse"
+        "404":
+          description: Alert source, alert routing or team not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /alert-routings:
+    get:
+      tags:
+        - Alert Routings
+      security:
+        - ApiKeyAuth: []
+      operationId: listAlertRoutings
+      summary: List alert routings
+      parameters:
+        - schema:
+            anyOf:
+              - type: string
+                enum:
+                  - "null"
+              - type: integer
+                exclusiveMinimum: 0
+            description: Only this team's records. Send the literal `null` for organization-level records only; omit to list every scope.
+          required: false
+          name: teamId
+          in: query
+      responses:
+        "200":
+          description: Alert routings.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AlertRoutingListResponse"
+        "400":
+          description: Invalid request, or a rule target that is not in the organization.
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: "#/components/schemas/ValidationErrorResponse"
+                  - $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Missing or invalid API key.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      tags:
+        - Alert Routings
+      security:
+        - ApiKeyAuth: []
+      operationId: createAlertRouting
+      summary: Create an alert routing
+      description: Creates a routing with its rules. Point alert sources at it with the alert source alertRoutingId.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAlertRoutingRequest"
+      responses:
+        "201":
+          description: Created alert routing.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AlertRouting"
+        "400":
+          description: Invalid request, or a rule target that is not in the organization.
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: "#/components/schemas/ValidationErrorResponse"
+                  - $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Missing or invalid API key.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: "Permission denied: the API key is read-only, or its access does not include an action this request needs."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiKeyDenialResponse"
+        "404":
+          description: Alert routing or team not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: A routing with this name already exists in the scope.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /alert-routings/{id}:
+    get:
+      tags:
+        - Alert Routings
+      security:
+        - ApiKeyAuth: []
+      operationId: getAlertRouting
+      summary: Get an alert routing
+      parameters:
+        - schema:
+            type: integer
+            exclusiveMinimum: 0
+            description: Alert routing ID.
+            format: int32
+          required: true
+          name: id
+          in: path
+      responses:
+        "200":
+          description: Alert routing.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AlertRouting"
+        "400":
+          description: Invalid request, or a rule target that is not in the organization.
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: "#/components/schemas/ValidationErrorResponse"
+                  - $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Missing or invalid API key.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Alert routing or team not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    patch:
+      tags:
+        - Alert Routings
+      security:
+        - ApiKeyAuth: []
+      operationId: updateAlertRouting
+      summary: Update an alert routing
+      description: Omitted fields are unchanged. A supplied rules list replaces every rule; an empty list removes them all.
+      parameters:
+        - schema:
+            type: integer
+            exclusiveMinimum: 0
+            description: Alert routing ID.
+            format: int32
+          required: true
+          name: id
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateAlertRoutingRequest"
+      responses:
+        "200":
+          description: Updated alert routing.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AlertRouting"
+        "400":
+          description: Invalid request, or a rule target that is not in the organization.
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: "#/components/schemas/ValidationErrorResponse"
+                  - $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Missing or invalid API key.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: "Permission denied: the API key is read-only, or its access does not include an action this request needs."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiKeyDenialResponse"
+        "404":
+          description: Alert routing or team not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: A routing with this name already exists in the scope.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      tags:
+        - Alert Routings
+      security:
+        - ApiKeyAuth: []
+      operationId: deleteAlertRouting
+      summary: Delete an alert routing
+      description: Deletes the routing and every rule on it, including enrichment rules set up in the product. Refused while an alert source or heartbeat still uses it; delete or repoint those first.
+      parameters:
+        - schema:
+            type: integer
+            exclusiveMinimum: 0
+            description: Alert routing ID.
+            format: int32
+          required: true
+          name: id
+          in: path
+      responses:
+        "204":
+          description: Alert routing deleted.
+        "400":
+          description: Invalid request, or a rule target that is not in the organization.
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: "#/components/schemas/ValidationErrorResponse"
+                  - $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Missing or invalid API key.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: "Permission denied: the API key is read-only, or its access does not include an action this request needs."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiKeyDenialResponse"
+        "404":
+          description: Alert routing or team not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: An alert source or heartbeat still uses the routing.
           content:
             application/json:
               schema:
