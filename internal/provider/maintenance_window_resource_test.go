@@ -117,7 +117,7 @@ const datadogAtMostSev3 = `
     operator = "AND"
     conditions = [
       { provider = { providers = ["datadog", "grafana"] } },
-      { severity = { operator = "greater_than_or_equal", severity = "SEV3" } },
+      { severity = { operator = "less_than_or_equal", severity = "SEV3" } },
     ]
   }]
 `
@@ -163,7 +163,7 @@ func TestMaintenanceWindowResourceLifecycle(t *testing.T) {
 					api.checkWindowStart(1, start),
 					api.checkWindowConditions("AND", `[
 						{"type":"provider","rule":{"operator":"one_of","providers":["datadog","grafana"]}},
-						{"type":"severity","rule":{"operator":"greater_than_or_equal","severity":"SEV3"}}
+						{"type":"severity","rule":{"operator":"less_than_or_equal","severity":"SEV3"}}
 					]`),
 				),
 			},
@@ -453,7 +453,7 @@ func TestMaintenanceWindowResourceRewritesUnsupportedConditionsSetThroughTheAPI(
 				},
 				Check: api.checkWindowConditions("AND", `[
 					{"type":"provider","rule":{"operator":"one_of","providers":["datadog","grafana"]}},
-					{"type":"severity","rule":{"operator":"greater_than_or_equal","severity":"SEV3"}}
+					{"type":"severity","rule":{"operator":"less_than_or_equal","severity":"SEV3"}}
 				]`),
 			},
 		},

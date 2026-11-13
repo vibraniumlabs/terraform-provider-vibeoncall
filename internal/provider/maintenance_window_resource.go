@@ -61,7 +61,7 @@ func conditionAttributes() map[string]schema.Attribute {
 			)},
 			Attributes: map[string]schema.Attribute{
 				"operator": schema.StringAttribute{
-					MarkdownDescription: "One of `equal_to`, `less_than`, `greater_than`, `less_than_or_equal`, `greater_than_or_equal`.",
+					MarkdownDescription: "One of `equal_to`, `less_than`, `greater_than`, `less_than_or_equal`, `greater_than_or_equal`. `greater_than` means more severe, so `less_than_or_equal` with `SEV3` matches SEV3, SEV4, SEV5 and SIGNAL.",
 					Required:            true,
 					Validators: []validator.String{stringvalidator.OneOf(
 						string(client.EqualTo), string(client.LessThan), string(client.GreaterThan),

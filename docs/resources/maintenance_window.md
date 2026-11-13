@@ -9,7 +9,11 @@ description: |-
 
 A maintenance window: a planned period during which matching alerts do not page anyone. Alerts are still ingested and created. Suited to planned, short-lived windows.
 
+~> **Warning** A window with neither `team_id` nor `condition_groups` mutes automatic paging for every alert in the organization while it is active.
+
 ~> **Note** Once `start_at` has passed, the window's `start_at` cannot change, and changing `team_id` fails at plan time because it would replace the window. Once `end_at` has passed, the window cannot change at all. To keep an ended window in the app's history when you remove it from your configuration, use a `removed` block with `destroy = false`; destroying it deletes it from the app.
+
+If a started window's team is changed in the app, the next plan wants to replace it and fails with the same `team_id` error. Set `team_id` in your configuration to the new team, or change the team back in the app.
 
 ## Conditions
 
@@ -31,12 +35,12 @@ resource "vibeoncall_maintenance_window" "db_upgrade" {
 
   announcement_channels = [data.vibeoncall_chat_channel.incidents.id]
 
-  # Covers Datadog or Grafana alerts at SEV3 or below.
+  # Covers Datadog or Grafana alerts at SEV3 or less severe: SEV3, SEV4, SEV5 and SIGNAL.
   condition_groups = [{
     operator = "AND"
     conditions = [
       { provider = { providers = ["datadog", "grafana"] } },
-      { severity = { operator = "greater_than_or_equal", severity = "SEV3" } },
+      { severity = { operator = "less_than_or_equal", severity = "SEV3" } },
     ]
   }]
 }
@@ -130,7 +134,7 @@ Required:
 
 Required:
 
-- `operator` (String) One of `equal_to`, `less_than`, `greater_than`, `less_than_or_equal`, `greater_than_or_equal`.
+- `operator` (String) One of `equal_to`, `less_than`, `greater_than`, `less_than_or_equal`, `greater_than_or_equal`. `greater_than` means more severe, so `less_than_or_equal` with `SEV3` matches SEV3, SEV4, SEV5 and SIGNAL.
 - `severity` (String) One of `SEV0` to `SEV5`, or `SIGNAL`.
 
 
