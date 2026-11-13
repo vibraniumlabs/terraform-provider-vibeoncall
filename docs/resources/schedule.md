@@ -11,7 +11,7 @@ An on-call schedule and its rotations.
 
 ~> **Note** The first participant is on call from `start_date`, and the rest follow in `participant_ids` order. Removing a participant can change who is on call now. To keep the current responder, list them first and set `start_date` to the date their current shift started.
 
-~> **Note** Rotations are matched to existing ones by name, and rotations sharing a name by their order. Removing one of two rotations with the same name removes the later one. Moving a rotation to a new position rewrites the rotations in place by position, so their overrides stay with the position, not the rotation you moved.
+~> **Note** Rotations are matched to existing ones by name, and rotations sharing a name by their order. Removing one of two rotations with the same name removes the later one. Moving a rotation to a new position rewrites the rotations in place by position, and the plan shows a warning when it does. Anything that targets a rotation by ID, such as overrides, escalation policies and routing rules, stays with the position, not the rotation you moved, so a policy can start paging a different rotation.
 
 ## Example Usage
 

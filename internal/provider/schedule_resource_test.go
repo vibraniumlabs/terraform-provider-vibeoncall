@@ -540,6 +540,32 @@ func TestScheduleResourceRejectsMalformedImportID(t *testing.T) {
 	})
 }
 
+func TestRewrittenRotations(t *testing.T) {
+	ab := []priorRotation{{ID: "1", Name: "A"}, {ID: "2", Name: "B"}}
+	ll := []priorRotation{{ID: "1", Name: "L"}, {ID: "2", Name: "L"}}
+	for name, tc := range map[string]struct {
+		prior   []priorRotation
+		desired []string
+		want    []string
+	}{
+		"unchanged":                      {ab, []string{"A", "B"}, nil},
+		"renamed":                        {ab, []string{"A", "X"}, nil},
+		"last removed":                   {ab, []string{"A"}, nil},
+		"appended":                       {ab, []string{"A", "B", "C"}, nil},
+		"one of duplicate names renamed": {ll, []string{"L", "X"}, nil},
+		"reordered":                      {ab, []string{"B", "A"}, []string{`- rotation 1 changes from "A" to "B"`, `- rotation 2 changes from "B" to "A"`}},
+		"inserted in the middle":         {ab, []string{"A", "X", "B"}, []string{`- rotation 2 changes from "B" to "X"`}},
+		"inserted between duplicates":    {ll, []string{"L", "X", "L"}, []string{`- rotation 2 changes from "L" to "X"`}},
+	} {
+		t.Run(name, func(t *testing.T) {
+			got := rewrittenRotations(tc.prior, tc.desired, matchRotations(tc.prior, tc.desired))
+			if !reflect.DeepEqual(got, tc.want) {
+				t.Errorf("rewrittenRotations(%v) = %q, want %q", tc.desired, got, tc.want)
+			}
+		})
+	}
+}
+
 func TestMatchRotations(t *testing.T) {
 	prior := func(pairs ...string) []priorRotation {
 		out := make([]priorRotation, 0, len(pairs)/2)

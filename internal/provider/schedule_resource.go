@@ -8,6 +8,7 @@ import (
 	"reflect"
 	"regexp"
 	"slices"
+	"strings"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
@@ -258,9 +259,17 @@ func (r *ScheduleResource) ModifyPlan(ctx context.Context, req resource.ModifyPl
 	if req.Plan.Get(ctx, &plan).HasError() || req.State.Get(ctx, &state).HasError() {
 		return
 	}
-	assigned, ok := assignRotationIDs(plan.Rotations, state.Rotations)
+	desired, ok := rotationNames(plan.Rotations)
 	if !ok {
 		return
+	}
+	prior := priorRotations(state.Rotations)
+	assigned := matchRotations(prior, desired)
+	if rewritten := rewrittenRotations(prior, desired, assigned); len(rewritten) > 0 {
+		resp.Diagnostics.AddWarning("Rotations will be rewritten in place",
+			"The API can't move a rotation, so these rotations keep their IDs and take new content. "+
+				"Overrides, escalation policies and routing rules that target these IDs will apply to the new content:\n"+
+				strings.Join(rewritten, "\n"))
 	}
 	for i, id := range assigned {
 		plan.Rotations[i].ID = types.StringUnknown()
@@ -519,18 +528,59 @@ type priorRotation struct {
 }
 
 func assignRotationIDs(planned, prior []scheduleRotationModel) ([]string, bool) {
-	desired := make([]string, len(planned))
-	for i, rot := range planned {
+	desired, ok := rotationNames(planned)
+	if !ok {
+		return nil, false
+	}
+	return matchRotations(priorRotations(prior), desired), true
+}
+
+func rotationNames(rotations []scheduleRotationModel) ([]string, bool) {
+	names := make([]string, len(rotations))
+	for i, rot := range rotations {
 		if rot.Name.IsUnknown() {
 			return nil, false
 		}
-		desired[i] = rot.Name.ValueString()
+		names[i] = rot.Name.ValueString()
 	}
-	priors := make([]priorRotation, len(prior))
-	for i, rot := range prior {
-		priors[i] = priorRotation{ID: rot.ID.ValueString(), Name: rot.Name.ValueString()}
+	return names, true
+}
+
+func priorRotations(rotations []scheduleRotationModel) []priorRotation {
+	out := make([]priorRotation, len(rotations))
+	for i, rot := range rotations {
+		out[i] = priorRotation{ID: rot.ID.ValueString(), Name: rot.Name.ValueString()}
 	}
-	return matchRotations(priors, desired), true
+	return out
+}
+
+func rewrittenRotations(prior []priorRotation, desired, assigned []string) []string {
+	priorNames := make([]string, len(prior))
+	for i, p := range prior {
+		priorNames[i] = p.Name
+	}
+	var out []string
+	for i, id := range assigned {
+		if id == "" {
+			continue
+		}
+		name := priorNames[slices.IndexFunc(prior, func(p priorRotation) bool { return p.ID == id })]
+		if name == desired[i] || countName(desired, name) < countName(priorNames, name) {
+			continue
+		}
+		out = append(out, fmt.Sprintf("- rotation %s changes from %q to %q", id, name, desired[i]))
+	}
+	return out
+}
+
+func countName(names []string, name string) int {
+	n := 0
+	for _, v := range names {
+		if v == name {
+			n++
+		}
+	}
+	return n
 }
 
 // The API keeps rotation positions and only appends, so every candidate must leave the rotations in the desired order.
