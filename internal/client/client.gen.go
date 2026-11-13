@@ -212,24 +212,6 @@ func (e PublicScheduleRotationConfig1Type) Valid() bool {
 	}
 }
 
-// Defines values for ServiceTeamResponderSource.
-const (
-	ServiceTeamResponderSourceAdded ServiceTeamResponderSource = "added"
-	ServiceTeamResponderSourceOwner ServiceTeamResponderSource = "owner"
-)
-
-// Valid indicates whether the value is a known member of the ServiceTeamResponderSource enum.
-func (e ServiceTeamResponderSource) Valid() bool {
-	switch e {
-	case ServiceTeamResponderSourceAdded:
-		return true
-	case ServiceTeamResponderSourceOwner:
-		return true
-	default:
-		return false
-	}
-}
-
 // Defines values for ServiceTeamResponderType.
 const (
 	Team ServiceTeamResponderType = "team"
@@ -239,21 +221,6 @@ const (
 func (e ServiceTeamResponderType) Valid() bool {
 	switch e {
 	case Team:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for ServiceUserResponderSource.
-const (
-	ServiceUserResponderSourceAdded ServiceUserResponderSource = "added"
-)
-
-// Valid indicates whether the value is a known member of the ServiceUserResponderSource enum.
-func (e ServiceUserResponderSource) Valid() bool {
-	switch e {
-	case ServiceUserResponderSourceAdded:
 		return true
 	default:
 		return false
@@ -1003,7 +970,7 @@ type ServiceCatalogPublicSummary struct {
 	// Name Service display name.
 	Name string `json:"name"`
 
-	// Responders Teams and users paged for this service: its owning team first (source owner), then those added to it (source added).
+	// Responders Teams and users added to the service. Its owning team responds without being added; adding it as well keeps it responding after the service moves to another team.
 	Responders []ServiceResponder `json:"responders"`
 
 	// Stakeholders Manual stakeholder users assigned to this service.
@@ -1045,35 +1012,25 @@ type ServiceStakeholdersResponse struct {
 
 // ServiceTeamResponder defines model for ServiceTeamResponder.
 type ServiceTeamResponder struct {
-	// Source owner: the service's owning team, which always responds while it owns the service. added: added to the service, and removable.
-	Source ServiceTeamResponderSource `json:"source"`
-	Team   struct {
+	Team struct {
 		Id   int32  `json:"id"`
 		Name string `json:"name"`
 	} `json:"team"`
 	Type ServiceTeamResponderType `json:"type"`
 }
 
-// ServiceTeamResponderSource owner: the service's owning team, which always responds while it owns the service. added: added to the service, and removable.
-type ServiceTeamResponderSource string
-
 // ServiceTeamResponderType defines model for ServiceTeamResponder.Type.
 type ServiceTeamResponderType string
 
 // ServiceUserResponder defines model for ServiceUserResponder.
 type ServiceUserResponder struct {
-	// Source Always added: a person is added to the service, and removable; only a team owns one.
-	Source ServiceUserResponderSource `json:"source"`
-	Type   ServiceUserResponderType   `json:"type"`
-	User   struct {
+	Type ServiceUserResponderType `json:"type"`
+	User struct {
 		Email    string                    `json:"email"`
 		FullName nullable.Nullable[string] `json:"fullName"`
 		Id       int32                     `json:"id"`
 	} `json:"user"`
 }
-
-// ServiceUserResponderSource Always added: a person is added to the service, and removable; only a team owns one.
-type ServiceUserResponderSource string
 
 // ServiceUserResponderType defines model for ServiceUserResponder.Type.
 type ServiceUserResponderType string
@@ -3560,7 +3517,7 @@ type ClientInterface interface {
 
 	// AddServiceRespondersWithBody Add service responders
 	//
-	// Adds teams and users to the service's responders. The service's owning team always responds, so it is skipped if sent; change it by updating the service's `teamId`.
+	// Adds teams and users to the service's responders. Adding its owning team keeps that team responding after the service moves to another team.
 	//
 	// Takes any type of body and a specified content type.
 	//
@@ -3569,7 +3526,7 @@ type ClientInterface interface {
 
 	// AddServiceResponders Add service responders
 	//
-	// Adds teams and users to the service's responders. The service's owning team always responds, so it is skipped if sent; change it by updating the service's `teamId`.
+	// Adds teams and users to the service's responders. Adding its owning team keeps that team responding after the service moves to another team.
 	//
 	// Takes a body of the `application/json` content type.
 	//
@@ -3578,7 +3535,7 @@ type ClientInterface interface {
 
 	// RemoveServiceRespondersWithBody Remove service responders
 	//
-	// Removes teams and users the service's responders were given. The service's owning team always responds, so it is skipped if sent; change it by updating the service's `teamId`.
+	// Removes teams and users from the service's responders. Its owning team keeps responding while it owns the service.
 	//
 	// Takes any type of body and a specified content type.
 	//
@@ -3587,7 +3544,7 @@ type ClientInterface interface {
 
 	// RemoveServiceResponders Remove service responders
 	//
-	// Removes teams and users the service's responders were given. The service's owning team always responds, so it is skipped if sent; change it by updating the service's `teamId`.
+	// Removes teams and users from the service's responders. Its owning team keeps responding while it owns the service.
 	//
 	// Takes a body of the `application/json` content type.
 	//
@@ -4467,7 +4424,7 @@ func (c *Client) UpdateService(ctx context.Context, id int32, body UpdateService
 
 // AddServiceRespondersWithBody Add service responders
 //
-// Adds teams and users to the service's responders. The service's owning team always responds, so it is skipped if sent; change it by updating the service's `teamId`.
+// Adds teams and users to the service's responders. Adding its owning team keeps that team responding after the service moves to another team.
 //
 // Takes any type of body and a specified content type.
 //
@@ -4486,7 +4443,7 @@ func (c *Client) AddServiceRespondersWithBody(ctx context.Context, id int32, con
 
 // AddServiceResponders Add service responders
 //
-// Adds teams and users to the service's responders. The service's owning team always responds, so it is skipped if sent; change it by updating the service's `teamId`.
+// Adds teams and users to the service's responders. Adding its owning team keeps that team responding after the service moves to another team.
 //
 // Takes a body of the `application/json` content type.
 //
@@ -4505,7 +4462,7 @@ func (c *Client) AddServiceResponders(ctx context.Context, id int32, body AddSer
 
 // RemoveServiceRespondersWithBody Remove service responders
 //
-// Removes teams and users the service's responders were given. The service's owning team always responds, so it is skipped if sent; change it by updating the service's `teamId`.
+// Removes teams and users from the service's responders. Its owning team keeps responding while it owns the service.
 //
 // Takes any type of body and a specified content type.
 //
@@ -4524,7 +4481,7 @@ func (c *Client) RemoveServiceRespondersWithBody(ctx context.Context, id int32, 
 
 // RemoveServiceResponders Remove service responders
 //
-// Removes teams and users the service's responders were given. The service's owning team always responds, so it is skipped if sent; change it by updating the service's `teamId`.
+// Removes teams and users from the service's responders. Its owning team keeps responding while it owns the service.
 //
 // Takes a body of the `application/json` content type.
 //
@@ -7569,7 +7526,7 @@ type ClientWithResponsesInterface interface {
 
 	// AddServiceRespondersWithBodyWithResponse Add service responders
 	//
-	// Adds teams and users to the service's responders. The service's owning team always responds, so it is skipped if sent; change it by updating the service's `teamId`.
+	// Adds teams and users to the service's responders. Adding its owning team keeps that team responding after the service moves to another team.
 	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -7578,7 +7535,7 @@ type ClientWithResponsesInterface interface {
 
 	// AddServiceRespondersWithResponse Add service responders
 	//
-	// Adds teams and users to the service's responders. The service's owning team always responds, so it is skipped if sent; change it by updating the service's `teamId`.
+	// Adds teams and users to the service's responders. Adding its owning team keeps that team responding after the service moves to another team.
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -7587,7 +7544,7 @@ type ClientWithResponsesInterface interface {
 
 	// RemoveServiceRespondersWithBodyWithResponse Remove service responders
 	//
-	// Removes teams and users the service's responders were given. The service's owning team always responds, so it is skipped if sent; change it by updating the service's `teamId`.
+	// Removes teams and users from the service's responders. Its owning team keeps responding while it owns the service.
 	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -7596,7 +7553,7 @@ type ClientWithResponsesInterface interface {
 
 	// RemoveServiceRespondersWithResponse Remove service responders
 	//
-	// Removes teams and users the service's responders were given. The service's owning team always responds, so it is skipped if sent; change it by updating the service's `teamId`.
+	// Removes teams and users from the service's responders. Its owning team keeps responding while it owns the service.
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -11585,7 +11542,7 @@ func (c *ClientWithResponses) UpdateServiceWithResponse(ctx context.Context, id 
 
 // AddServiceRespondersWithBodyWithResponse Add service responders
 //
-// Adds teams and users to the service's responders. The service's owning team always responds, so it is skipped if sent; change it by updating the service's `teamId`.
+// Adds teams and users to the service's responders. Adding its owning team keeps that team responding after the service moves to another team.
 //
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
@@ -11600,7 +11557,7 @@ func (c *ClientWithResponses) AddServiceRespondersWithBodyWithResponse(ctx conte
 
 // AddServiceRespondersWithResponse Add service responders
 //
-// Adds teams and users to the service's responders. The service's owning team always responds, so it is skipped if sent; change it by updating the service's `teamId`.
+// Adds teams and users to the service's responders. Adding its owning team keeps that team responding after the service moves to another team.
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
@@ -11615,7 +11572,7 @@ func (c *ClientWithResponses) AddServiceRespondersWithResponse(ctx context.Conte
 
 // RemoveServiceRespondersWithBodyWithResponse Remove service responders
 //
-// Removes teams and users the service's responders were given. The service's owning team always responds, so it is skipped if sent; change it by updating the service's `teamId`.
+// Removes teams and users from the service's responders. Its owning team keeps responding while it owns the service.
 //
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
@@ -11630,7 +11587,7 @@ func (c *ClientWithResponses) RemoveServiceRespondersWithBodyWithResponse(ctx co
 
 // RemoveServiceRespondersWithResponse Remove service responders
 //
-// Removes teams and users the service's responders were given. The service's owning team always responds, so it is skipped if sent; change it by updating the service's `teamId`.
+// Removes teams and users from the service's responders. Its owning team keeps responding while it owns the service.
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //

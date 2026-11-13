@@ -122,7 +122,7 @@ func TestServiceResourceLifecycle(t *testing.T) {
 	})
 }
 
-func TestServiceResourceOwnerChangeLeavesNoHiddenResponder(t *testing.T) {
+func TestServiceResourceOwnerCanAlsoBeAResponder(t *testing.T) {
 	api, srv := newFakeAPI(t)
 
 	resource.UnitTest(t, resource.TestCase{
@@ -132,30 +132,29 @@ func TestServiceResourceOwnerChangeLeavesNoHiddenResponder(t *testing.T) {
 			{
 				Config: serviceConfig(srv.URL, `
   team_id            = vibeoncall_team.payments.id
-  responder_team_ids = [vibeoncall_team.platform.id]
+  responder_team_ids = [vibeoncall_team.payments.id, vibeoncall_team.platform.id]
 `),
-				Check: api.checkFirstServiceResponders([]fakeResponderRow{{TeamID: 2}}),
-			},
-			{
-				Config: serviceConfig(srv.URL, `team_id = vibeoncall_team.platform.id`),
-				Check:  api.checkFirstServiceResponders(nil),
-			},
-			{
-				Config: serviceConfig(srv.URL, `team_id = vibeoncall_team.search.id`),
-				Check:  resource.TestCheckNoResourceAttr("vibeoncall_service.checkout", "responder_team_ids"),
+				Check: api.checkFirstServiceResponders([]fakeResponderRow{{TeamID: 1}, {TeamID: 2}}),
 			},
 			{
 				Config: serviceConfig(srv.URL, `
-  team_id            = vibeoncall_team.payments.id
-  responder_team_ids = [vibeoncall_team.search.id]
+  team_id            = vibeoncall_team.platform.id
+  responder_team_ids = [vibeoncall_team.payments.id, vibeoncall_team.platform.id]
 `),
-				Check: api.checkFirstServiceResponders([]fakeResponderRow{{TeamID: 3}}),
+				Check: api.checkFirstServiceResponders([]fakeResponderRow{{TeamID: 1}, {TeamID: 2}}),
+			},
+			{
+				Config: serviceConfig(srv.URL, `
+  team_id            = vibeoncall_team.platform.id
+  responder_team_ids = [vibeoncall_team.payments.id]
+`),
+				Check: api.checkFirstServiceResponders([]fakeResponderRow{{TeamID: 1}}),
 			},
 		},
 	})
 }
 
-func TestServiceResourceOwnerChangedInAppLeavesNoHiddenResponder(t *testing.T) {
+func TestServiceResourceOwnerChangedInAppKeepsResponders(t *testing.T) {
 	api, srv := newFakeAPI(t)
 
 	resource.UnitTest(t, resource.TestCase{
@@ -170,7 +169,10 @@ func TestServiceResourceOwnerChangedInAppLeavesNoHiddenResponder(t *testing.T) {
 			},
 			{
 				PreConfig: func() { api.setServiceOwner(1, 2) },
-				Config:    serviceConfig(srv.URL, `team_id = vibeoncall_team.platform.id`),
+				Config: serviceConfig(srv.URL, `
+  team_id            = vibeoncall_team.platform.id
+  responder_team_ids = [vibeoncall_team.platform.id]
+`),
 				ConfigPlanChecks: resource.ConfigPlanChecks{
 					PreApply: []plancheck.PlanCheck{plancheck.ExpectEmptyPlan()},
 				},
@@ -178,35 +180,6 @@ func TestServiceResourceOwnerChangedInAppLeavesNoHiddenResponder(t *testing.T) {
 			{
 				Config: serviceConfig(srv.URL, `team_id = vibeoncall_team.search.id`),
 				Check:  api.checkFirstServiceResponders(nil),
-			},
-		},
-	})
-}
-
-func TestServiceResourceRejectsOwnerAsResponder(t *testing.T) {
-	api, srv := newFakeAPI(t)
-
-	resource.UnitTest(t, resource.TestCase{
-		ProtoV6ProviderFactories: protoV6ProviderFactories(),
-		CheckDestroy:             api.checkNothingLeft,
-		Steps: []resource.TestStep{
-			{
-				Config: providerConfig(srv.URL) + `
-resource "vibeoncall_service" "x" {
-  name               = "X"
-  team_id            = "5"
-  responder_team_ids = ["5", "6"]
-}
-`,
-				PlanOnly:    true,
-				ExpectError: regexp.MustCompile(`Owning team listed as a responder`),
-			},
-			{
-				Config: serviceConfig(srv.URL, `
-  team_id            = vibeoncall_team.payments.id
-  responder_team_ids = [vibeoncall_team.payments.id]
-`),
-				ExpectError: regexp.MustCompile(`Owning team listed as a responder`),
 			},
 		},
 	})

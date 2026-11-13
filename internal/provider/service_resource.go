@@ -28,7 +28,6 @@ var (
 	_ resource.Resource                     = &ServiceResource{}
 	_ resource.ResourceWithImportState      = &ServiceResource{}
 	_ resource.ResourceWithConfigValidators = &ServiceResource{}
-	_ resource.ResourceWithValidateConfig   = &ServiceResource{}
 )
 
 func NewServiceResource() resource.Resource {
@@ -71,7 +70,7 @@ func (r *ServiceResource) Metadata(ctx context.Context, req resource.MetadataReq
 
 func (r *ServiceResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "A service in the service catalog, with the teams and users paged for it and the stakeholders kept informed.",
+		MarkdownDescription: "A service in the service catalog, with the teams and users who respond to it and the stakeholders kept informed.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				MarkdownDescription: "Numeric service ID.",
@@ -89,7 +88,7 @@ func (r *ServiceResource) Schema(ctx context.Context, req resource.SchemaRequest
 				Validators:          []validator.String{stringvalidator.UTF8LengthAtMost(1000), noSurroundingWhitespace},
 			},
 			"team_id": schema.StringAttribute{
-				MarkdownDescription: "Numeric ID of the owning team. The owning team is always paged for the service, so do not list it in `responder_team_ids`.",
+				MarkdownDescription: "Numeric ID of the owning team, which always responds to the service.",
 				Optional:            true,
 				Validators:          []validator.String{int32NumericID},
 			},
@@ -103,8 +102,8 @@ func (r *ServiceResource) Schema(ctx context.Context, req resource.SchemaRequest
 				Optional:            true,
 				Validators:          []validator.String{stringvalidator.UTF8LengthAtMost(128), noSurroundingWhitespace},
 			},
-			"responder_team_ids":   idSetAttribute("Numeric IDs of teams paged for the service in addition to the owning team."),
-			"responder_user_ids":   idSetAttribute("Numeric IDs of users paged for the service. For a member of the owning team, use `vibeoncall_team_membership.<name>.user_id`, so Terraform removes the user from this service before it removes them from the team. For anyone else, use `data.vibeoncall_member.<name>.id`."),
+			"responder_team_ids":   idSetAttribute("Numeric IDs of teams added as responders. The owning team responds without being listed; list it as well to keep it responding after `team_id` changes."),
+			"responder_user_ids":   idSetAttribute("Numeric IDs of users added as responders. For a member of the owning team, use `vibeoncall_team_membership.<name>.user_id`, so Terraform removes the user from this service before it removes them from the team. For anyone else, use `data.vibeoncall_member.<name>.id`."),
 			"stakeholder_user_ids": idSetAttribute("Numeric IDs of users added as stakeholders of the service. Stakeholders matched by a condition set in the app are not managed here."),
 		},
 	}
@@ -113,26 +112,6 @@ func (r *ServiceResource) Schema(ctx context.Context, req resource.SchemaRequest
 func (r *ServiceResource) ConfigValidators(ctx context.Context) []resource.ConfigValidator {
 	return []resource.ConfigValidator{
 		resourcevalidator.RequiredTogether(path.MatchRoot("external_provider"), path.MatchRoot("external_service_id")),
-	}
-}
-
-func (r *ServiceResource) ValidateConfig(ctx context.Context, req resource.ValidateConfigRequest, resp *resource.ValidateConfigResponse) {
-	var teamID types.String
-	var responderTeamIDs types.Set
-	resp.Diagnostics.Append(req.Config.GetAttribute(ctx, path.Root("team_id"), &teamID)...)
-	resp.Diagnostics.Append(req.Config.GetAttribute(ctx, path.Root("responder_team_ids"), &responderTeamIDs)...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
-	if teamID.IsNull() || teamID.IsUnknown() || responderTeamIDs.IsUnknown() {
-		return
-	}
-	for _, e := range responderTeamIDs.Elements() {
-		if id, ok := e.(types.String); ok && !id.IsUnknown() && id.ValueString() == teamID.ValueString() {
-			resp.Diagnostics.AddAttributeError(path.Root("responder_team_ids"), "Owning team listed as a responder",
-				fmt.Sprintf("Team %s owns the service and is always paged for it. Remove it from responder_team_ids.", teamID.ValueString()))
-			return
-		}
 	}
 }
 
@@ -214,11 +193,7 @@ func (r *ServiceResource) Update(ctx context.Context, req resource.UpdateRequest
 		return
 	}
 
-	// The API skips the owning team on add and remove and hides its responder row, so the incoming owner's row
-	// goes before the team_id change and the outgoing owner's row after it, or either resurfaces once ownership moves.
-	if r.removeMembers(ctx, id, state, plan, &resp.Diagnostics) &&
-		r.updateFields(ctx, id, state, plan, &resp.Diagnostics) &&
-		r.removeResponders(ctx, id, responderRefs(outgoingOwner(state, plan), nil), &resp.Diagnostics) {
+	if r.removeMembers(ctx, id, state, plan, &resp.Diagnostics) && r.updateFields(ctx, id, state, plan, &resp.Diagnostics) {
 		r.addMembers(ctx, id, state, plan, &resp.Diagnostics)
 	}
 	r.saveReadBack(ctx, id, &resp.State, &resp.Diagnostics)
@@ -281,8 +256,16 @@ func (r *ServiceResource) removeMembers(ctx context.Context, id int32, from, to 
 	users := missingIDs(to.ResponderUserIDs, from.ResponderUserIDs)
 	stakeholders := missingIDs(to.StakeholderUserIDs, from.StakeholderUserIDs)
 
-	if !r.removeResponders(ctx, id, responderRefs(teams, users), diags) {
-		return false
+	if refs := responderRefs(teams, users); len(refs) > 0 {
+		res, err := r.client.RemoveServiceRespondersWithResponse(ctx, id, client.RemoveServiceRespondersJSONRequestBody{Responders: refs})
+		if err != nil {
+			diags.AddError("Remove service responders failed", err.Error())
+			return false
+		}
+		if res.JSON200 == nil {
+			diags.AddError("Remove service responders failed", apiError(res.StatusCode(), res.Body))
+			return false
+		}
 	}
 	if len(stakeholders) > 0 {
 		res, err := r.client.RemoveServiceStakeholdersWithResponse(ctx, id, client.RemoveServiceStakeholdersJSONRequestBody{UserIds: stakeholders})
@@ -296,29 +279,6 @@ func (r *ServiceResource) removeMembers(ctx context.Context, id int32, from, to 
 		}
 	}
 	return true
-}
-
-func (r *ServiceResource) removeResponders(ctx context.Context, id int32, refs []serviceResponderRef, diags *diag.Diagnostics) bool {
-	if len(refs) == 0 {
-		return true
-	}
-	res, err := r.client.RemoveServiceRespondersWithResponse(ctx, id, client.RemoveServiceRespondersJSONRequestBody{Responders: refs})
-	if err != nil {
-		diags.AddError("Remove service responders failed", err.Error())
-		return false
-	}
-	if res.JSON200 == nil {
-		diags.AddError("Remove service responders failed", apiError(res.StatusCode(), res.Body))
-		return false
-	}
-	return true
-}
-
-func outgoingOwner(state, plan ServiceResourceModel) []int {
-	if state.TeamID.IsNull() || state.TeamID.Equal(plan.TeamID) {
-		return nil
-	}
-	return []int{mustAtoi(state.TeamID)}
 }
 
 func (r *ServiceResource) addMembers(ctx context.Context, id int32, from, to ServiceResourceModel, diags *diag.Diagnostics) {
@@ -379,9 +339,7 @@ func setServiceState(m *ServiceResourceModel, s *client.ServiceCatalogPublicSumm
 	for _, responder := range s.Responders {
 		switch v, _ := responder.ValueByDiscriminator(); v := v.(type) {
 		case client.ServiceTeamResponder:
-			if v.Source == client.ServiceTeamResponderSourceAdded {
-				teams = append(teams, int(v.Team.Id))
-			}
+			teams = append(teams, int(v.Team.Id))
 		case client.ServiceUserResponder:
 			users = append(users, int(v.User.Id))
 		}

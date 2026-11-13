@@ -26,21 +26,12 @@ type fakeService struct {
 
 func (a *fakeAPI) serviceJSON(s *fakeService) map[string]any {
 	responders := []map[string]any{}
-	addTeam := func(id int, source string) {
-		if team := a.teams[id]; team != nil {
-			responders = append(responders, map[string]any{"type": "team", "team": map[string]any{"id": team.ID, "name": team.Name}, "source": source})
-		}
-	}
-	if s.TeamID != nil {
-		addTeam(*s.TeamID, "owner")
-	}
 	for _, row := range s.responders {
-		switch {
-		case row.TeamID != 0 && (s.TeamID == nil || row.TeamID != *s.TeamID):
-			addTeam(row.TeamID, "added")
-		case row.UserID != 0:
-			u := a.findUser(row.UserID)
-			responders = append(responders, map[string]any{"type": "user", "user": map[string]any{"id": u.ID, "email": u.Email, "fullName": u.FullName}, "source": "added"})
+		if team := a.teams[row.TeamID]; team != nil {
+			responders = append(responders, map[string]any{"type": "team", "team": map[string]any{"id": team.ID, "name": team.Name}})
+		}
+		if u := a.findUser(row.UserID); u != nil {
+			responders = append(responders, map[string]any{"type": "user", "user": map[string]any{"id": u.ID, "email": u.Email, "fullName": u.FullName}})
 		}
 	}
 	stakeholders := []map[string]any{}
@@ -136,9 +127,6 @@ func (a *fakeAPI) mutateResponders(w http.ResponseWriter, s *fakeService, action
 		}
 	}
 	for _, ref := range refs {
-		if s.TeamID != nil && ref.TeamID == *s.TeamID {
-			continue
-		}
 		s.responders = addOrRemove(s.responders, ref, action)
 	}
 	writeJSON(w, http.StatusOK, map[string]any{"responders": a.serviceJSON(s)["responders"]})
