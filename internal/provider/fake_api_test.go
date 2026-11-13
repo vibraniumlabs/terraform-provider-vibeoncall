@@ -72,23 +72,25 @@ type fakePolicy struct {
 }
 
 type fakeAPI struct {
-	mu           sync.Mutex
-	nextTeamID   int
-	teams        map[int]*fakeTeam
-	users        []fakeUser
-	memberships  map[int]map[int]string
-	labels       []fakeLabel
-	chatChannels []fakeChatChannel
-	chatQuery    url.Values
-	afterTeams   func()
-	nextPolicyID int
-	nextTierID   int
-	policies     map[int]*fakePolicy
-	teamDefaults map[int]int
-	nextSchedID  int
-	nextRotID    int
-	schedules    map[int]*fakeSchedule
-	rotationPuts int
+	mu            sync.Mutex
+	nextTeamID    int
+	teams         map[int]*fakeTeam
+	users         []fakeUser
+	memberships   map[int]map[int]string
+	labels        []fakeLabel
+	chatChannels  []fakeChatChannel
+	chatQuery     url.Values
+	afterTeams    func()
+	nextPolicyID  int
+	nextTierID    int
+	policies      map[int]*fakePolicy
+	teamDefaults  map[int]int
+	nextServiceID int
+	services      map[int]*fakeService
+	nextSchedID   int
+	nextRotID     int
+	schedules     map[int]*fakeSchedule
+	rotationPuts  int
 }
 
 func strPtr(s string) *string { return &s }
@@ -98,6 +100,7 @@ func newFakeAPI(t *testing.T, users ...fakeUser) (*fakeAPI, *httptest.Server) {
 		nextTeamID: 1, teams: map[int]*fakeTeam{}, users: users, memberships: map[int]map[int]string{},
 		nextPolicyID: 1, nextTierID: 1, policies: map[int]*fakePolicy{}, teamDefaults: map[int]int{},
 		nextSchedID: 1, nextRotID: 1, schedules: map[int]*fakeSchedule{},
+		nextServiceID: 1, services: map[int]*fakeService{},
 	}
 	srv := httptest.NewServer(api)
 	t.Cleanup(srv.Close)
@@ -171,6 +174,8 @@ func (a *fakeAPI) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		applyTeamBody(team, body)
 		a.teams[team.ID] = team
 		writeJSON(w, http.StatusCreated, team)
+	case parts[0] == "services":
+		a.serveServices(w, r, parts[1:], body)
 	case parts[0] == "escalation-policies":
 		a.serveEscalationPolicies(w, r, parts[1:], body)
 	case parts[0] == "schedules":
@@ -329,6 +334,9 @@ func (a *fakeAPI) checkNothingLeft(*terraform.State) error {
 	}
 	if len(a.schedules) > 0 {
 		return fmt.Errorf("%d schedules left after destroy", len(a.schedules))
+	}
+	if len(a.services) > 0 {
+		return fmt.Errorf("%d services left after destroy", len(a.services))
 	}
 	for teamID, members := range a.memberships {
 		if len(members) > 0 {

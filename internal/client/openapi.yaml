@@ -2688,16 +2688,9 @@ components:
           required:
             - id
             - name
-        source:
-          type: string
-          enum:
-            - owner
-            - added
-          description: "owner: the service's owning team, which always responds while it owns the service. added: added to the service, and removable."
       required:
         - type
         - team
-        - source
     ServiceUserResponder:
       type: object
       properties:
@@ -2721,15 +2714,9 @@ components:
             - id
             - email
             - fullName
-        source:
-          type: string
-          enum:
-            - added
-          description: "Always added: a person is added to the service, and removable; only a team owns one."
       required:
         - type
         - user
-        - source
     ServiceResponder:
       oneOf:
         - $ref: "#/components/schemas/ServiceTeamResponder"
@@ -2790,7 +2777,7 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ServiceResponder"
-          description: "Teams and users paged for this service: its owning team first (source owner), then those added to it (source added)."
+          description: Teams and users added to the service. Its owning team responds without being added; adding it as well keeps it responding after the service moves to another team.
         stakeholders:
           type: array
           items:
@@ -8483,7 +8470,7 @@ paths:
       tags:
         - Services
       summary: Add service responders
-      description: Adds teams and users to the service's responders. The service's owning team always responds, so it is skipped if sent; change it by updating the service's `teamId`.
+      description: Adds teams and users to the service's responders. Adding its owning team keeps that team responding after the service moves to another team.
       operationId: addServiceResponders
       security:
         - ApiKeyAuth: []
@@ -8524,7 +8511,7 @@ paths:
               additionalProperties: false
       responses:
         "200":
-          description: The teams and users now paged for the service, its owning team included (source owner). Only added responders change.
+          description: The service's responders after the change.
           content:
             application/json:
               schema:
@@ -8564,7 +8551,7 @@ paths:
       tags:
         - Services
       summary: Remove service responders
-      description: Removes teams and users the service's responders were given. The service's owning team always responds, so it is skipped if sent; change it by updating the service's `teamId`.
+      description: Removes teams and users from the service's responders. Its owning team keeps responding while it owns the service.
       operationId: removeServiceResponders
       security:
         - ApiKeyAuth: []
@@ -8605,7 +8592,7 @@ paths:
               additionalProperties: false
       responses:
         "200":
-          description: The teams and users now paged for the service, its owning team included (source owner). Only added responders change.
+          description: The service's responders after the change.
           content:
             application/json:
               schema:

@@ -96,6 +96,7 @@ func (p *VibeOnCallProvider) Resources(ctx context.Context) []func() resource.Re
 		NewEscalationPolicyResource,
 		NewTeamDefaultEscalationPolicyResource,
 		NewScheduleResource,
+		NewServiceResource,
 	}
 }
 
