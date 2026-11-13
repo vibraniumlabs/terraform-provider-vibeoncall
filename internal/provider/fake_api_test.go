@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -84,6 +85,10 @@ type fakeAPI struct {
 	nextTierID   int
 	policies     map[int]*fakePolicy
 	teamDefaults map[int]int
+	nextSchedID  int
+	nextRotID    int
+	schedules    map[int]*fakeSchedule
+	rotationPuts int
 }
 
 func strPtr(s string) *string { return &s }
@@ -92,6 +97,7 @@ func newFakeAPI(t *testing.T, users ...fakeUser) (*fakeAPI, *httptest.Server) {
 	api := &fakeAPI{
 		nextTeamID: 1, teams: map[int]*fakeTeam{}, users: users, memberships: map[int]map[int]string{},
 		nextPolicyID: 1, nextTierID: 1, policies: map[int]*fakePolicy{}, teamDefaults: map[int]int{},
+		nextSchedID: 1, nextRotID: 1, schedules: map[int]*fakeSchedule{},
 	}
 	srv := httptest.NewServer(api)
 	t.Cleanup(srv.Close)
@@ -167,6 +173,8 @@ func (a *fakeAPI) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusCreated, team)
 	case parts[0] == "escalation-policies":
 		a.serveEscalationPolicies(w, r, parts[1:], body)
+	case parts[0] == "schedules":
+		a.serveSchedules(w, r, parts[1:], body)
 	case len(parts) >= 2 && parts[0] == "teams":
 		team := a.findTeam(parts[1])
 		if team == nil {
@@ -318,6 +326,9 @@ func (a *fakeAPI) checkNothingLeft(*terraform.State) error {
 	}
 	if len(a.policies) > 0 {
 		return fmt.Errorf("%d escalation policies left after destroy", len(a.policies))
+	}
+	if len(a.schedules) > 0 {
+		return fmt.Errorf("%d schedules left after destroy", len(a.schedules))
 	}
 	for teamID, members := range a.memberships {
 		if len(members) > 0 {
@@ -482,4 +493,285 @@ func (a *fakeAPI) setTeamDefault(teamID, policyID int) {
 		return
 	}
 	a.teamDefaults[teamID] = policyID
+}
+
+const fakeSchedulePageSize = 2
+
+type fakeRotation struct {
+	ID             int             `json:"id"`
+	Name           string          `json:"name"`
+	StartAt        string          `json:"startAt"`
+	RotationConfig json.RawMessage `json:"rotationConfig"`
+	Participants   []int           `json:"participants"`
+	inUse          bool
+}
+
+type fakeSchedule struct {
+	ID        int             `json:"id"`
+	Name      string          `json:"name"`
+	Timezone  string          `json:"timezone"`
+	TeamIDs   []int           `json:"teamIds"`
+	Rotations []*fakeRotation `json:"rotations"`
+	inUse     bool
+}
+
+func scheduleJSON(s *fakeSchedule) map[string]any {
+	var teamID *int
+	if len(s.TeamIDs) > 0 {
+		teamID = &s.TeamIDs[0]
+	}
+	return map[string]any{
+		"id": s.ID, "name": s.Name, "timezone": s.Timezone, "teamId": teamID, "teamIds": s.TeamIDs, "rotations": s.Rotations,
+	}
+}
+
+func (a *fakeAPI) serveSchedules(w http.ResponseWriter, r *http.Request, rest []string, body map[string]json.RawMessage) {
+	if len(rest) == 0 {
+		switch r.Method {
+		case http.MethodGet:
+			a.listSchedules(w, r)
+		case http.MethodPost:
+			a.createSchedule(w, body)
+		default:
+			w.WriteHeader(http.StatusMethodNotAllowed)
+		}
+		return
+	}
+
+	id, _ := strconv.Atoi(rest[0])
+	s := a.schedules[id]
+	if s == nil {
+		notFound(w)
+		return
+	}
+	switch {
+	case len(rest) == 1 && r.Method == http.MethodGet:
+		writeJSON(w, http.StatusOK, scheduleJSON(s))
+	case len(rest) == 1 && r.Method == http.MethodPatch:
+		if len(s.Rotations) == 0 {
+			writeJSON(w, http.StatusConflict, map[string]string{"error": "Schedule has no active rotations"})
+			return
+		}
+		var name string
+		if raw, ok := body["name"]; ok {
+			_ = json.Unmarshal(raw, &name)
+			if a.scheduleNameTaken(name, s.ID) {
+				writeJSON(w, http.StatusConflict, map[string]string{"error": "Schedule name already in use"})
+				return
+			}
+			s.Name = name
+		}
+		if raw, ok := body["timezone"]; ok {
+			_ = json.Unmarshal(raw, &s.Timezone)
+		}
+		writeJSON(w, http.StatusOK, scheduleJSON(s))
+	case len(rest) == 1 && r.Method == http.MethodDelete:
+		if s.inUse {
+			writeJSON(w, http.StatusConflict, map[string]string{"error": fmt.Sprintf("Schedule %d is still paged by escalation policy 3", s.ID)})
+			return
+		}
+		delete(a.schedules, s.ID)
+		w.WriteHeader(http.StatusNoContent)
+	case len(rest) == 2 && rest[1] == "teams" && r.Method == http.MethodPut:
+		var teamIDs []int
+		_ = json.Unmarshal(body["teamIds"], &teamIDs)
+		if !a.teamsExist(teamIDs) {
+			notFound(w)
+			return
+		}
+		sort.Ints(teamIDs)
+		s.TeamIDs = teamIDs
+		writeJSON(w, http.StatusOK, scheduleJSON(s))
+	case len(rest) == 2 && rest[1] == "rotations" && r.Method == http.MethodPost:
+		if _, ok := body["storeParticipantsAsSent"]; ok {
+			writeJSON(w, http.StatusBadRequest, map[string]string{"error": "Unrecognized key: storeParticipantsAsSent"})
+			return
+		}
+		rot := a.rotationFromBody(body)
+		if rot == nil {
+			notFound(w)
+			return
+		}
+		rot.ID = a.newRotationID()
+		s.Rotations = append(s.Rotations, rot)
+		writeJSON(w, http.StatusCreated, map[string]int{"id": rot.ID})
+	case len(rest) == 3 && rest[1] == "rotations":
+		a.serveRotation(w, r, s, rest[2], body)
+	default:
+		notFound(w)
+	}
+}
+
+func (a *fakeAPI) serveRotation(w http.ResponseWriter, r *http.Request, s *fakeSchedule, ref string, body map[string]json.RawMessage) {
+	rotationID, _ := strconv.Atoi(ref)
+	index := slices.IndexFunc(s.Rotations, func(rot *fakeRotation) bool { return rot.ID == rotationID })
+	if index == -1 {
+		notFound(w)
+		return
+	}
+	switch r.Method {
+	case http.MethodPut:
+		rot := a.rotationFromBody(body)
+		if rot == nil {
+			notFound(w)
+			return
+		}
+		var storeAsSent bool
+		_ = json.Unmarshal(body["storeParticipantsAsSent"], &storeAsSent)
+		if !storeAsSent && onlyMembershipChanged(s.Rotations[index].Participants, rot.Participants) {
+			rot.Participants = append(rot.Participants[1:], rot.Participants[0])
+		}
+		rot.ID = rotationID
+		s.Rotations[index] = rot
+		a.rotationPuts++
+		writeJSON(w, http.StatusOK, map[string]int{"id": rotationID})
+	case http.MethodDelete:
+		if s.Rotations[index].inUse {
+			writeJSON(w, http.StatusConflict, map[string]string{"error": fmt.Sprintf("Rotation %d is still paged by escalation policy 3", rotationID)})
+			return
+		}
+		if len(s.Rotations) == 1 {
+			writeJSON(w, http.StatusConflict, map[string]string{"error": "Cannot delete the last active rotation of a schedule"})
+			return
+		}
+		s.Rotations = slices.Delete(s.Rotations, index, index+1)
+		w.WriteHeader(http.StatusNoContent)
+	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
+	}
+}
+
+// onlyMembershipChanged mirrors the API's membership-only classification, where it rotates the stored order to keep the current responder on call.
+func onlyMembershipChanged(existing, requested []int) bool {
+	var kept, added []int
+	for _, id := range existing {
+		if slices.Contains(requested, id) {
+			kept = append(kept, id)
+		}
+	}
+	for _, id := range requested {
+		if !slices.Contains(existing, id) {
+			added = append(added, id)
+		}
+	}
+	return len(requested) > 1 && !slices.Equal(existing, requested) && slices.Equal(append(kept, added...), requested)
+}
+
+func (a *fakeAPI) createSchedule(w http.ResponseWriter, body map[string]json.RawMessage) {
+	s := &fakeSchedule{TeamIDs: []int{}}
+	_ = json.Unmarshal(body["name"], &s.Name)
+	_ = json.Unmarshal(body["timezone"], &s.Timezone)
+	if raw, ok := body["teamIds"]; ok {
+		_ = json.Unmarshal(raw, &s.TeamIDs)
+	}
+	if a.scheduleNameTaken(s.Name, 0) {
+		writeJSON(w, http.StatusConflict, map[string]string{"error": "Schedule name already in use"})
+		return
+	}
+	if !a.teamsExist(s.TeamIDs) {
+		notFound(w)
+		return
+	}
+	var rotations []map[string]json.RawMessage
+	_ = json.Unmarshal(body["rotations"], &rotations)
+	if len(rotations) == 0 {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "At least one rotation is required"})
+		return
+	}
+	for _, rb := range rotations {
+		if _, ok := rb["storeParticipantsAsSent"]; ok {
+			writeJSON(w, http.StatusBadRequest, map[string]string{"error": "Unrecognized key: storeParticipantsAsSent"})
+			return
+		}
+		rot := a.rotationFromBody(rb)
+		if rot == nil {
+			notFound(w)
+			return
+		}
+		rot.ID = a.newRotationID()
+		s.Rotations = append(s.Rotations, rot)
+	}
+	sort.Ints(s.TeamIDs)
+	s.ID = a.nextSchedID
+	a.nextSchedID++
+	a.schedules[s.ID] = s
+	writeJSON(w, http.StatusCreated, scheduleJSON(s))
+}
+
+func (a *fakeAPI) rotationFromBody(body map[string]json.RawMessage) *fakeRotation {
+	rot := &fakeRotation{RotationConfig: body["rotationConfig"]}
+	_ = json.Unmarshal(body["name"], &rot.Name)
+	_ = json.Unmarshal(body["startAt"], &rot.StartAt)
+	_ = json.Unmarshal(body["participants"], &rot.Participants)
+	for _, id := range rot.Participants {
+		if a.findUser(id) == nil {
+			return nil
+		}
+	}
+	return rot
+}
+
+func (a *fakeAPI) newRotationID() int {
+	id := a.nextRotID
+	a.nextRotID++
+	return id
+}
+
+func (a *fakeAPI) scheduleNameTaken(name string, exceptID int) bool {
+	for _, s := range a.schedules {
+		if s.Name == name && s.ID != exceptID {
+			return true
+		}
+	}
+	return false
+}
+
+func (a *fakeAPI) teamsExist(ids []int) bool {
+	for _, id := range ids {
+		if a.teams[id] == nil {
+			return false
+		}
+	}
+	return true
+}
+
+func (a *fakeAPI) listSchedules(w http.ResponseWriter, r *http.Request) {
+	ids := make([]int, 0, len(a.schedules))
+	for id := range a.schedules {
+		ids = append(ids, id)
+	}
+	sort.Sort(sort.Reverse(sort.IntSlice(ids)))
+	teamID, _ := strconv.Atoi(r.URL.Query().Get("teamId"))
+	matched := []map[string]any{}
+	for _, id := range ids {
+		s := a.schedules[id]
+		if teamID == 0 || slices.Contains(s.TeamIDs, teamID) {
+			matched = append(matched, scheduleJSON(s))
+		}
+	}
+	offset, _ := strconv.Atoi(r.URL.Query().Get("offset"))
+	start, end := min(offset, len(matched)), min(offset+fakeSchedulePageSize, len(matched))
+	writeJSON(w, http.StatusOK, map[string]any{"schedules": matched[start:end], "total": len(matched), "hasMore": end < len(matched)})
+}
+
+func (a *fakeAPI) setRotationInUse(rotationID int, inUse bool) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	for _, rot := range a.schedules[1].Rotations {
+		if rot.ID == rotationID {
+			rot.inUse = inUse
+		}
+	}
+}
+
+func (a *fakeAPI) setScheduleInUse(id int, inUse bool) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.schedules[id].inUse = inUse
+}
+
+func (a *fakeAPI) removeSchedule(id int) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	delete(a.schedules, id)
 }

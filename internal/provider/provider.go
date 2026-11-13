@@ -95,6 +95,7 @@ func (p *VibeOnCallProvider) Resources(ctx context.Context) []func() resource.Re
 		NewTeamMembershipResource,
 		NewEscalationPolicyResource,
 		NewTeamDefaultEscalationPolicyResource,
+		NewScheduleResource,
 	}
 }
 
@@ -104,6 +105,7 @@ func (p *VibeOnCallProvider) DataSources(ctx context.Context) []func() datasourc
 		NewTeamDataSource,
 		NewLabelDataSource,
 		NewChatChannelDataSource,
+		NewScheduleDataSource,
 	}
 }
 

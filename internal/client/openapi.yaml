@@ -555,10 +555,10 @@ components:
               properties:
                 startTime:
                   type: string
-                  pattern: ^([01][0-9]|2[0-3]):00$
+                  pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
                 endTime:
                   type: string
-                  pattern: ^([01][0-9]|2[0-3]):00$
+                  pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
               required:
                 - startTime
                 - endTime
@@ -580,10 +580,10 @@ components:
                   properties:
                     startTime:
                       type: string
-                      pattern: ^([01][0-9]|2[0-3]):00$
+                      pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
                     endTime:
                       type: string
-                      pattern: ^([01][0-9]|2[0-3]):00$
+                      pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
                     startDay:
                       type: integer
                       minimum: 0
@@ -594,10 +594,10 @@ components:
                       maximum: 6
                     dailyStartTime:
                       type: string
-                      pattern: ^([01][0-9]|2[0-3]):00$
+                      pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
                     dailyEndTime:
                       type: string
-                      pattern: ^([01][0-9]|2[0-3]):00$
+                      pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
                     handOffDay:
                       type: integer
                       minimum: 0
@@ -619,10 +619,10 @@ components:
                         properties:
                           startTime:
                             type: string
-                            pattern: ^([01][0-9]|2[0-3]):00$
+                            pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
                           endTime:
                             type: string
-                            pattern: ^([01][0-9]|2[0-3]):00$
+                            pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
                           startDay:
                             type: integer
                             minimum: 0
@@ -652,49 +652,7 @@ components:
             - payload
           additionalProperties: false
           title: Weekly rotation
-      description: "Public daily and weekly types use the custom coverage-window payloads. Daily requires startTime and endTime; weekly accepts a day/time range or windows. Without handOffDay, a weekly rotation hands off to the next participant at the range start, or at the earliest window start in the Sunday-to-Saturday week. A range whose start and end share the same weekday and time covers a full seven days: startDay 3, startTime 12:00, endDay 3, endTime 12:00 gives continuous coverage with a Wednesday-noon handoff. With handOffDay, the handoff happens at 00:00 on that weekday instead, independent of coverage. Handoffs keep their local clock time in the schedule timezone across daylight-saving changes. Times must be hour-aligned HH:00; weekdays are 0 (Sunday) through 6 (Saturday)."
-    PublicLegacyScheduleRotationConfig:
-      oneOf:
-        - type: object
-          properties:
-            type:
-              type: string
-              enum:
-                - daily
-            payload:
-              type: object
-              properties:
-                rotationTime:
-                  type: string
-              required:
-                - rotationTime
-              additionalProperties: false
-          required:
-            - type
-            - payload
-          additionalProperties: false
-        - type: object
-          properties:
-            type:
-              type: string
-              enum:
-                - weekly
-            payload:
-              type: object
-              properties:
-                rotationTime:
-                  type: string
-                dayOffset:
-                  type: integer
-              required:
-                - rotationTime
-                - dayOffset
-              additionalProperties: false
-          required:
-            - type
-            - payload
-          additionalProperties: false
-      description: Existing fixed-interval rotations may use a legacy rotation time and optional rotation interval.
+      description: "Public daily and weekly types use the custom coverage-window payloads. Daily requires startTime and endTime; weekly accepts a day/time range or windows. Without handOffDay, a weekly rotation hands off to the next participant at the range start, or at the earliest window start in the Sunday-to-Saturday week. A range whose start and end share the same weekday and time covers a full seven days: startDay 3, startTime 12:00, endDay 3, endTime 12:00 gives continuous coverage with a Wednesday-noon handoff. With handOffDay, the handoff happens at 00:00 on that weekday instead, independent of coverage. Handoffs keep their local clock time in the schedule timezone across daylight-saving changes. Times are 24-hour HH:MM; weekdays are 0 (Sunday) through 6 (Saturday)."
     PublicScheduleRotationResponse:
       type: object
       properties:
@@ -708,9 +666,7 @@ components:
           description: First date this rotation takes effect, in YYYY-MM-DD format.
           example: 2026-09-01
         rotationConfig:
-          anyOf:
-            - $ref: "#/components/schemas/PublicScheduleRotationConfig"
-            - $ref: "#/components/schemas/PublicLegacyScheduleRotationConfig"
+          $ref: "#/components/schemas/PublicScheduleRotationConfig"
         participants:
           type: array
           items:
@@ -723,11 +679,6 @@ components:
           exclusiveMinimum: 0
           description: Rotation ID.
           format: int32
-        rotationInterval:
-          type:
-            - string
-            - "null"
-          description: Stored interval in milliseconds for a legacy fixed-interval rotation.
       required:
         - name
         - startAt
@@ -896,6 +847,36 @@ components:
           format: int32
       required:
         - id
+    PublicScheduleRotationUpdateInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        startAt:
+          type: string
+          format: date
+          description: First date this rotation takes effect, in YYYY-MM-DD format.
+          example: 2026-09-01
+        rotationConfig:
+          $ref: "#/components/schemas/PublicScheduleRotationConfig"
+        participants:
+          type: array
+          items:
+            type: integer
+            exclusiveMinimum: 0
+          minItems: 1
+          description: Ordered user IDs; each ID must appear only once.
+        storeParticipantsAsSent:
+          type: boolean
+          description: When true, participants are stored exactly in the order supplied, so startAt and the order alone decide who is on call, and removing or appending a participant can change who is on call now. When false or omitted, an update that only removes participants or appends them at the end may rotate the stored order so the person on call now stays on call; repeating the same PUT can then save a different order and change future handoffs.
+      required:
+        - name
+        - startAt
+        - rotationConfig
+        - participants
+      additionalProperties: false
     PublicOnCallResponder:
       type: object
       properties:
@@ -2707,9 +2688,16 @@ components:
           required:
             - id
             - name
+        source:
+          type: string
+          enum:
+            - owner
+            - added
+          description: "owner: the service's owning team, which always responds while it owns the service. added: added to the service, and removable."
       required:
         - type
         - team
+        - source
     ServiceUserResponder:
       type: object
       properties:
@@ -2733,9 +2721,15 @@ components:
             - id
             - email
             - fullName
+        source:
+          type: string
+          enum:
+            - added
+          description: "Always added: a person is added to the service, and removable; only a team owns one."
       required:
         - type
         - user
+        - source
     ServiceResponder:
       oneOf:
         - $ref: "#/components/schemas/ServiceTeamResponder"
@@ -2796,7 +2790,7 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ServiceResponder"
-          description: Responder teams and users assigned to this service.
+          description: "Teams and users paged for this service: its owning team first (source owner), then those added to it (source added)."
         stakeholders:
           type: array
           items:
@@ -4405,7 +4399,7 @@ paths:
       tags:
         - Schedules
       summary: Replace a schedule rotation
-      description: Send the complete rotation, including all participant IDs. The rotation retains its position. An explicit participant reorder is saved as supplied. When only membership changes, the stored order may be rearranged to keep the current on-call responder in place. Repeating the same PUT after such an adjustment can save a different order and change future handoffs.
+      description: Send the complete rotation, including all participant IDs. The rotation retains its position. An explicit participant reorder is saved as supplied; for membership-only changes, see storeParticipantsAsSent. Clients that compare the stored rotation with what they sent, such as infrastructure-as-code tools, should set it to true.
       operationId: updateScheduleRotation
       security:
         - ApiKeyAuth: []
@@ -4430,7 +4424,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PublicScheduleRotationInput"
+              $ref: "#/components/schemas/PublicScheduleRotationUpdateInput"
       responses:
         "200":
           description: Updated rotation ID.
@@ -8489,6 +8483,7 @@ paths:
       tags:
         - Services
       summary: Add service responders
+      description: Adds teams and users to the service's responders. The service's owning team always responds, so it is skipped if sent; change it by updating the service's `teamId`.
       operationId: addServiceResponders
       security:
         - ApiKeyAuth: []
@@ -8529,7 +8524,7 @@ paths:
               additionalProperties: false
       responses:
         "200":
-          description: Updated responder list.
+          description: The teams and users now paged for the service, its owning team included (source owner). Only added responders change.
           content:
             application/json:
               schema:
@@ -8569,6 +8564,7 @@ paths:
       tags:
         - Services
       summary: Remove service responders
+      description: Removes teams and users the service's responders were given. The service's owning team always responds, so it is skipped if sent; change it by updating the service's `teamId`.
       operationId: removeServiceResponders
       security:
         - ApiKeyAuth: []
@@ -8609,7 +8605,7 @@ paths:
               additionalProperties: false
       responses:
         "200":
-          description: Updated responder list.
+          description: The teams and users now paged for the service, its owning team included (source owner). Only added responders change.
           content:
             application/json:
               schema:

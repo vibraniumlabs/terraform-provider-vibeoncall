@@ -181,6 +181,36 @@ func (e PublicEscalationPolicyTierResponseScheduleTargetsMode) Valid() bool {
 	}
 }
 
+// Defines values for PublicScheduleRotationConfig0Type.
+const (
+	Daily PublicScheduleRotationConfig0Type = "daily"
+)
+
+// Valid indicates whether the value is a known member of the PublicScheduleRotationConfig0Type enum.
+func (e PublicScheduleRotationConfig0Type) Valid() bool {
+	switch e {
+	case Daily:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for PublicScheduleRotationConfig1Type.
+const (
+	Weekly PublicScheduleRotationConfig1Type = "weekly"
+)
+
+// Valid indicates whether the value is a known member of the PublicScheduleRotationConfig1Type enum.
+func (e PublicScheduleRotationConfig1Type) Valid() bool {
+	switch e {
+	case Weekly:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for TeamMemberAssignmentResponseRole.
 const (
 	TeamMemberAssignmentResponseRoleAdmin  TeamMemberAssignmentResponseRole = "admin"
@@ -341,6 +371,22 @@ type CreatePublicEscalationPolicyRequest struct {
 	Tiers []PublicEscalationPolicyTierInput `json:"tiers"`
 }
 
+// CreatePublicScheduleRequest defines model for CreatePublicScheduleRequest.
+type CreatePublicScheduleRequest struct {
+	Name      string                        `json:"name"`
+	Rotations []PublicScheduleRotationInput `json:"rotations"`
+
+	// TeamId Deprecated: use teamIds. A single owning team ID, or null for a global schedule. Cannot be sent with teamIds.
+	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
+	TeamId nullable.Nullable[int32] `json:"teamId,omitempty"`
+
+	// TeamIds Owning team IDs. An empty array, or omitting both teamIds and teamId, creates a global schedule.
+	TeamIds *[]int32 `json:"teamIds,omitempty"`
+
+	// Timezone IANA time zone for this schedule, such as America/New_York.
+	Timezone string `json:"timezone"`
+}
+
 // CreateTeamRequest defines model for CreateTeamRequest.
 type CreateTeamRequest struct {
 	Description      nullable.Nullable[string] `json:"description,omitempty"`
@@ -467,6 +513,82 @@ type MicrosoftTeamsTeamsListResponse struct {
 	Total int32 `json:"total"`
 }
 
+// OnCallHoursEntry defines model for OnCallHoursEntry.
+type OnCallHoursEntry struct {
+	// MemberEmail Email address of the user.
+	MemberEmail openapi_types.Email `json:"memberEmail"`
+
+	// MemberId Unique identifier of the user.
+	MemberId int32 `json:"memberId"`
+
+	// MemberName Display name of the user.
+	MemberName string `json:"memberName"`
+
+	// ShiftCount Number of contributing shifts.
+	ShiftCount int32 `json:"shiftCount"`
+
+	// Shifts Underlying shifts contributing to the aggregate.
+	Shifts []OnCallHoursShift `json:"shifts"`
+
+	// TeamId Unique identifier of the team, if the schedule is team-scoped.
+	TeamId nullable.Nullable[int32] `json:"teamId"`
+
+	// TeamName Name of the team, if the schedule is team-scoped.
+	TeamName nullable.Nullable[string] `json:"teamName"`
+
+	// TotalDays Total on-call days for the user/team grouping (= totalHours / hoursPerDay). Only present when the request specified hoursPerDay.
+	TotalDays *float32 `json:"totalDays,omitempty"`
+
+	// TotalHours Total on-call hours for the user/team grouping.
+	TotalHours float32 `json:"totalHours"`
+}
+
+// OnCallHoursReportResponse defines model for OnCallHoursReportResponse.
+type OnCallHoursReportResponse struct {
+	// Entries Aggregated on-call hours grouped by member and team.
+	Entries []OnCallHoursEntry `json:"entries"`
+	Summary OnCallHoursSummary `json:"summary"`
+}
+
+// OnCallHoursShift defines model for OnCallHoursShift.
+type OnCallHoursShift struct {
+	// EndAt Shift end timestamp in ISO 8601 format.
+	EndAt time.Time `json:"endAt"`
+
+	// Hours Number of on-call hours contributed by the shift within the report window.
+	Hours float32 `json:"hours"`
+
+	// IsOverride Whether the shift came from an override.
+	IsOverride bool `json:"isOverride"`
+
+	// ScheduleId Unique identifier of the schedule.
+	ScheduleId int32 `json:"scheduleId"`
+
+	// ScheduleName Name of the schedule.
+	ScheduleName string `json:"scheduleName"`
+
+	// StartAt Shift start timestamp in ISO 8601 format.
+	StartAt time.Time `json:"startAt"`
+}
+
+// OnCallHoursSummary defines model for OnCallHoursSummary.
+type OnCallHoursSummary struct {
+	// AvgDaysPerPerson Average on-call days per distinct person. Only present when the request specified hoursPerDay.
+	AvgDaysPerPerson *float32 `json:"avgDaysPerPerson,omitempty"`
+
+	// AvgHoursPerPerson Average on-call hours per distinct person.
+	AvgHoursPerPerson float32 `json:"avgHoursPerPerson"`
+
+	// TotalDays Total on-call days across all entries (= totalHours / hoursPerDay). Only present when the request specified hoursPerDay.
+	TotalDays *float32 `json:"totalDays,omitempty"`
+
+	// TotalHours Total on-call hours across all returned entries.
+	TotalHours float32 `json:"totalHours"`
+
+	// TotalPeople Number of distinct people represented in the response.
+	TotalPeople int32 `json:"totalPeople"`
+}
+
 // PublicEscalationPolicyListResponse defines model for PublicEscalationPolicyListResponse.
 type PublicEscalationPolicyListResponse struct {
 	HasMore  bool                             `json:"hasMore"`
@@ -555,6 +677,244 @@ type PublicEscalationPolicyTierResponse struct {
 
 // PublicEscalationPolicyTierResponseScheduleTargetsMode defines model for PublicEscalationPolicyTierResponse.ScheduleTargets.Mode.
 type PublicEscalationPolicyTierResponseScheduleTargetsMode string
+
+// PublicOnCallResponder defines model for PublicOnCallResponder.
+type PublicOnCallResponder struct {
+	// Email Responder email address.
+	Email openapi_types.Email `json:"email"`
+
+	// Id Responder user ID.
+	Id int32 `json:"id"`
+
+	// Name Responder name.
+	Name string `json:"name"`
+}
+
+// PublicRotationIdResponse defines model for PublicRotationIdResponse.
+type PublicRotationIdResponse struct {
+	// Id Rotation ID.
+	Id int32 `json:"id"`
+}
+
+// PublicScheduleListResponse defines model for PublicScheduleListResponse.
+type PublicScheduleListResponse struct {
+	HasMore   bool                     `json:"hasMore"`
+	Schedules []PublicScheduleResponse `json:"schedules"`
+	Total     int32                    `json:"total"`
+}
+
+// PublicScheduleOverrideListResponse defines model for PublicScheduleOverrideListResponse.
+type PublicScheduleOverrideListResponse struct {
+	HasMore   bool                             `json:"hasMore"`
+	Overrides []PublicScheduleOverrideResponse `json:"overrides"`
+	Total     int                              `json:"total"`
+}
+
+// PublicScheduleOverrideRequest defines model for PublicScheduleOverrideRequest.
+type PublicScheduleOverrideRequest struct {
+	// EndAt ISO 8601 timestamp with an explicit offset. The offset defines an instant, which is converted to the schedule timezone before saving the override clock boundary. For an Asia/Taipei schedule, 2026-09-01T10:00:00+07:00 and 2026-09-01T11:00:00+08:00 both mean 11:00 on the schedule clock.
+	EndAt time.Time `json:"endAt"`
+
+	// StartAt ISO 8601 timestamp with an explicit offset. The offset defines an instant, which is converted to the schedule timezone before saving the override clock boundary. For an Asia/Taipei schedule, 2026-09-01T10:00:00+07:00 and 2026-09-01T11:00:00+08:00 both mean 11:00 on the schedule clock.
+	StartAt time.Time `json:"startAt"`
+
+	// UserId User ID in the API key organization.
+	UserId int32 `json:"userId"`
+}
+
+// PublicScheduleOverrideResponse defines model for PublicScheduleOverrideResponse.
+type PublicScheduleOverrideResponse struct {
+	// EndAt UTC instant corresponding to this override boundary in the schedule timezone.
+	EndAt time.Time `json:"endAt"`
+
+	// Id Override ID.
+	Id int32 `json:"id"`
+
+	// RotationId Rotation ID.
+	RotationId int32 `json:"rotationId"`
+
+	// StartAt UTC instant corresponding to this override boundary in the schedule timezone.
+	StartAt time.Time `json:"startAt"`
+
+	// UserId Assigned user ID.
+	UserId int32 `json:"userId"`
+}
+
+// PublicScheduleResponse defines model for PublicScheduleResponse.
+type PublicScheduleResponse struct {
+	// Id Schedule ID.
+	Id        int32                            `json:"id"`
+	Name      string                           `json:"name"`
+	Rotations []PublicScheduleRotationResponse `json:"rotations"`
+
+	// TeamId Deprecated: use teamIds. The lowest owning team ID, or null for a global schedule.
+	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
+	TeamId nullable.Nullable[int32] `json:"teamId"`
+
+	// TeamIds Every owning team ID in ascending order. Empty for a global schedule.
+	TeamIds []int32 `json:"teamIds"`
+
+	// Timezone IANA time zone for this schedule, such as America/New_York.
+	Timezone string `json:"timezone"`
+}
+
+// PublicScheduleRotationConfig Public daily and weekly types use the custom coverage-window payloads. Daily requires startTime and endTime; weekly accepts a day/time range or windows. Without handOffDay, a weekly rotation hands off to the next participant at the range start, or at the earliest window start in the Sunday-to-Saturday week. A range whose start and end share the same weekday and time covers a full seven days: startDay 3, startTime 12:00, endDay 3, endTime 12:00 gives continuous coverage with a Wednesday-noon handoff. With handOffDay, the handoff happens at 00:00 on that weekday instead, independent of coverage. Handoffs keep their local clock time in the schedule timezone across daylight-saving changes. Times are 24-hour HH:MM; weekdays are 0 (Sunday) through 6 (Saturday).
+type PublicScheduleRotationConfig struct {
+	union json.RawMessage
+}
+
+// PublicScheduleRotationConfig0 defines model for PublicScheduleRotationConfig.0.
+type PublicScheduleRotationConfig0 struct {
+	Payload struct {
+		EndTime   string `json:"endTime"`
+		StartTime string `json:"startTime"`
+	} `json:"payload"`
+	Type PublicScheduleRotationConfig0Type `json:"type"`
+}
+
+// PublicScheduleRotationConfig0Type defines model for PublicScheduleRotationConfig.0.Type.
+type PublicScheduleRotationConfig0Type string
+
+// PublicScheduleRotationConfig1 defines model for PublicScheduleRotationConfig.1.
+type PublicScheduleRotationConfig1 struct {
+	Payload PublicScheduleRotationConfig_1_Payload `json:"payload"`
+	Type    PublicScheduleRotationConfig1Type      `json:"type"`
+}
+
+// PublicScheduleRotationConfig1Payload0 defines model for PublicScheduleRotationConfig.1.Payload.0.
+type PublicScheduleRotationConfig1Payload0 struct {
+	DailyEndTime   *string `json:"dailyEndTime,omitempty"`
+	DailyStartTime *string `json:"dailyStartTime,omitempty"`
+	EndDay         int     `json:"endDay"`
+	EndTime        string  `json:"endTime"`
+
+	// HandOffDay Participant handoff weekday, 0 (Sunday) through 6 (Saturday), at 00:00 in the schedule timezone, independent of coverage. Omit it to hand off at the range start (startDay at startTime).
+	HandOffDay *int   `json:"handOffDay,omitempty"`
+	StartDay   int    `json:"startDay"`
+	StartTime  string `json:"startTime"`
+}
+
+// PublicScheduleRotationConfig1Payload1 defines model for PublicScheduleRotationConfig.1.Payload.1.
+type PublicScheduleRotationConfig1Payload1 struct {
+	// HandOffDay Participant handoff weekday, 0 (Sunday) through 6 (Saturday), at 00:00 in the schedule timezone, independent of coverage. Omit it to hand off at the start of the earliest window in the Sunday-to-Saturday week.
+	HandOffDay *int `json:"handOffDay,omitempty"`
+	Windows    []struct {
+		EndDay    int    `json:"endDay"`
+		EndTime   string `json:"endTime"`
+		StartDay  int    `json:"startDay"`
+		StartTime string `json:"startTime"`
+	} `json:"windows"`
+}
+
+// PublicScheduleRotationConfig_1_Payload defines model for PublicScheduleRotationConfig.1.Payload.
+type PublicScheduleRotationConfig_1_Payload struct {
+	union json.RawMessage
+}
+
+// PublicScheduleRotationConfig1Type defines model for PublicScheduleRotationConfig.1.Type.
+type PublicScheduleRotationConfig1Type string
+
+// PublicScheduleRotationInput defines model for PublicScheduleRotationInput.
+type PublicScheduleRotationInput struct {
+	Name string `json:"name"`
+
+	// Participants Ordered user IDs; each ID must appear only once.
+	Participants []int `json:"participants"`
+
+	// RotationConfig Public daily and weekly types use the custom coverage-window payloads. Daily requires startTime and endTime; weekly accepts a day/time range or windows. Without handOffDay, a weekly rotation hands off to the next participant at the range start, or at the earliest window start in the Sunday-to-Saturday week. A range whose start and end share the same weekday and time covers a full seven days: startDay 3, startTime 12:00, endDay 3, endTime 12:00 gives continuous coverage with a Wednesday-noon handoff. With handOffDay, the handoff happens at 00:00 on that weekday instead, independent of coverage. Handoffs keep their local clock time in the schedule timezone across daylight-saving changes. Times are 24-hour HH:MM; weekdays are 0 (Sunday) through 6 (Saturday).
+	RotationConfig PublicScheduleRotationConfig `json:"rotationConfig"`
+
+	// StartAt First date this rotation takes effect, in YYYY-MM-DD format.
+	StartAt openapi_types.Date `json:"startAt"`
+}
+
+// PublicScheduleRotationResponse defines model for PublicScheduleRotationResponse.
+type PublicScheduleRotationResponse struct {
+	// Id Rotation ID.
+	Id   int32  `json:"id"`
+	Name string `json:"name"`
+
+	// Participants Ordered user IDs; each ID must appear only once.
+	Participants []int `json:"participants"`
+
+	// RotationConfig Public daily and weekly types use the custom coverage-window payloads. Daily requires startTime and endTime; weekly accepts a day/time range or windows. Without handOffDay, a weekly rotation hands off to the next participant at the range start, or at the earliest window start in the Sunday-to-Saturday week. A range whose start and end share the same weekday and time covers a full seven days: startDay 3, startTime 12:00, endDay 3, endTime 12:00 gives continuous coverage with a Wednesday-noon handoff. With handOffDay, the handoff happens at 00:00 on that weekday instead, independent of coverage. Handoffs keep their local clock time in the schedule timezone across daylight-saving changes. Times are 24-hour HH:MM; weekdays are 0 (Sunday) through 6 (Saturday).
+	RotationConfig PublicScheduleRotationConfig `json:"rotationConfig"`
+
+	// StartAt First date this rotation takes effect, in YYYY-MM-DD format.
+	StartAt openapi_types.Date `json:"startAt"`
+}
+
+// PublicScheduleRotationUpdateInput defines model for PublicScheduleRotationUpdateInput.
+type PublicScheduleRotationUpdateInput struct {
+	Name string `json:"name"`
+
+	// Participants Ordered user IDs; each ID must appear only once.
+	Participants []int `json:"participants"`
+
+	// RotationConfig Public daily and weekly types use the custom coverage-window payloads. Daily requires startTime and endTime; weekly accepts a day/time range or windows. Without handOffDay, a weekly rotation hands off to the next participant at the range start, or at the earliest window start in the Sunday-to-Saturday week. A range whose start and end share the same weekday and time covers a full seven days: startDay 3, startTime 12:00, endDay 3, endTime 12:00 gives continuous coverage with a Wednesday-noon handoff. With handOffDay, the handoff happens at 00:00 on that weekday instead, independent of coverage. Handoffs keep their local clock time in the schedule timezone across daylight-saving changes. Times are 24-hour HH:MM; weekdays are 0 (Sunday) through 6 (Saturday).
+	RotationConfig PublicScheduleRotationConfig `json:"rotationConfig"`
+
+	// StartAt First date this rotation takes effect, in YYYY-MM-DD format.
+	StartAt openapi_types.Date `json:"startAt"`
+
+	// StoreParticipantsAsSent When true, participants are stored exactly in the order supplied, so startAt and the order alone decide who is on call, and removing or appending a participant can change who is on call now. When false or omitted, an update that only removes participants or appends them at the end may rotate the stored order so the person on call now stays on call; repeating the same PUT can then save a different order and change future handoffs.
+	StoreParticipantsAsSent *bool `json:"storeParticipantsAsSent,omitempty"`
+}
+
+// ReplacePublicScheduleTeamsRequest defines model for ReplacePublicScheduleTeamsRequest.
+type ReplacePublicScheduleTeamsRequest struct {
+	// TeamIds The complete set of owning team IDs. An empty array makes the schedule global.
+	TeamIds []int32 `json:"teamIds"`
+}
+
+// ScheduleCurrentOnCallResponse defines model for ScheduleCurrentOnCallResponse.
+type ScheduleCurrentOnCallResponse struct {
+	// Id Unique identifier of the schedule.
+	Id int32 `json:"id"`
+
+	// Name Name of the schedule.
+	Name string `json:"name"`
+
+	// OnCallResponders Current responders, deduplicated by user ID across rotations. Empty when there is no active coverage.
+	OnCallResponders []PublicOnCallResponder `json:"onCallResponders"`
+
+	// Team Team associated with the schedule, if any.
+	Team nullable.Nullable[ScheduleTeamRef] `json:"team"`
+}
+
+// ScheduleOnCallSummary defines model for ScheduleOnCallSummary.
+type ScheduleOnCallSummary struct {
+	// Id Unique identifier of the schedule.
+	Id int32 `json:"id"`
+
+	// Name Name of the schedule.
+	Name string `json:"name"`
+
+	// OnCallResponderEmails Email addresses of all current on-call responders for the schedule.
+	OnCallResponderEmails []openapi_types.Email `json:"onCallResponderEmails"`
+
+	// Team Team associated with the schedule, if any.
+	Team nullable.Nullable[ScheduleTeamRef] `json:"team,omitempty"`
+}
+
+// ScheduleTeamRef defines model for ScheduleTeamRef.
+type ScheduleTeamRef struct {
+	// Name Name of the team associated with the schedule.
+	Name string `json:"name"`
+
+	// ShortId Short identifier of the team associated with the schedule.
+	ShortId string `json:"shortId"`
+}
+
+// SchedulesOnCallResponse defines model for SchedulesOnCallResponse.
+type SchedulesOnCallResponse struct {
+	// HasMore Whether there are more schedules available beyond the current page.
+	HasMore   bool                    `json:"hasMore"`
+	Schedules []ScheduleOnCallSummary `json:"schedules"`
+
+	// Total Total number of schedules for the organization.
+	Total int32 `json:"total"`
+}
 
 // TeamMemberAssignmentResponse defines model for TeamMemberAssignmentResponse.
 type TeamMemberAssignmentResponse struct {
@@ -730,6 +1090,14 @@ type UpdatePublicEscalationPolicyRequest struct {
 	Tiers *[]PublicEscalationPolicyTierInput `json:"tiers,omitempty"`
 }
 
+// UpdatePublicScheduleRequest defines model for UpdatePublicScheduleRequest.
+type UpdatePublicScheduleRequest struct {
+	Name *string `json:"name,omitempty"`
+
+	// Timezone IANA time zone for this schedule, such as America/New_York.
+	Timezone *string `json:"timezone,omitempty"`
+}
+
 // UpdateTeamRequest defines model for UpdateTeamRequest.
 type UpdateTeamRequest struct {
 	Description      nullable.Nullable[string] `json:"description,omitempty"`
@@ -823,6 +1191,96 @@ type ListMembersParams struct {
 // ListMembersParamsStatus defines parameters for ListMembers.
 type ListMembersParamsStatus string
 
+// ListSchedulesParams defines parameters for ListSchedules.
+type ListSchedulesParams struct {
+	Limit  *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset *int32 `form:"offset,omitempty" json:"offset,omitempty"`
+	TeamId *int32 `form:"teamId,omitempty" json:"teamId,omitempty"`
+}
+
+// CreateSchedule400JSONResponseBody defines parameters for CreateSchedule.
+type CreateSchedule400JSONResponseBody struct {
+	union json.RawMessage
+}
+
+// ListSchedulesCurrentOnCallParams defines parameters for ListSchedulesCurrentOnCall.
+type ListSchedulesCurrentOnCallParams struct {
+	Limit  *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset *int32 `form:"offset,omitempty" json:"offset,omitempty"`
+}
+
+// GetOnCallHoursReportParams defines parameters for GetOnCallHoursReport.
+type GetOnCallHoursReportParams struct {
+	StartDate    string    `form:"startDate" json:"startDate"`
+	EndDate      string    `form:"endDate" json:"endDate"`
+	TeamShortIds *[]string `form:"teamShortIds,omitempty" json:"teamShortIds,omitempty"`
+	MemberIds    *[]int    `form:"memberIds,omitempty" json:"memberIds,omitempty"`
+	HoursPerDay  *float32  `form:"hoursPerDay,omitempty" json:"hoursPerDay,omitempty"`
+}
+
+// DeleteSchedule400JSONResponseBody defines parameters for DeleteSchedule.
+type DeleteSchedule400JSONResponseBody struct {
+	union json.RawMessage
+}
+
+// GetSchedule400JSONResponseBody defines parameters for GetSchedule.
+type GetSchedule400JSONResponseBody struct {
+	union json.RawMessage
+}
+
+// UpdateSchedule400JSONResponseBody defines parameters for UpdateSchedule.
+type UpdateSchedule400JSONResponseBody struct {
+	union json.RawMessage
+}
+
+// CreateScheduleRotation400JSONResponseBody defines parameters for CreateScheduleRotation.
+type CreateScheduleRotation400JSONResponseBody struct {
+	union json.RawMessage
+}
+
+// DeleteScheduleRotation400JSONResponseBody defines parameters for DeleteScheduleRotation.
+type DeleteScheduleRotation400JSONResponseBody struct {
+	union json.RawMessage
+}
+
+// UpdateScheduleRotation400JSONResponseBody defines parameters for UpdateScheduleRotation.
+type UpdateScheduleRotation400JSONResponseBody struct {
+	union json.RawMessage
+}
+
+// ListScheduleRotationOverridesParams defines parameters for ListScheduleRotationOverrides.
+type ListScheduleRotationOverridesParams struct {
+	Limit  *int       `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset *int       `form:"offset,omitempty" json:"offset,omitempty"`
+	From   *time.Time `form:"from,omitempty" json:"from,omitempty"`
+	To     *time.Time `form:"to,omitempty" json:"to,omitempty"`
+}
+
+// ListScheduleRotationOverrides400JSONResponseBody defines parameters for ListScheduleRotationOverrides.
+type ListScheduleRotationOverrides400JSONResponseBody struct {
+	union json.RawMessage
+}
+
+// CreateScheduleRotationOverride400JSONResponseBody defines parameters for CreateScheduleRotationOverride.
+type CreateScheduleRotationOverride400JSONResponseBody struct {
+	union json.RawMessage
+}
+
+// DeleteScheduleRotationOverride400JSONResponseBody defines parameters for DeleteScheduleRotationOverride.
+type DeleteScheduleRotationOverride400JSONResponseBody struct {
+	union json.RawMessage
+}
+
+// UpdateScheduleRotationOverride400JSONResponseBody defines parameters for UpdateScheduleRotationOverride.
+type UpdateScheduleRotationOverride400JSONResponseBody struct {
+	union json.RawMessage
+}
+
+// ReplaceScheduleTeams400JSONResponseBody defines parameters for ReplaceScheduleTeams.
+type ReplaceScheduleTeams400JSONResponseBody struct {
+	union json.RawMessage
+}
+
 // ListTeamsParams defines parameters for ListTeams.
 type ListTeamsParams struct {
 	Limit  *int32 `form:"limit,omitempty" json:"limit,omitempty"`
@@ -840,6 +1298,27 @@ type CreateEscalationPolicyJSONRequestBody = CreatePublicEscalationPolicyRequest
 
 // UpdateEscalationPolicyJSONRequestBody defines body for UpdateEscalationPolicy for application/json ContentType.
 type UpdateEscalationPolicyJSONRequestBody = UpdatePublicEscalationPolicyRequest
+
+// CreateScheduleJSONRequestBody defines body for CreateSchedule for application/json ContentType.
+type CreateScheduleJSONRequestBody = CreatePublicScheduleRequest
+
+// UpdateScheduleJSONRequestBody defines body for UpdateSchedule for application/json ContentType.
+type UpdateScheduleJSONRequestBody = UpdatePublicScheduleRequest
+
+// CreateScheduleRotationJSONRequestBody defines body for CreateScheduleRotation for application/json ContentType.
+type CreateScheduleRotationJSONRequestBody = PublicScheduleRotationInput
+
+// UpdateScheduleRotationJSONRequestBody defines body for UpdateScheduleRotation for application/json ContentType.
+type UpdateScheduleRotationJSONRequestBody = PublicScheduleRotationUpdateInput
+
+// CreateScheduleRotationOverrideJSONRequestBody defines body for CreateScheduleRotationOverride for application/json ContentType.
+type CreateScheduleRotationOverrideJSONRequestBody = PublicScheduleOverrideRequest
+
+// UpdateScheduleRotationOverrideJSONRequestBody defines body for UpdateScheduleRotationOverride for application/json ContentType.
+type UpdateScheduleRotationOverrideJSONRequestBody = PublicScheduleOverrideRequest
+
+// ReplaceScheduleTeamsJSONRequestBody defines body for ReplaceScheduleTeams for application/json ContentType.
+type ReplaceScheduleTeamsJSONRequestBody = ReplacePublicScheduleTeamsRequest
 
 // CreateTeamJSONRequestBody defines body for CreateTeam for application/json ContentType.
 type CreateTeamJSONRequestBody = CreateTeamRequest
@@ -1009,6 +1488,130 @@ func (t *PublicEscalationPolicyTierInput) UnmarshalJSON(b []byte) error {
 		}
 	}
 
+	return err
+}
+
+// AsPublicScheduleRotationConfig0 returns the union data inside the PublicScheduleRotationConfig as a PublicScheduleRotationConfig0
+func (t PublicScheduleRotationConfig) AsPublicScheduleRotationConfig0() (PublicScheduleRotationConfig0, error) {
+	var body PublicScheduleRotationConfig0
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPublicScheduleRotationConfig0 overwrites any union data inside the PublicScheduleRotationConfig as the provided PublicScheduleRotationConfig0
+func (t *PublicScheduleRotationConfig) FromPublicScheduleRotationConfig0(v PublicScheduleRotationConfig0) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePublicScheduleRotationConfig0 performs a merge with any union data inside the PublicScheduleRotationConfig, using the provided PublicScheduleRotationConfig0
+func (t *PublicScheduleRotationConfig) MergePublicScheduleRotationConfig0(v PublicScheduleRotationConfig0) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPublicScheduleRotationConfig1 returns the union data inside the PublicScheduleRotationConfig as a PublicScheduleRotationConfig1
+func (t PublicScheduleRotationConfig) AsPublicScheduleRotationConfig1() (PublicScheduleRotationConfig1, error) {
+	var body PublicScheduleRotationConfig1
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPublicScheduleRotationConfig1 overwrites any union data inside the PublicScheduleRotationConfig as the provided PublicScheduleRotationConfig1
+func (t *PublicScheduleRotationConfig) FromPublicScheduleRotationConfig1(v PublicScheduleRotationConfig1) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePublicScheduleRotationConfig1 performs a merge with any union data inside the PublicScheduleRotationConfig, using the provided PublicScheduleRotationConfig1
+func (t *PublicScheduleRotationConfig) MergePublicScheduleRotationConfig1(v PublicScheduleRotationConfig1) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t PublicScheduleRotationConfig) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *PublicScheduleRotationConfig) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsPublicScheduleRotationConfig1Payload0 returns the union data inside the PublicScheduleRotationConfig_1_Payload as a PublicScheduleRotationConfig1Payload0
+func (t PublicScheduleRotationConfig_1_Payload) AsPublicScheduleRotationConfig1Payload0() (PublicScheduleRotationConfig1Payload0, error) {
+	var body PublicScheduleRotationConfig1Payload0
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPublicScheduleRotationConfig1Payload0 overwrites any union data inside the PublicScheduleRotationConfig_1_Payload as the provided PublicScheduleRotationConfig1Payload0
+func (t *PublicScheduleRotationConfig_1_Payload) FromPublicScheduleRotationConfig1Payload0(v PublicScheduleRotationConfig1Payload0) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePublicScheduleRotationConfig1Payload0 performs a merge with any union data inside the PublicScheduleRotationConfig_1_Payload, using the provided PublicScheduleRotationConfig1Payload0
+func (t *PublicScheduleRotationConfig_1_Payload) MergePublicScheduleRotationConfig1Payload0(v PublicScheduleRotationConfig1Payload0) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPublicScheduleRotationConfig1Payload1 returns the union data inside the PublicScheduleRotationConfig_1_Payload as a PublicScheduleRotationConfig1Payload1
+func (t PublicScheduleRotationConfig_1_Payload) AsPublicScheduleRotationConfig1Payload1() (PublicScheduleRotationConfig1Payload1, error) {
+	var body PublicScheduleRotationConfig1Payload1
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPublicScheduleRotationConfig1Payload1 overwrites any union data inside the PublicScheduleRotationConfig_1_Payload as the provided PublicScheduleRotationConfig1Payload1
+func (t *PublicScheduleRotationConfig_1_Payload) FromPublicScheduleRotationConfig1Payload1(v PublicScheduleRotationConfig1Payload1) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePublicScheduleRotationConfig1Payload1 performs a merge with any union data inside the PublicScheduleRotationConfig_1_Payload, using the provided PublicScheduleRotationConfig1Payload1
+func (t *PublicScheduleRotationConfig_1_Payload) MergePublicScheduleRotationConfig1Payload1(v PublicScheduleRotationConfig1Payload1) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t PublicScheduleRotationConfig_1_Payload) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *PublicScheduleRotationConfig_1_Payload) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
 	return err
 }
 
@@ -1446,6 +2049,750 @@ func (t *ListMicrosoftTeamsTeams400JSONResponseBody) UnmarshalJSON(b []byte) err
 	return err
 }
 
+// AsValidationErrorResponse returns the union data inside the CreateSchedule400JSONResponseBody as a ValidationErrorResponse
+func (t CreateSchedule400JSONResponseBody) AsValidationErrorResponse() (ValidationErrorResponse, error) {
+	var body ValidationErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromValidationErrorResponse overwrites any union data inside the CreateSchedule400JSONResponseBody as the provided ValidationErrorResponse
+func (t *CreateSchedule400JSONResponseBody) FromValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeValidationErrorResponse performs a merge with any union data inside the CreateSchedule400JSONResponseBody, using the provided ValidationErrorResponse
+func (t *CreateSchedule400JSONResponseBody) MergeValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsErrorResponse returns the union data inside the CreateSchedule400JSONResponseBody as a ErrorResponse
+func (t CreateSchedule400JSONResponseBody) AsErrorResponse() (ErrorResponse, error) {
+	var body ErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorResponse overwrites any union data inside the CreateSchedule400JSONResponseBody as the provided ErrorResponse
+func (t *CreateSchedule400JSONResponseBody) FromErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorResponse performs a merge with any union data inside the CreateSchedule400JSONResponseBody, using the provided ErrorResponse
+func (t *CreateSchedule400JSONResponseBody) MergeErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t CreateSchedule400JSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *CreateSchedule400JSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsValidationErrorResponse returns the union data inside the DeleteSchedule400JSONResponseBody as a ValidationErrorResponse
+func (t DeleteSchedule400JSONResponseBody) AsValidationErrorResponse() (ValidationErrorResponse, error) {
+	var body ValidationErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromValidationErrorResponse overwrites any union data inside the DeleteSchedule400JSONResponseBody as the provided ValidationErrorResponse
+func (t *DeleteSchedule400JSONResponseBody) FromValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeValidationErrorResponse performs a merge with any union data inside the DeleteSchedule400JSONResponseBody, using the provided ValidationErrorResponse
+func (t *DeleteSchedule400JSONResponseBody) MergeValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsErrorResponse returns the union data inside the DeleteSchedule400JSONResponseBody as a ErrorResponse
+func (t DeleteSchedule400JSONResponseBody) AsErrorResponse() (ErrorResponse, error) {
+	var body ErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorResponse overwrites any union data inside the DeleteSchedule400JSONResponseBody as the provided ErrorResponse
+func (t *DeleteSchedule400JSONResponseBody) FromErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorResponse performs a merge with any union data inside the DeleteSchedule400JSONResponseBody, using the provided ErrorResponse
+func (t *DeleteSchedule400JSONResponseBody) MergeErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t DeleteSchedule400JSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *DeleteSchedule400JSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsValidationErrorResponse returns the union data inside the GetSchedule400JSONResponseBody as a ValidationErrorResponse
+func (t GetSchedule400JSONResponseBody) AsValidationErrorResponse() (ValidationErrorResponse, error) {
+	var body ValidationErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromValidationErrorResponse overwrites any union data inside the GetSchedule400JSONResponseBody as the provided ValidationErrorResponse
+func (t *GetSchedule400JSONResponseBody) FromValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeValidationErrorResponse performs a merge with any union data inside the GetSchedule400JSONResponseBody, using the provided ValidationErrorResponse
+func (t *GetSchedule400JSONResponseBody) MergeValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsErrorResponse returns the union data inside the GetSchedule400JSONResponseBody as a ErrorResponse
+func (t GetSchedule400JSONResponseBody) AsErrorResponse() (ErrorResponse, error) {
+	var body ErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorResponse overwrites any union data inside the GetSchedule400JSONResponseBody as the provided ErrorResponse
+func (t *GetSchedule400JSONResponseBody) FromErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorResponse performs a merge with any union data inside the GetSchedule400JSONResponseBody, using the provided ErrorResponse
+func (t *GetSchedule400JSONResponseBody) MergeErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t GetSchedule400JSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *GetSchedule400JSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsValidationErrorResponse returns the union data inside the UpdateSchedule400JSONResponseBody as a ValidationErrorResponse
+func (t UpdateSchedule400JSONResponseBody) AsValidationErrorResponse() (ValidationErrorResponse, error) {
+	var body ValidationErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromValidationErrorResponse overwrites any union data inside the UpdateSchedule400JSONResponseBody as the provided ValidationErrorResponse
+func (t *UpdateSchedule400JSONResponseBody) FromValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeValidationErrorResponse performs a merge with any union data inside the UpdateSchedule400JSONResponseBody, using the provided ValidationErrorResponse
+func (t *UpdateSchedule400JSONResponseBody) MergeValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsErrorResponse returns the union data inside the UpdateSchedule400JSONResponseBody as a ErrorResponse
+func (t UpdateSchedule400JSONResponseBody) AsErrorResponse() (ErrorResponse, error) {
+	var body ErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorResponse overwrites any union data inside the UpdateSchedule400JSONResponseBody as the provided ErrorResponse
+func (t *UpdateSchedule400JSONResponseBody) FromErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorResponse performs a merge with any union data inside the UpdateSchedule400JSONResponseBody, using the provided ErrorResponse
+func (t *UpdateSchedule400JSONResponseBody) MergeErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t UpdateSchedule400JSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *UpdateSchedule400JSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsValidationErrorResponse returns the union data inside the CreateScheduleRotation400JSONResponseBody as a ValidationErrorResponse
+func (t CreateScheduleRotation400JSONResponseBody) AsValidationErrorResponse() (ValidationErrorResponse, error) {
+	var body ValidationErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromValidationErrorResponse overwrites any union data inside the CreateScheduleRotation400JSONResponseBody as the provided ValidationErrorResponse
+func (t *CreateScheduleRotation400JSONResponseBody) FromValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeValidationErrorResponse performs a merge with any union data inside the CreateScheduleRotation400JSONResponseBody, using the provided ValidationErrorResponse
+func (t *CreateScheduleRotation400JSONResponseBody) MergeValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsErrorResponse returns the union data inside the CreateScheduleRotation400JSONResponseBody as a ErrorResponse
+func (t CreateScheduleRotation400JSONResponseBody) AsErrorResponse() (ErrorResponse, error) {
+	var body ErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorResponse overwrites any union data inside the CreateScheduleRotation400JSONResponseBody as the provided ErrorResponse
+func (t *CreateScheduleRotation400JSONResponseBody) FromErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorResponse performs a merge with any union data inside the CreateScheduleRotation400JSONResponseBody, using the provided ErrorResponse
+func (t *CreateScheduleRotation400JSONResponseBody) MergeErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t CreateScheduleRotation400JSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *CreateScheduleRotation400JSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsValidationErrorResponse returns the union data inside the DeleteScheduleRotation400JSONResponseBody as a ValidationErrorResponse
+func (t DeleteScheduleRotation400JSONResponseBody) AsValidationErrorResponse() (ValidationErrorResponse, error) {
+	var body ValidationErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromValidationErrorResponse overwrites any union data inside the DeleteScheduleRotation400JSONResponseBody as the provided ValidationErrorResponse
+func (t *DeleteScheduleRotation400JSONResponseBody) FromValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeValidationErrorResponse performs a merge with any union data inside the DeleteScheduleRotation400JSONResponseBody, using the provided ValidationErrorResponse
+func (t *DeleteScheduleRotation400JSONResponseBody) MergeValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsErrorResponse returns the union data inside the DeleteScheduleRotation400JSONResponseBody as a ErrorResponse
+func (t DeleteScheduleRotation400JSONResponseBody) AsErrorResponse() (ErrorResponse, error) {
+	var body ErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorResponse overwrites any union data inside the DeleteScheduleRotation400JSONResponseBody as the provided ErrorResponse
+func (t *DeleteScheduleRotation400JSONResponseBody) FromErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorResponse performs a merge with any union data inside the DeleteScheduleRotation400JSONResponseBody, using the provided ErrorResponse
+func (t *DeleteScheduleRotation400JSONResponseBody) MergeErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t DeleteScheduleRotation400JSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *DeleteScheduleRotation400JSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsValidationErrorResponse returns the union data inside the UpdateScheduleRotation400JSONResponseBody as a ValidationErrorResponse
+func (t UpdateScheduleRotation400JSONResponseBody) AsValidationErrorResponse() (ValidationErrorResponse, error) {
+	var body ValidationErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromValidationErrorResponse overwrites any union data inside the UpdateScheduleRotation400JSONResponseBody as the provided ValidationErrorResponse
+func (t *UpdateScheduleRotation400JSONResponseBody) FromValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeValidationErrorResponse performs a merge with any union data inside the UpdateScheduleRotation400JSONResponseBody, using the provided ValidationErrorResponse
+func (t *UpdateScheduleRotation400JSONResponseBody) MergeValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsErrorResponse returns the union data inside the UpdateScheduleRotation400JSONResponseBody as a ErrorResponse
+func (t UpdateScheduleRotation400JSONResponseBody) AsErrorResponse() (ErrorResponse, error) {
+	var body ErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorResponse overwrites any union data inside the UpdateScheduleRotation400JSONResponseBody as the provided ErrorResponse
+func (t *UpdateScheduleRotation400JSONResponseBody) FromErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorResponse performs a merge with any union data inside the UpdateScheduleRotation400JSONResponseBody, using the provided ErrorResponse
+func (t *UpdateScheduleRotation400JSONResponseBody) MergeErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t UpdateScheduleRotation400JSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *UpdateScheduleRotation400JSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsValidationErrorResponse returns the union data inside the ListScheduleRotationOverrides400JSONResponseBody as a ValidationErrorResponse
+func (t ListScheduleRotationOverrides400JSONResponseBody) AsValidationErrorResponse() (ValidationErrorResponse, error) {
+	var body ValidationErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromValidationErrorResponse overwrites any union data inside the ListScheduleRotationOverrides400JSONResponseBody as the provided ValidationErrorResponse
+func (t *ListScheduleRotationOverrides400JSONResponseBody) FromValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeValidationErrorResponse performs a merge with any union data inside the ListScheduleRotationOverrides400JSONResponseBody, using the provided ValidationErrorResponse
+func (t *ListScheduleRotationOverrides400JSONResponseBody) MergeValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsErrorResponse returns the union data inside the ListScheduleRotationOverrides400JSONResponseBody as a ErrorResponse
+func (t ListScheduleRotationOverrides400JSONResponseBody) AsErrorResponse() (ErrorResponse, error) {
+	var body ErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorResponse overwrites any union data inside the ListScheduleRotationOverrides400JSONResponseBody as the provided ErrorResponse
+func (t *ListScheduleRotationOverrides400JSONResponseBody) FromErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorResponse performs a merge with any union data inside the ListScheduleRotationOverrides400JSONResponseBody, using the provided ErrorResponse
+func (t *ListScheduleRotationOverrides400JSONResponseBody) MergeErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t ListScheduleRotationOverrides400JSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *ListScheduleRotationOverrides400JSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsValidationErrorResponse returns the union data inside the CreateScheduleRotationOverride400JSONResponseBody as a ValidationErrorResponse
+func (t CreateScheduleRotationOverride400JSONResponseBody) AsValidationErrorResponse() (ValidationErrorResponse, error) {
+	var body ValidationErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromValidationErrorResponse overwrites any union data inside the CreateScheduleRotationOverride400JSONResponseBody as the provided ValidationErrorResponse
+func (t *CreateScheduleRotationOverride400JSONResponseBody) FromValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeValidationErrorResponse performs a merge with any union data inside the CreateScheduleRotationOverride400JSONResponseBody, using the provided ValidationErrorResponse
+func (t *CreateScheduleRotationOverride400JSONResponseBody) MergeValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsErrorResponse returns the union data inside the CreateScheduleRotationOverride400JSONResponseBody as a ErrorResponse
+func (t CreateScheduleRotationOverride400JSONResponseBody) AsErrorResponse() (ErrorResponse, error) {
+	var body ErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorResponse overwrites any union data inside the CreateScheduleRotationOverride400JSONResponseBody as the provided ErrorResponse
+func (t *CreateScheduleRotationOverride400JSONResponseBody) FromErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorResponse performs a merge with any union data inside the CreateScheduleRotationOverride400JSONResponseBody, using the provided ErrorResponse
+func (t *CreateScheduleRotationOverride400JSONResponseBody) MergeErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t CreateScheduleRotationOverride400JSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *CreateScheduleRotationOverride400JSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsValidationErrorResponse returns the union data inside the DeleteScheduleRotationOverride400JSONResponseBody as a ValidationErrorResponse
+func (t DeleteScheduleRotationOverride400JSONResponseBody) AsValidationErrorResponse() (ValidationErrorResponse, error) {
+	var body ValidationErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromValidationErrorResponse overwrites any union data inside the DeleteScheduleRotationOverride400JSONResponseBody as the provided ValidationErrorResponse
+func (t *DeleteScheduleRotationOverride400JSONResponseBody) FromValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeValidationErrorResponse performs a merge with any union data inside the DeleteScheduleRotationOverride400JSONResponseBody, using the provided ValidationErrorResponse
+func (t *DeleteScheduleRotationOverride400JSONResponseBody) MergeValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsErrorResponse returns the union data inside the DeleteScheduleRotationOverride400JSONResponseBody as a ErrorResponse
+func (t DeleteScheduleRotationOverride400JSONResponseBody) AsErrorResponse() (ErrorResponse, error) {
+	var body ErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorResponse overwrites any union data inside the DeleteScheduleRotationOverride400JSONResponseBody as the provided ErrorResponse
+func (t *DeleteScheduleRotationOverride400JSONResponseBody) FromErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorResponse performs a merge with any union data inside the DeleteScheduleRotationOverride400JSONResponseBody, using the provided ErrorResponse
+func (t *DeleteScheduleRotationOverride400JSONResponseBody) MergeErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t DeleteScheduleRotationOverride400JSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *DeleteScheduleRotationOverride400JSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsValidationErrorResponse returns the union data inside the UpdateScheduleRotationOverride400JSONResponseBody as a ValidationErrorResponse
+func (t UpdateScheduleRotationOverride400JSONResponseBody) AsValidationErrorResponse() (ValidationErrorResponse, error) {
+	var body ValidationErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromValidationErrorResponse overwrites any union data inside the UpdateScheduleRotationOverride400JSONResponseBody as the provided ValidationErrorResponse
+func (t *UpdateScheduleRotationOverride400JSONResponseBody) FromValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeValidationErrorResponse performs a merge with any union data inside the UpdateScheduleRotationOverride400JSONResponseBody, using the provided ValidationErrorResponse
+func (t *UpdateScheduleRotationOverride400JSONResponseBody) MergeValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsErrorResponse returns the union data inside the UpdateScheduleRotationOverride400JSONResponseBody as a ErrorResponse
+func (t UpdateScheduleRotationOverride400JSONResponseBody) AsErrorResponse() (ErrorResponse, error) {
+	var body ErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorResponse overwrites any union data inside the UpdateScheduleRotationOverride400JSONResponseBody as the provided ErrorResponse
+func (t *UpdateScheduleRotationOverride400JSONResponseBody) FromErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorResponse performs a merge with any union data inside the UpdateScheduleRotationOverride400JSONResponseBody, using the provided ErrorResponse
+func (t *UpdateScheduleRotationOverride400JSONResponseBody) MergeErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t UpdateScheduleRotationOverride400JSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *UpdateScheduleRotationOverride400JSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsValidationErrorResponse returns the union data inside the ReplaceScheduleTeams400JSONResponseBody as a ValidationErrorResponse
+func (t ReplaceScheduleTeams400JSONResponseBody) AsValidationErrorResponse() (ValidationErrorResponse, error) {
+	var body ValidationErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromValidationErrorResponse overwrites any union data inside the ReplaceScheduleTeams400JSONResponseBody as the provided ValidationErrorResponse
+func (t *ReplaceScheduleTeams400JSONResponseBody) FromValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeValidationErrorResponse performs a merge with any union data inside the ReplaceScheduleTeams400JSONResponseBody, using the provided ValidationErrorResponse
+func (t *ReplaceScheduleTeams400JSONResponseBody) MergeValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsErrorResponse returns the union data inside the ReplaceScheduleTeams400JSONResponseBody as a ErrorResponse
+func (t ReplaceScheduleTeams400JSONResponseBody) AsErrorResponse() (ErrorResponse, error) {
+	var body ErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorResponse overwrites any union data inside the ReplaceScheduleTeams400JSONResponseBody as the provided ErrorResponse
+func (t *ReplaceScheduleTeams400JSONResponseBody) FromErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorResponse performs a merge with any union data inside the ReplaceScheduleTeams400JSONResponseBody, using the provided ErrorResponse
+func (t *ReplaceScheduleTeams400JSONResponseBody) MergeErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t ReplaceScheduleTeams400JSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *ReplaceScheduleTeams400JSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
 // RequestEditorFn is the function signature for the RequestEditor callback function
 type RequestEditorFn func(ctx context.Context, req *http.Request) error
 
@@ -1609,6 +2956,195 @@ type ClientInterface interface {
 	//
 	// Corresponds with GET /members/{userId} (the `GetMember` operationId).
 	GetMember(ctx context.Context, userId int32, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListSchedules List schedules
+	//
+	// Lists schedules in the API key organization, newest first. teamId narrows the list to one team.
+	//
+	// Corresponds with GET /schedules (the `ListSchedules` operationId).
+	ListSchedules(ctx context.Context, params *ListSchedulesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateScheduleWithBody Create a schedule
+	//
+	// Creates a schedule owned by the teamIds in the API key organization, or a global schedule when no team is given. At least one rotation is required.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /schedules (the `CreateSchedule` operationId).
+	CreateScheduleWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateSchedule Create a schedule
+	//
+	// Creates a schedule owned by the teamIds in the API key organization, or a global schedule when no team is given. At least one rotation is required.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /schedules (the `CreateSchedule` operationId).
+	CreateSchedule(ctx context.Context, body CreateScheduleJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListSchedulesCurrentOnCall List schedules and current on-call responders
+	//
+	// Returns a paginated list of schedules for the organization associated with the API key, including the current on-call responder emails for each schedule.
+	//
+	// Corresponds with GET /schedules/on-call (the `ListSchedulesCurrentOnCall` operationId).
+	ListSchedulesCurrentOnCall(ctx context.Context, params *ListSchedulesCurrentOnCallParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetOnCallHoursReport Report on-call hours by member
+	//
+	// Returns aggregated on-call hours by member for the organization associated with the API key. The response mirrors the internal on-call hours reporting contract.
+	//
+	// Corresponds with GET /schedules/on-call-hours (the `GetOnCallHoursReport` operationId).
+	GetOnCallHoursReport(ctx context.Context, params *GetOnCallHoursReportParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteSchedule Delete a schedule
+	//
+	// Soft-deletes a schedule in the API key organization. A schedule that an escalation policy tier or routing rule still pages cannot be deleted; change those first.
+	//
+	// Corresponds with DELETE /schedules/{id} (the `DeleteSchedule` operationId).
+	DeleteSchedule(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetSchedule Get a schedule
+	//
+	// Returns a schedule in the API key organization with its rotations. Older schedules without active rotations return an empty rotations array.
+	//
+	// Corresponds with GET /schedules/{id} (the `GetSchedule` operationId).
+	GetSchedule(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateScheduleWithBody Update schedule details
+	//
+	// Updates name or timezone. Omitted fields retain their current values. Change owning teams with PUT /schedules/{id}/teams and rotations with the rotation routes.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PATCH /schedules/{id} (the `UpdateSchedule` operationId).
+	UpdateScheduleWithBody(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateSchedule Update schedule details
+	//
+	// Updates name or timezone. Omitted fields retain their current values. Change owning teams with PUT /schedules/{id}/teams and rotations with the rotation routes.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PATCH /schedules/{id} (the `UpdateSchedule` operationId).
+	UpdateSchedule(ctx context.Context, id int32, body UpdateScheduleJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetScheduleCurrentOnCall Get current on-call responders for a schedule
+	//
+	// Returns current responder profiles for a schedule in the API key organization. Uses the schedule timezone, rotation coverage windows, and overrides. Responders are deduplicated by user ID across rotations. Global schedules have a null team; schedules without active coverage or rotations return an empty onCallResponders array.
+	//
+	// Corresponds with GET /schedules/{id}/on-call (the `GetScheduleCurrentOnCall` operationId).
+	GetScheduleCurrentOnCall(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateScheduleRotationWithBody Create a schedule rotation
+	//
+	// Appends a rotation after the last active rotation in the schedule.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /schedules/{id}/rotations (the `CreateScheduleRotation` operationId).
+	CreateScheduleRotationWithBody(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateScheduleRotation Create a schedule rotation
+	//
+	// Appends a rotation after the last active rotation in the schedule.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /schedules/{id}/rotations (the `CreateScheduleRotation` operationId).
+	CreateScheduleRotation(ctx context.Context, id int32, body CreateScheduleRotationJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteScheduleRotation Delete a schedule rotation
+	//
+	// Soft-deletes one rotation from a schedule. The last active rotation cannot be deleted.
+	//
+	// Corresponds with DELETE /schedules/{id}/rotations/{rotationId} (the `DeleteScheduleRotation` operationId).
+	DeleteScheduleRotation(ctx context.Context, id int32, rotationId int32, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateScheduleRotationWithBody Replace a schedule rotation
+	//
+	// Send the complete rotation, including all participant IDs. The rotation retains its position. An explicit participant reorder is saved as supplied; for membership-only changes, see storeParticipantsAsSent. Clients that compare the stored rotation with what they sent, such as infrastructure-as-code tools, should set it to true.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PUT /schedules/{id}/rotations/{rotationId} (the `UpdateScheduleRotation` operationId).
+	UpdateScheduleRotationWithBody(ctx context.Context, id int32, rotationId int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateScheduleRotation Replace a schedule rotation
+	//
+	// Send the complete rotation, including all participant IDs. The rotation retains its position. An explicit participant reorder is saved as supplied; for membership-only changes, see storeParticipantsAsSent. Clients that compare the stored rotation with what they sent, such as infrastructure-as-code tools, should set it to true.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PUT /schedules/{id}/rotations/{rotationId} (the `UpdateScheduleRotation` operationId).
+	UpdateScheduleRotation(ctx context.Context, id int32, rotationId int32, body UpdateScheduleRotationJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListScheduleRotationOverrides List rotation overrides
+	//
+	// Lists past and future non-deleted overrides for one rotation, ordered by schedule-clock startAt then id. from and to filter overlapping windows after conversion to the schedule timezone: endAt >= from and startAt <= to. Returned timestamps are UTC instants.
+	//
+	// Corresponds with GET /schedules/{id}/rotations/{rotationId}/overrides (the `ListScheduleRotationOverrides` operationId).
+	ListScheduleRotationOverrides(ctx context.Context, id int32, rotationId int32, params *ListScheduleRotationOverridesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateScheduleRotationOverrideWithBody Create a rotation override
+	//
+	// Assigns an organization user to the rotation for the requested window. startAt and endAt require ISO 8601 timestamps with explicit offsets. Each instant is converted to the schedule timezone before its clock boundary is saved.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /schedules/{id}/rotations/{rotationId}/overrides (the `CreateScheduleRotationOverride` operationId).
+	CreateScheduleRotationOverrideWithBody(ctx context.Context, id int32, rotationId int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateScheduleRotationOverride Create a rotation override
+	//
+	// Assigns an organization user to the rotation for the requested window. startAt and endAt require ISO 8601 timestamps with explicit offsets. Each instant is converted to the schedule timezone before its clock boundary is saved.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /schedules/{id}/rotations/{rotationId}/overrides (the `CreateScheduleRotationOverride` operationId).
+	CreateScheduleRotationOverride(ctx context.Context, id int32, rotationId int32, body CreateScheduleRotationOverrideJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteScheduleRotationOverride Delete a rotation override
+	//
+	// Soft-deletes an override in the API key organization.
+	//
+	// Corresponds with DELETE /schedules/{id}/rotations/{rotationId}/overrides/{overrideId} (the `DeleteScheduleRotationOverride` operationId).
+	DeleteScheduleRotationOverride(ctx context.Context, id int32, rotationId int32, overrideId int32, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateScheduleRotationOverrideWithBody Replace a rotation override
+	//
+	// Replaces the assigned user and window. Send all three editable fields. Timestamps require explicit ISO 8601 offsets and are converted to schedule-local clock boundaries before saving.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PUT /schedules/{id}/rotations/{rotationId}/overrides/{overrideId} (the `UpdateScheduleRotationOverride` operationId).
+	UpdateScheduleRotationOverrideWithBody(ctx context.Context, id int32, rotationId int32, overrideId int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateScheduleRotationOverride Replace a rotation override
+	//
+	// Replaces the assigned user and window. Send all three editable fields. Timestamps require explicit ISO 8601 offsets and are converted to schedule-local clock boundaries before saving.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PUT /schedules/{id}/rotations/{rotationId}/overrides/{overrideId} (the `UpdateScheduleRotationOverride` operationId).
+	UpdateScheduleRotationOverride(ctx context.Context, id int32, rotationId int32, overrideId int32, body UpdateScheduleRotationOverrideJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ReplaceScheduleTeamsWithBody Replace a schedule's owning teams
+	//
+	// Replaces the complete set of teams that own the schedule. Requires schedule.manageTeamOwnership; it does not change the schedule configuration or rotations. Sending the current set changes nothing.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PUT /schedules/{id}/teams (the `ReplaceScheduleTeams` operationId).
+	ReplaceScheduleTeamsWithBody(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ReplaceScheduleTeams Replace a schedule's owning teams
+	//
+	// Replaces the complete set of teams that own the schedule. Requires schedule.manageTeamOwnership; it does not change the schedule configuration or rotations. Sending the current set changes nothing.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PUT /schedules/{id}/teams (the `ReplaceScheduleTeams` operationId).
+	ReplaceScheduleTeams(ctx context.Context, id int32, body ReplaceScheduleTeamsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ListTeams List teams for the organization
 	//
@@ -1907,6 +3443,425 @@ func (c *Client) ListMembers(ctx context.Context, params *ListMembersParams, req
 // Corresponds with GET /members/{userId} (the `GetMember` operationId).
 func (c *Client) GetMember(ctx context.Context, userId int32, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetMemberRequest(c.Server, userId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListSchedules List schedules
+//
+// Lists schedules in the API key organization, newest first. teamId narrows the list to one team.
+//
+// Corresponds with GET /schedules (the `ListSchedules` operationId).
+func (c *Client) ListSchedules(ctx context.Context, params *ListSchedulesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListSchedulesRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateScheduleWithBody Create a schedule
+//
+// Creates a schedule owned by the teamIds in the API key organization, or a global schedule when no team is given. At least one rotation is required.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /schedules (the `CreateSchedule` operationId).
+func (c *Client) CreateScheduleWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateScheduleRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateSchedule Create a schedule
+//
+// Creates a schedule owned by the teamIds in the API key organization, or a global schedule when no team is given. At least one rotation is required.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /schedules (the `CreateSchedule` operationId).
+func (c *Client) CreateSchedule(ctx context.Context, body CreateScheduleJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateScheduleRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListSchedulesCurrentOnCall List schedules and current on-call responders
+//
+// Returns a paginated list of schedules for the organization associated with the API key, including the current on-call responder emails for each schedule.
+//
+// Corresponds with GET /schedules/on-call (the `ListSchedulesCurrentOnCall` operationId).
+func (c *Client) ListSchedulesCurrentOnCall(ctx context.Context, params *ListSchedulesCurrentOnCallParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListSchedulesCurrentOnCallRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetOnCallHoursReport Report on-call hours by member
+//
+// Returns aggregated on-call hours by member for the organization associated with the API key. The response mirrors the internal on-call hours reporting contract.
+//
+// Corresponds with GET /schedules/on-call-hours (the `GetOnCallHoursReport` operationId).
+func (c *Client) GetOnCallHoursReport(ctx context.Context, params *GetOnCallHoursReportParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetOnCallHoursReportRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DeleteSchedule Delete a schedule
+//
+// Soft-deletes a schedule in the API key organization. A schedule that an escalation policy tier or routing rule still pages cannot be deleted; change those first.
+//
+// Corresponds with DELETE /schedules/{id} (the `DeleteSchedule` operationId).
+func (c *Client) DeleteSchedule(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteScheduleRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetSchedule Get a schedule
+//
+// Returns a schedule in the API key organization with its rotations. Older schedules without active rotations return an empty rotations array.
+//
+// Corresponds with GET /schedules/{id} (the `GetSchedule` operationId).
+func (c *Client) GetSchedule(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetScheduleRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateScheduleWithBody Update schedule details
+//
+// Updates name or timezone. Omitted fields retain their current values. Change owning teams with PUT /schedules/{id}/teams and rotations with the rotation routes.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PATCH /schedules/{id} (the `UpdateSchedule` operationId).
+func (c *Client) UpdateScheduleWithBody(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateScheduleRequestWithBody(c.Server, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateSchedule Update schedule details
+//
+// Updates name or timezone. Omitted fields retain their current values. Change owning teams with PUT /schedules/{id}/teams and rotations with the rotation routes.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PATCH /schedules/{id} (the `UpdateSchedule` operationId).
+func (c *Client) UpdateSchedule(ctx context.Context, id int32, body UpdateScheduleJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateScheduleRequest(c.Server, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetScheduleCurrentOnCall Get current on-call responders for a schedule
+//
+// Returns current responder profiles for a schedule in the API key organization. Uses the schedule timezone, rotation coverage windows, and overrides. Responders are deduplicated by user ID across rotations. Global schedules have a null team; schedules without active coverage or rotations return an empty onCallResponders array.
+//
+// Corresponds with GET /schedules/{id}/on-call (the `GetScheduleCurrentOnCall` operationId).
+func (c *Client) GetScheduleCurrentOnCall(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetScheduleCurrentOnCallRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateScheduleRotationWithBody Create a schedule rotation
+//
+// Appends a rotation after the last active rotation in the schedule.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /schedules/{id}/rotations (the `CreateScheduleRotation` operationId).
+func (c *Client) CreateScheduleRotationWithBody(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateScheduleRotationRequestWithBody(c.Server, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateScheduleRotation Create a schedule rotation
+//
+// Appends a rotation after the last active rotation in the schedule.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /schedules/{id}/rotations (the `CreateScheduleRotation` operationId).
+func (c *Client) CreateScheduleRotation(ctx context.Context, id int32, body CreateScheduleRotationJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateScheduleRotationRequest(c.Server, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DeleteScheduleRotation Delete a schedule rotation
+//
+// Soft-deletes one rotation from a schedule. The last active rotation cannot be deleted.
+//
+// Corresponds with DELETE /schedules/{id}/rotations/{rotationId} (the `DeleteScheduleRotation` operationId).
+func (c *Client) DeleteScheduleRotation(ctx context.Context, id int32, rotationId int32, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteScheduleRotationRequest(c.Server, id, rotationId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateScheduleRotationWithBody Replace a schedule rotation
+//
+// Send the complete rotation, including all participant IDs. The rotation retains its position. An explicit participant reorder is saved as supplied; for membership-only changes, see storeParticipantsAsSent. Clients that compare the stored rotation with what they sent, such as infrastructure-as-code tools, should set it to true.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PUT /schedules/{id}/rotations/{rotationId} (the `UpdateScheduleRotation` operationId).
+func (c *Client) UpdateScheduleRotationWithBody(ctx context.Context, id int32, rotationId int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateScheduleRotationRequestWithBody(c.Server, id, rotationId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateScheduleRotation Replace a schedule rotation
+//
+// Send the complete rotation, including all participant IDs. The rotation retains its position. An explicit participant reorder is saved as supplied; for membership-only changes, see storeParticipantsAsSent. Clients that compare the stored rotation with what they sent, such as infrastructure-as-code tools, should set it to true.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PUT /schedules/{id}/rotations/{rotationId} (the `UpdateScheduleRotation` operationId).
+func (c *Client) UpdateScheduleRotation(ctx context.Context, id int32, rotationId int32, body UpdateScheduleRotationJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateScheduleRotationRequest(c.Server, id, rotationId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListScheduleRotationOverrides List rotation overrides
+//
+// Lists past and future non-deleted overrides for one rotation, ordered by schedule-clock startAt then id. from and to filter overlapping windows after conversion to the schedule timezone: endAt >= from and startAt <= to. Returned timestamps are UTC instants.
+//
+// Corresponds with GET /schedules/{id}/rotations/{rotationId}/overrides (the `ListScheduleRotationOverrides` operationId).
+func (c *Client) ListScheduleRotationOverrides(ctx context.Context, id int32, rotationId int32, params *ListScheduleRotationOverridesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListScheduleRotationOverridesRequest(c.Server, id, rotationId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateScheduleRotationOverrideWithBody Create a rotation override
+//
+// Assigns an organization user to the rotation for the requested window. startAt and endAt require ISO 8601 timestamps with explicit offsets. Each instant is converted to the schedule timezone before its clock boundary is saved.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /schedules/{id}/rotations/{rotationId}/overrides (the `CreateScheduleRotationOverride` operationId).
+func (c *Client) CreateScheduleRotationOverrideWithBody(ctx context.Context, id int32, rotationId int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateScheduleRotationOverrideRequestWithBody(c.Server, id, rotationId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateScheduleRotationOverride Create a rotation override
+//
+// Assigns an organization user to the rotation for the requested window. startAt and endAt require ISO 8601 timestamps with explicit offsets. Each instant is converted to the schedule timezone before its clock boundary is saved.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /schedules/{id}/rotations/{rotationId}/overrides (the `CreateScheduleRotationOverride` operationId).
+func (c *Client) CreateScheduleRotationOverride(ctx context.Context, id int32, rotationId int32, body CreateScheduleRotationOverrideJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateScheduleRotationOverrideRequest(c.Server, id, rotationId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DeleteScheduleRotationOverride Delete a rotation override
+//
+// Soft-deletes an override in the API key organization.
+//
+// Corresponds with DELETE /schedules/{id}/rotations/{rotationId}/overrides/{overrideId} (the `DeleteScheduleRotationOverride` operationId).
+func (c *Client) DeleteScheduleRotationOverride(ctx context.Context, id int32, rotationId int32, overrideId int32, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteScheduleRotationOverrideRequest(c.Server, id, rotationId, overrideId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateScheduleRotationOverrideWithBody Replace a rotation override
+//
+// Replaces the assigned user and window. Send all three editable fields. Timestamps require explicit ISO 8601 offsets and are converted to schedule-local clock boundaries before saving.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PUT /schedules/{id}/rotations/{rotationId}/overrides/{overrideId} (the `UpdateScheduleRotationOverride` operationId).
+func (c *Client) UpdateScheduleRotationOverrideWithBody(ctx context.Context, id int32, rotationId int32, overrideId int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateScheduleRotationOverrideRequestWithBody(c.Server, id, rotationId, overrideId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateScheduleRotationOverride Replace a rotation override
+//
+// Replaces the assigned user and window. Send all three editable fields. Timestamps require explicit ISO 8601 offsets and are converted to schedule-local clock boundaries before saving.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PUT /schedules/{id}/rotations/{rotationId}/overrides/{overrideId} (the `UpdateScheduleRotationOverride` operationId).
+func (c *Client) UpdateScheduleRotationOverride(ctx context.Context, id int32, rotationId int32, overrideId int32, body UpdateScheduleRotationOverrideJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateScheduleRotationOverrideRequest(c.Server, id, rotationId, overrideId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ReplaceScheduleTeamsWithBody Replace a schedule's owning teams
+//
+// Replaces the complete set of teams that own the schedule. Requires schedule.manageTeamOwnership; it does not change the schedule configuration or rotations. Sending the current set changes nothing.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PUT /schedules/{id}/teams (the `ReplaceScheduleTeams` operationId).
+func (c *Client) ReplaceScheduleTeamsWithBody(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewReplaceScheduleTeamsRequestWithBody(c.Server, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ReplaceScheduleTeams Replace a schedule's owning teams
+//
+// Replaces the complete set of teams that own the schedule. Requires schedule.manageTeamOwnership; it does not change the schedule configuration or rotations. Sending the current set changes nothing.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PUT /schedules/{id}/teams (the `ReplaceScheduleTeams` operationId).
+func (c *Client) ReplaceScheduleTeams(ctx context.Context, id int32, body ReplaceScheduleTeamsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewReplaceScheduleTeamsRequest(c.Server, id, body)
 	if err != nil {
 		return nil, err
 	}
@@ -2709,6 +4664,889 @@ func NewGetMemberRequest(server string, userId int32) (*http.Request, error) {
 	return req, nil
 }
 
+// NewListSchedulesRequest constructs an http.Request for the ListSchedules method
+func NewListSchedulesRequest(server string, params *ListSchedulesParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/schedules")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "limit", *params.Limit, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: "int32"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Offset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "offset", *params.Offset, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: "int32"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.TeamId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "teamId", *params.TeamId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: "int32"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCreateScheduleRequest calls the generic CreateSchedule builder with application/json body
+func NewCreateScheduleRequest(server string, body CreateScheduleJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateScheduleRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewCreateScheduleRequestWithBody constructs an http.Request for the CreateSchedule method, with any body, and a specified content type
+func NewCreateScheduleRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/schedules")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewListSchedulesCurrentOnCallRequest constructs an http.Request for the ListSchedulesCurrentOnCall method
+func NewListSchedulesCurrentOnCallRequest(server string, params *ListSchedulesCurrentOnCallParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/schedules/on-call")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "limit", *params.Limit, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: "int32"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Offset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "offset", *params.Offset, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: "int32"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetOnCallHoursReportRequest constructs an http.Request for the GetOnCallHoursReport method
+func NewGetOnCallHoursReportRequest(server string, params *GetOnCallHoursReportParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/schedules/on-call-hours")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "startDate", params.StartDate, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+			return nil, err
+		} else {
+			for _, qp := range strings.Split(queryFrag, "&") {
+				rawQueryFragments = append(rawQueryFragments, qp)
+			}
+		}
+
+		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "endDate", params.EndDate, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+			return nil, err
+		} else {
+			for _, qp := range strings.Split(queryFrag, "&") {
+				rawQueryFragments = append(rawQueryFragments, qp)
+			}
+		}
+
+		if params.TeamShortIds != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "teamShortIds", *params.TeamShortIds, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.MemberIds != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "memberIds", *params.MemberIds, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.HoursPerDay != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "hoursPerDay", *params.HoursPerDay, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "number", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewDeleteScheduleRequest constructs an http.Request for the DeleteSchedule method
+func NewDeleteScheduleRequest(server string, id int32) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/schedules/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetScheduleRequest constructs an http.Request for the GetSchedule method
+func NewGetScheduleRequest(server string, id int32) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/schedules/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateScheduleRequest calls the generic UpdateSchedule builder with application/json body
+func NewUpdateScheduleRequest(server string, id int32, body UpdateScheduleJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateScheduleRequestWithBody(server, id, "application/json", bodyReader)
+}
+
+// NewUpdateScheduleRequestWithBody constructs an http.Request for the UpdateSchedule method, with any body, and a specified content type
+func NewUpdateScheduleRequestWithBody(server string, id int32, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/schedules/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPatch, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetScheduleCurrentOnCallRequest constructs an http.Request for the GetScheduleCurrentOnCall method
+func NewGetScheduleCurrentOnCallRequest(server string, id int32) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/schedules/%s/on-call", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCreateScheduleRotationRequest calls the generic CreateScheduleRotation builder with application/json body
+func NewCreateScheduleRotationRequest(server string, id int32, body CreateScheduleRotationJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateScheduleRotationRequestWithBody(server, id, "application/json", bodyReader)
+}
+
+// NewCreateScheduleRotationRequestWithBody constructs an http.Request for the CreateScheduleRotation method, with any body, and a specified content type
+func NewCreateScheduleRotationRequestWithBody(server string, id int32, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/schedules/%s/rotations", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteScheduleRotationRequest constructs an http.Request for the DeleteScheduleRotation method
+func NewDeleteScheduleRotationRequest(server string, id int32, rotationId int32) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "rotationId", rotationId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/schedules/%s/rotations/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateScheduleRotationRequest calls the generic UpdateScheduleRotation builder with application/json body
+func NewUpdateScheduleRotationRequest(server string, id int32, rotationId int32, body UpdateScheduleRotationJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateScheduleRotationRequestWithBody(server, id, rotationId, "application/json", bodyReader)
+}
+
+// NewUpdateScheduleRotationRequestWithBody constructs an http.Request for the UpdateScheduleRotation method, with any body, and a specified content type
+func NewUpdateScheduleRotationRequestWithBody(server string, id int32, rotationId int32, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "rotationId", rotationId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/schedules/%s/rotations/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPut, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewListScheduleRotationOverridesRequest constructs an http.Request for the ListScheduleRotationOverrides method
+func NewListScheduleRotationOverridesRequest(server string, id int32, rotationId int32, params *ListScheduleRotationOverridesParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "rotationId", rotationId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/schedules/%s/rotations/%s/overrides", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "limit", *params.Limit, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Offset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "offset", *params.Offset, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.From != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "from", *params.From, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: "date-time"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.To != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "to", *params.To, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: "date-time"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCreateScheduleRotationOverrideRequest calls the generic CreateScheduleRotationOverride builder with application/json body
+func NewCreateScheduleRotationOverrideRequest(server string, id int32, rotationId int32, body CreateScheduleRotationOverrideJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateScheduleRotationOverrideRequestWithBody(server, id, rotationId, "application/json", bodyReader)
+}
+
+// NewCreateScheduleRotationOverrideRequestWithBody constructs an http.Request for the CreateScheduleRotationOverride method, with any body, and a specified content type
+func NewCreateScheduleRotationOverrideRequestWithBody(server string, id int32, rotationId int32, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "rotationId", rotationId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/schedules/%s/rotations/%s/overrides", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteScheduleRotationOverrideRequest constructs an http.Request for the DeleteScheduleRotationOverride method
+func NewDeleteScheduleRotationOverrideRequest(server string, id int32, rotationId int32, overrideId int32) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "rotationId", rotationId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam2 string
+
+	pathParam2, err = runtime.StyleParamWithOptions("simple", false, "overrideId", overrideId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/schedules/%s/rotations/%s/overrides/%s", pathParam0, pathParam1, pathParam2)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateScheduleRotationOverrideRequest calls the generic UpdateScheduleRotationOverride builder with application/json body
+func NewUpdateScheduleRotationOverrideRequest(server string, id int32, rotationId int32, overrideId int32, body UpdateScheduleRotationOverrideJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateScheduleRotationOverrideRequestWithBody(server, id, rotationId, overrideId, "application/json", bodyReader)
+}
+
+// NewUpdateScheduleRotationOverrideRequestWithBody constructs an http.Request for the UpdateScheduleRotationOverride method, with any body, and a specified content type
+func NewUpdateScheduleRotationOverrideRequestWithBody(server string, id int32, rotationId int32, overrideId int32, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "rotationId", rotationId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam2 string
+
+	pathParam2, err = runtime.StyleParamWithOptions("simple", false, "overrideId", overrideId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/schedules/%s/rotations/%s/overrides/%s", pathParam0, pathParam1, pathParam2)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPut, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewReplaceScheduleTeamsRequest calls the generic ReplaceScheduleTeams builder with application/json body
+func NewReplaceScheduleTeamsRequest(server string, id int32, body ReplaceScheduleTeamsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewReplaceScheduleTeamsRequestWithBody(server, id, "application/json", bodyReader)
+}
+
+// NewReplaceScheduleTeamsRequestWithBody constructs an http.Request for the ReplaceScheduleTeams method, with any body, and a specified content type
+func NewReplaceScheduleTeamsRequestWithBody(server string, id int32, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/schedules/%s/teams", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPut, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewListTeamsRequest constructs an http.Request for the ListTeams method
 func NewListTeamsRequest(server string, params *ListTeamsParams) (*http.Request, error) {
 	var err error
@@ -3274,6 +6112,213 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with GET /members/{userId} (the `GetMember` operationId).
 	GetMemberWithResponse(ctx context.Context, userId int32, reqEditors ...RequestEditorFn) (*GetMemberResponse, error)
+
+	// ListSchedulesWithResponse List schedules
+	//
+	// Lists schedules in the API key organization, newest first. teamId narrows the list to one team.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /schedules (the `ListSchedules` operationId).
+	ListSchedulesWithResponse(ctx context.Context, params *ListSchedulesParams, reqEditors ...RequestEditorFn) (*ListSchedulesResponse, error)
+
+	// CreateScheduleWithBodyWithResponse Create a schedule
+	//
+	// Creates a schedule owned by the teamIds in the API key organization, or a global schedule when no team is given. At least one rotation is required.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /schedules (the `CreateSchedule` operationId).
+	CreateScheduleWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateScheduleResponse, error)
+
+	// CreateScheduleWithResponse Create a schedule
+	//
+	// Creates a schedule owned by the teamIds in the API key organization, or a global schedule when no team is given. At least one rotation is required.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /schedules (the `CreateSchedule` operationId).
+	CreateScheduleWithResponse(ctx context.Context, body CreateScheduleJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateScheduleResponse, error)
+
+	// ListSchedulesCurrentOnCallWithResponse List schedules and current on-call responders
+	//
+	// Returns a paginated list of schedules for the organization associated with the API key, including the current on-call responder emails for each schedule.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /schedules/on-call (the `ListSchedulesCurrentOnCall` operationId).
+	ListSchedulesCurrentOnCallWithResponse(ctx context.Context, params *ListSchedulesCurrentOnCallParams, reqEditors ...RequestEditorFn) (*ListSchedulesCurrentOnCallResponse, error)
+
+	// GetOnCallHoursReportWithResponse Report on-call hours by member
+	//
+	// Returns aggregated on-call hours by member for the organization associated with the API key. The response mirrors the internal on-call hours reporting contract.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /schedules/on-call-hours (the `GetOnCallHoursReport` operationId).
+	GetOnCallHoursReportWithResponse(ctx context.Context, params *GetOnCallHoursReportParams, reqEditors ...RequestEditorFn) (*GetOnCallHoursReportResponse, error)
+
+	// DeleteScheduleWithResponse Delete a schedule
+	//
+	// Soft-deletes a schedule in the API key organization. A schedule that an escalation policy tier or routing rule still pages cannot be deleted; change those first.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /schedules/{id} (the `DeleteSchedule` operationId).
+	DeleteScheduleWithResponse(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*DeleteScheduleResponse, error)
+
+	// GetScheduleWithResponse Get a schedule
+	//
+	// Returns a schedule in the API key organization with its rotations. Older schedules without active rotations return an empty rotations array.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /schedules/{id} (the `GetSchedule` operationId).
+	GetScheduleWithResponse(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*GetScheduleResponse, error)
+
+	// UpdateScheduleWithBodyWithResponse Update schedule details
+	//
+	// Updates name or timezone. Omitted fields retain their current values. Change owning teams with PUT /schedules/{id}/teams and rotations with the rotation routes.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PATCH /schedules/{id} (the `UpdateSchedule` operationId).
+	UpdateScheduleWithBodyWithResponse(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateScheduleResponse, error)
+
+	// UpdateScheduleWithResponse Update schedule details
+	//
+	// Updates name or timezone. Omitted fields retain their current values. Change owning teams with PUT /schedules/{id}/teams and rotations with the rotation routes.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PATCH /schedules/{id} (the `UpdateSchedule` operationId).
+	UpdateScheduleWithResponse(ctx context.Context, id int32, body UpdateScheduleJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateScheduleResponse, error)
+
+	// GetScheduleCurrentOnCallWithResponse Get current on-call responders for a schedule
+	//
+	// Returns current responder profiles for a schedule in the API key organization. Uses the schedule timezone, rotation coverage windows, and overrides. Responders are deduplicated by user ID across rotations. Global schedules have a null team; schedules without active coverage or rotations return an empty onCallResponders array.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /schedules/{id}/on-call (the `GetScheduleCurrentOnCall` operationId).
+	GetScheduleCurrentOnCallWithResponse(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*GetScheduleCurrentOnCallResponse, error)
+
+	// CreateScheduleRotationWithBodyWithResponse Create a schedule rotation
+	//
+	// Appends a rotation after the last active rotation in the schedule.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /schedules/{id}/rotations (the `CreateScheduleRotation` operationId).
+	CreateScheduleRotationWithBodyWithResponse(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateScheduleRotationResponse, error)
+
+	// CreateScheduleRotationWithResponse Create a schedule rotation
+	//
+	// Appends a rotation after the last active rotation in the schedule.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /schedules/{id}/rotations (the `CreateScheduleRotation` operationId).
+	CreateScheduleRotationWithResponse(ctx context.Context, id int32, body CreateScheduleRotationJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateScheduleRotationResponse, error)
+
+	// DeleteScheduleRotationWithResponse Delete a schedule rotation
+	//
+	// Soft-deletes one rotation from a schedule. The last active rotation cannot be deleted.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /schedules/{id}/rotations/{rotationId} (the `DeleteScheduleRotation` operationId).
+	DeleteScheduleRotationWithResponse(ctx context.Context, id int32, rotationId int32, reqEditors ...RequestEditorFn) (*DeleteScheduleRotationResponse, error)
+
+	// UpdateScheduleRotationWithBodyWithResponse Replace a schedule rotation
+	//
+	// Send the complete rotation, including all participant IDs. The rotation retains its position. An explicit participant reorder is saved as supplied; for membership-only changes, see storeParticipantsAsSent. Clients that compare the stored rotation with what they sent, such as infrastructure-as-code tools, should set it to true.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /schedules/{id}/rotations/{rotationId} (the `UpdateScheduleRotation` operationId).
+	UpdateScheduleRotationWithBodyWithResponse(ctx context.Context, id int32, rotationId int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateScheduleRotationResponse, error)
+
+	// UpdateScheduleRotationWithResponse Replace a schedule rotation
+	//
+	// Send the complete rotation, including all participant IDs. The rotation retains its position. An explicit participant reorder is saved as supplied; for membership-only changes, see storeParticipantsAsSent. Clients that compare the stored rotation with what they sent, such as infrastructure-as-code tools, should set it to true.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /schedules/{id}/rotations/{rotationId} (the `UpdateScheduleRotation` operationId).
+	UpdateScheduleRotationWithResponse(ctx context.Context, id int32, rotationId int32, body UpdateScheduleRotationJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateScheduleRotationResponse, error)
+
+	// ListScheduleRotationOverridesWithResponse List rotation overrides
+	//
+	// Lists past and future non-deleted overrides for one rotation, ordered by schedule-clock startAt then id. from and to filter overlapping windows after conversion to the schedule timezone: endAt >= from and startAt <= to. Returned timestamps are UTC instants.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /schedules/{id}/rotations/{rotationId}/overrides (the `ListScheduleRotationOverrides` operationId).
+	ListScheduleRotationOverridesWithResponse(ctx context.Context, id int32, rotationId int32, params *ListScheduleRotationOverridesParams, reqEditors ...RequestEditorFn) (*ListScheduleRotationOverridesResponse, error)
+
+	// CreateScheduleRotationOverrideWithBodyWithResponse Create a rotation override
+	//
+	// Assigns an organization user to the rotation for the requested window. startAt and endAt require ISO 8601 timestamps with explicit offsets. Each instant is converted to the schedule timezone before its clock boundary is saved.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /schedules/{id}/rotations/{rotationId}/overrides (the `CreateScheduleRotationOverride` operationId).
+	CreateScheduleRotationOverrideWithBodyWithResponse(ctx context.Context, id int32, rotationId int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateScheduleRotationOverrideResponse, error)
+
+	// CreateScheduleRotationOverrideWithResponse Create a rotation override
+	//
+	// Assigns an organization user to the rotation for the requested window. startAt and endAt require ISO 8601 timestamps with explicit offsets. Each instant is converted to the schedule timezone before its clock boundary is saved.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /schedules/{id}/rotations/{rotationId}/overrides (the `CreateScheduleRotationOverride` operationId).
+	CreateScheduleRotationOverrideWithResponse(ctx context.Context, id int32, rotationId int32, body CreateScheduleRotationOverrideJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateScheduleRotationOverrideResponse, error)
+
+	// DeleteScheduleRotationOverrideWithResponse Delete a rotation override
+	//
+	// Soft-deletes an override in the API key organization.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /schedules/{id}/rotations/{rotationId}/overrides/{overrideId} (the `DeleteScheduleRotationOverride` operationId).
+	DeleteScheduleRotationOverrideWithResponse(ctx context.Context, id int32, rotationId int32, overrideId int32, reqEditors ...RequestEditorFn) (*DeleteScheduleRotationOverrideResponse, error)
+
+	// UpdateScheduleRotationOverrideWithBodyWithResponse Replace a rotation override
+	//
+	// Replaces the assigned user and window. Send all three editable fields. Timestamps require explicit ISO 8601 offsets and are converted to schedule-local clock boundaries before saving.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /schedules/{id}/rotations/{rotationId}/overrides/{overrideId} (the `UpdateScheduleRotationOverride` operationId).
+	UpdateScheduleRotationOverrideWithBodyWithResponse(ctx context.Context, id int32, rotationId int32, overrideId int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateScheduleRotationOverrideResponse, error)
+
+	// UpdateScheduleRotationOverrideWithResponse Replace a rotation override
+	//
+	// Replaces the assigned user and window. Send all three editable fields. Timestamps require explicit ISO 8601 offsets and are converted to schedule-local clock boundaries before saving.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /schedules/{id}/rotations/{rotationId}/overrides/{overrideId} (the `UpdateScheduleRotationOverride` operationId).
+	UpdateScheduleRotationOverrideWithResponse(ctx context.Context, id int32, rotationId int32, overrideId int32, body UpdateScheduleRotationOverrideJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateScheduleRotationOverrideResponse, error)
+
+	// ReplaceScheduleTeamsWithBodyWithResponse Replace a schedule's owning teams
+	//
+	// Replaces the complete set of teams that own the schedule. Requires schedule.manageTeamOwnership; it does not change the schedule configuration or rotations. Sending the current set changes nothing.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /schedules/{id}/teams (the `ReplaceScheduleTeams` operationId).
+	ReplaceScheduleTeamsWithBodyWithResponse(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ReplaceScheduleTeamsResponse, error)
+
+	// ReplaceScheduleTeamsWithResponse Replace a schedule's owning teams
+	//
+	// Replaces the complete set of teams that own the schedule. Requires schedule.manageTeamOwnership; it does not change the schedule configuration or rotations. Sending the current set changes nothing.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /schedules/{id}/teams (the `ReplaceScheduleTeams` operationId).
+	ReplaceScheduleTeamsWithResponse(ctx context.Context, id int32, body ReplaceScheduleTeamsJSONRequestBody, reqEditors ...RequestEditorFn) (*ReplaceScheduleTeamsResponse, error)
 
 	// ListTeamsWithResponse List teams for the organization
 	//
@@ -4089,6 +7134,1194 @@ func (r GetMemberResponse) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r GetMemberResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type ListSchedulesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *PublicScheduleListResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationErrorResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r ListSchedulesResponse) GetJSON200() *PublicScheduleListResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r ListSchedulesResponse) GetJSON400() *ValidationErrorResponse {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r ListSchedulesResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r ListSchedulesResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r ListSchedulesResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r ListSchedulesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListSchedulesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r ListSchedulesResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type CreateScheduleResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON201 the response for an HTTP 201 `application/json` response
+	JSON201 *PublicScheduleResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *CreateSchedule400JSONResponseBody
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ApiKeyDenialResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON201 returns the response for an HTTP 201 `application/json` response
+func (r CreateScheduleResponse) GetJSON201() *PublicScheduleResponse {
+	return r.JSON201
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r CreateScheduleResponse) GetJSON400() *CreateSchedule400JSONResponseBody {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r CreateScheduleResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r CreateScheduleResponse) GetJSON403() *ApiKeyDenialResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r CreateScheduleResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r CreateScheduleResponse) GetJSON409() *ErrorResponse {
+	return r.JSON409
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r CreateScheduleResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r CreateScheduleResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateScheduleResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateScheduleResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r CreateScheduleResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type ListSchedulesCurrentOnCallResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *SchedulesOnCallResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationErrorResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r ListSchedulesCurrentOnCallResponse) GetJSON200() *SchedulesOnCallResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r ListSchedulesCurrentOnCallResponse) GetJSON400() *ValidationErrorResponse {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r ListSchedulesCurrentOnCallResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r ListSchedulesCurrentOnCallResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r ListSchedulesCurrentOnCallResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r ListSchedulesCurrentOnCallResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListSchedulesCurrentOnCallResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r ListSchedulesCurrentOnCallResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetOnCallHoursReportResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *OnCallHoursReportResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationErrorResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetOnCallHoursReportResponse) GetJSON200() *OnCallHoursReportResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r GetOnCallHoursReportResponse) GetJSON400() *ValidationErrorResponse {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r GetOnCallHoursReportResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r GetOnCallHoursReportResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r GetOnCallHoursReportResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r GetOnCallHoursReportResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetOnCallHoursReportResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetOnCallHoursReportResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetOnCallHoursReportResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type DeleteScheduleResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *DeleteSchedule400JSONResponseBody
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ApiKeyDenialResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r DeleteScheduleResponse) GetJSON400() *DeleteSchedule400JSONResponseBody {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r DeleteScheduleResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r DeleteScheduleResponse) GetJSON403() *ApiKeyDenialResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r DeleteScheduleResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r DeleteScheduleResponse) GetJSON409() *ErrorResponse {
+	return r.JSON409
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r DeleteScheduleResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r DeleteScheduleResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteScheduleResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteScheduleResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r DeleteScheduleResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetScheduleResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *PublicScheduleResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *GetSchedule400JSONResponseBody
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetScheduleResponse) GetJSON200() *PublicScheduleResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r GetScheduleResponse) GetJSON400() *GetSchedule400JSONResponseBody {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r GetScheduleResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r GetScheduleResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r GetScheduleResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r GetScheduleResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetScheduleResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetScheduleResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetScheduleResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type UpdateScheduleResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *PublicScheduleResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *UpdateSchedule400JSONResponseBody
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ApiKeyDenialResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r UpdateScheduleResponse) GetJSON200() *PublicScheduleResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r UpdateScheduleResponse) GetJSON400() *UpdateSchedule400JSONResponseBody {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r UpdateScheduleResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r UpdateScheduleResponse) GetJSON403() *ApiKeyDenialResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r UpdateScheduleResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r UpdateScheduleResponse) GetJSON409() *ErrorResponse {
+	return r.JSON409
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r UpdateScheduleResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r UpdateScheduleResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateScheduleResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateScheduleResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r UpdateScheduleResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetScheduleCurrentOnCallResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *ScheduleCurrentOnCallResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationErrorResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetScheduleCurrentOnCallResponse) GetJSON200() *ScheduleCurrentOnCallResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r GetScheduleCurrentOnCallResponse) GetJSON400() *ValidationErrorResponse {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r GetScheduleCurrentOnCallResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r GetScheduleCurrentOnCallResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r GetScheduleCurrentOnCallResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r GetScheduleCurrentOnCallResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetScheduleCurrentOnCallResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetScheduleCurrentOnCallResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetScheduleCurrentOnCallResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type CreateScheduleRotationResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON201 the response for an HTTP 201 `application/json` response
+	JSON201 *PublicRotationIdResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *CreateScheduleRotation400JSONResponseBody
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ApiKeyDenialResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON201 returns the response for an HTTP 201 `application/json` response
+func (r CreateScheduleRotationResponse) GetJSON201() *PublicRotationIdResponse {
+	return r.JSON201
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r CreateScheduleRotationResponse) GetJSON400() *CreateScheduleRotation400JSONResponseBody {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r CreateScheduleRotationResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r CreateScheduleRotationResponse) GetJSON403() *ApiKeyDenialResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r CreateScheduleRotationResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r CreateScheduleRotationResponse) GetJSON409() *ErrorResponse {
+	return r.JSON409
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r CreateScheduleRotationResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r CreateScheduleRotationResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateScheduleRotationResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateScheduleRotationResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r CreateScheduleRotationResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type DeleteScheduleRotationResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *DeleteScheduleRotation400JSONResponseBody
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ApiKeyDenialResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r DeleteScheduleRotationResponse) GetJSON400() *DeleteScheduleRotation400JSONResponseBody {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r DeleteScheduleRotationResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r DeleteScheduleRotationResponse) GetJSON403() *ApiKeyDenialResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r DeleteScheduleRotationResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r DeleteScheduleRotationResponse) GetJSON409() *ErrorResponse {
+	return r.JSON409
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r DeleteScheduleRotationResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r DeleteScheduleRotationResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteScheduleRotationResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteScheduleRotationResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r DeleteScheduleRotationResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type UpdateScheduleRotationResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *PublicRotationIdResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *UpdateScheduleRotation400JSONResponseBody
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ApiKeyDenialResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r UpdateScheduleRotationResponse) GetJSON200() *PublicRotationIdResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r UpdateScheduleRotationResponse) GetJSON400() *UpdateScheduleRotation400JSONResponseBody {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r UpdateScheduleRotationResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r UpdateScheduleRotationResponse) GetJSON403() *ApiKeyDenialResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r UpdateScheduleRotationResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r UpdateScheduleRotationResponse) GetJSON409() *ErrorResponse {
+	return r.JSON409
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r UpdateScheduleRotationResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r UpdateScheduleRotationResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateScheduleRotationResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateScheduleRotationResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r UpdateScheduleRotationResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type ListScheduleRotationOverridesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *PublicScheduleOverrideListResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ListScheduleRotationOverrides400JSONResponseBody
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r ListScheduleRotationOverridesResponse) GetJSON200() *PublicScheduleOverrideListResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r ListScheduleRotationOverridesResponse) GetJSON400() *ListScheduleRotationOverrides400JSONResponseBody {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r ListScheduleRotationOverridesResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r ListScheduleRotationOverridesResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r ListScheduleRotationOverridesResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r ListScheduleRotationOverridesResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r ListScheduleRotationOverridesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListScheduleRotationOverridesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r ListScheduleRotationOverridesResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type CreateScheduleRotationOverrideResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON201 the response for an HTTP 201 `application/json` response
+	JSON201 *PublicScheduleOverrideResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *CreateScheduleRotationOverride400JSONResponseBody
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ApiKeyDenialResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON201 returns the response for an HTTP 201 `application/json` response
+func (r CreateScheduleRotationOverrideResponse) GetJSON201() *PublicScheduleOverrideResponse {
+	return r.JSON201
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r CreateScheduleRotationOverrideResponse) GetJSON400() *CreateScheduleRotationOverride400JSONResponseBody {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r CreateScheduleRotationOverrideResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r CreateScheduleRotationOverrideResponse) GetJSON403() *ApiKeyDenialResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r CreateScheduleRotationOverrideResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r CreateScheduleRotationOverrideResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r CreateScheduleRotationOverrideResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateScheduleRotationOverrideResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateScheduleRotationOverrideResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r CreateScheduleRotationOverrideResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type DeleteScheduleRotationOverrideResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *DeleteScheduleRotationOverride400JSONResponseBody
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ApiKeyDenialResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r DeleteScheduleRotationOverrideResponse) GetJSON400() *DeleteScheduleRotationOverride400JSONResponseBody {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r DeleteScheduleRotationOverrideResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r DeleteScheduleRotationOverrideResponse) GetJSON403() *ApiKeyDenialResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r DeleteScheduleRotationOverrideResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r DeleteScheduleRotationOverrideResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r DeleteScheduleRotationOverrideResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteScheduleRotationOverrideResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteScheduleRotationOverrideResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r DeleteScheduleRotationOverrideResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type UpdateScheduleRotationOverrideResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *PublicScheduleOverrideResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *UpdateScheduleRotationOverride400JSONResponseBody
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ApiKeyDenialResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r UpdateScheduleRotationOverrideResponse) GetJSON200() *PublicScheduleOverrideResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r UpdateScheduleRotationOverrideResponse) GetJSON400() *UpdateScheduleRotationOverride400JSONResponseBody {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r UpdateScheduleRotationOverrideResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r UpdateScheduleRotationOverrideResponse) GetJSON403() *ApiKeyDenialResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r UpdateScheduleRotationOverrideResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r UpdateScheduleRotationOverrideResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r UpdateScheduleRotationOverrideResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateScheduleRotationOverrideResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateScheduleRotationOverrideResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r UpdateScheduleRotationOverrideResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type ReplaceScheduleTeamsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *PublicScheduleResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ReplaceScheduleTeams400JSONResponseBody
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ApiKeyDenialResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r ReplaceScheduleTeamsResponse) GetJSON200() *PublicScheduleResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r ReplaceScheduleTeamsResponse) GetJSON400() *ReplaceScheduleTeams400JSONResponseBody {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r ReplaceScheduleTeamsResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r ReplaceScheduleTeamsResponse) GetJSON403() *ApiKeyDenialResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r ReplaceScheduleTeamsResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r ReplaceScheduleTeamsResponse) GetJSON409() *ErrorResponse {
+	return r.JSON409
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r ReplaceScheduleTeamsResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r ReplaceScheduleTeamsResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r ReplaceScheduleTeamsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ReplaceScheduleTeamsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r ReplaceScheduleTeamsResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -4936,6 +9169,351 @@ func (c *ClientWithResponses) GetMemberWithResponse(ctx context.Context, userId 
 	return ParseGetMemberResponse(rsp)
 }
 
+// ListSchedulesWithResponse List schedules
+//
+// Lists schedules in the API key organization, newest first. teamId narrows the list to one team.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /schedules (the `ListSchedules` operationId).
+func (c *ClientWithResponses) ListSchedulesWithResponse(ctx context.Context, params *ListSchedulesParams, reqEditors ...RequestEditorFn) (*ListSchedulesResponse, error) {
+	rsp, err := c.ListSchedules(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListSchedulesResponse(rsp)
+}
+
+// CreateScheduleWithBodyWithResponse Create a schedule
+//
+// Creates a schedule owned by the teamIds in the API key organization, or a global schedule when no team is given. At least one rotation is required.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /schedules (the `CreateSchedule` operationId).
+func (c *ClientWithResponses) CreateScheduleWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateScheduleResponse, error) {
+	rsp, err := c.CreateScheduleWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateScheduleResponse(rsp)
+}
+
+// CreateScheduleWithResponse Create a schedule
+//
+// Creates a schedule owned by the teamIds in the API key organization, or a global schedule when no team is given. At least one rotation is required.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /schedules (the `CreateSchedule` operationId).
+func (c *ClientWithResponses) CreateScheduleWithResponse(ctx context.Context, body CreateScheduleJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateScheduleResponse, error) {
+	rsp, err := c.CreateSchedule(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateScheduleResponse(rsp)
+}
+
+// ListSchedulesCurrentOnCallWithResponse List schedules and current on-call responders
+//
+// Returns a paginated list of schedules for the organization associated with the API key, including the current on-call responder emails for each schedule.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /schedules/on-call (the `ListSchedulesCurrentOnCall` operationId).
+func (c *ClientWithResponses) ListSchedulesCurrentOnCallWithResponse(ctx context.Context, params *ListSchedulesCurrentOnCallParams, reqEditors ...RequestEditorFn) (*ListSchedulesCurrentOnCallResponse, error) {
+	rsp, err := c.ListSchedulesCurrentOnCall(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListSchedulesCurrentOnCallResponse(rsp)
+}
+
+// GetOnCallHoursReportWithResponse Report on-call hours by member
+//
+// Returns aggregated on-call hours by member for the organization associated with the API key. The response mirrors the internal on-call hours reporting contract.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /schedules/on-call-hours (the `GetOnCallHoursReport` operationId).
+func (c *ClientWithResponses) GetOnCallHoursReportWithResponse(ctx context.Context, params *GetOnCallHoursReportParams, reqEditors ...RequestEditorFn) (*GetOnCallHoursReportResponse, error) {
+	rsp, err := c.GetOnCallHoursReport(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetOnCallHoursReportResponse(rsp)
+}
+
+// DeleteScheduleWithResponse Delete a schedule
+//
+// Soft-deletes a schedule in the API key organization. A schedule that an escalation policy tier or routing rule still pages cannot be deleted; change those first.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /schedules/{id} (the `DeleteSchedule` operationId).
+func (c *ClientWithResponses) DeleteScheduleWithResponse(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*DeleteScheduleResponse, error) {
+	rsp, err := c.DeleteSchedule(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteScheduleResponse(rsp)
+}
+
+// GetScheduleWithResponse Get a schedule
+//
+// Returns a schedule in the API key organization with its rotations. Older schedules without active rotations return an empty rotations array.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /schedules/{id} (the `GetSchedule` operationId).
+func (c *ClientWithResponses) GetScheduleWithResponse(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*GetScheduleResponse, error) {
+	rsp, err := c.GetSchedule(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetScheduleResponse(rsp)
+}
+
+// UpdateScheduleWithBodyWithResponse Update schedule details
+//
+// Updates name or timezone. Omitted fields retain their current values. Change owning teams with PUT /schedules/{id}/teams and rotations with the rotation routes.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PATCH /schedules/{id} (the `UpdateSchedule` operationId).
+func (c *ClientWithResponses) UpdateScheduleWithBodyWithResponse(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateScheduleResponse, error) {
+	rsp, err := c.UpdateScheduleWithBody(ctx, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateScheduleResponse(rsp)
+}
+
+// UpdateScheduleWithResponse Update schedule details
+//
+// Updates name or timezone. Omitted fields retain their current values. Change owning teams with PUT /schedules/{id}/teams and rotations with the rotation routes.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PATCH /schedules/{id} (the `UpdateSchedule` operationId).
+func (c *ClientWithResponses) UpdateScheduleWithResponse(ctx context.Context, id int32, body UpdateScheduleJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateScheduleResponse, error) {
+	rsp, err := c.UpdateSchedule(ctx, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateScheduleResponse(rsp)
+}
+
+// GetScheduleCurrentOnCallWithResponse Get current on-call responders for a schedule
+//
+// Returns current responder profiles for a schedule in the API key organization. Uses the schedule timezone, rotation coverage windows, and overrides. Responders are deduplicated by user ID across rotations. Global schedules have a null team; schedules without active coverage or rotations return an empty onCallResponders array.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /schedules/{id}/on-call (the `GetScheduleCurrentOnCall` operationId).
+func (c *ClientWithResponses) GetScheduleCurrentOnCallWithResponse(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*GetScheduleCurrentOnCallResponse, error) {
+	rsp, err := c.GetScheduleCurrentOnCall(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetScheduleCurrentOnCallResponse(rsp)
+}
+
+// CreateScheduleRotationWithBodyWithResponse Create a schedule rotation
+//
+// Appends a rotation after the last active rotation in the schedule.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /schedules/{id}/rotations (the `CreateScheduleRotation` operationId).
+func (c *ClientWithResponses) CreateScheduleRotationWithBodyWithResponse(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateScheduleRotationResponse, error) {
+	rsp, err := c.CreateScheduleRotationWithBody(ctx, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateScheduleRotationResponse(rsp)
+}
+
+// CreateScheduleRotationWithResponse Create a schedule rotation
+//
+// Appends a rotation after the last active rotation in the schedule.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /schedules/{id}/rotations (the `CreateScheduleRotation` operationId).
+func (c *ClientWithResponses) CreateScheduleRotationWithResponse(ctx context.Context, id int32, body CreateScheduleRotationJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateScheduleRotationResponse, error) {
+	rsp, err := c.CreateScheduleRotation(ctx, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateScheduleRotationResponse(rsp)
+}
+
+// DeleteScheduleRotationWithResponse Delete a schedule rotation
+//
+// Soft-deletes one rotation from a schedule. The last active rotation cannot be deleted.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /schedules/{id}/rotations/{rotationId} (the `DeleteScheduleRotation` operationId).
+func (c *ClientWithResponses) DeleteScheduleRotationWithResponse(ctx context.Context, id int32, rotationId int32, reqEditors ...RequestEditorFn) (*DeleteScheduleRotationResponse, error) {
+	rsp, err := c.DeleteScheduleRotation(ctx, id, rotationId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteScheduleRotationResponse(rsp)
+}
+
+// UpdateScheduleRotationWithBodyWithResponse Replace a schedule rotation
+//
+// Send the complete rotation, including all participant IDs. The rotation retains its position. An explicit participant reorder is saved as supplied; for membership-only changes, see storeParticipantsAsSent. Clients that compare the stored rotation with what they sent, such as infrastructure-as-code tools, should set it to true.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /schedules/{id}/rotations/{rotationId} (the `UpdateScheduleRotation` operationId).
+func (c *ClientWithResponses) UpdateScheduleRotationWithBodyWithResponse(ctx context.Context, id int32, rotationId int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateScheduleRotationResponse, error) {
+	rsp, err := c.UpdateScheduleRotationWithBody(ctx, id, rotationId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateScheduleRotationResponse(rsp)
+}
+
+// UpdateScheduleRotationWithResponse Replace a schedule rotation
+//
+// Send the complete rotation, including all participant IDs. The rotation retains its position. An explicit participant reorder is saved as supplied; for membership-only changes, see storeParticipantsAsSent. Clients that compare the stored rotation with what they sent, such as infrastructure-as-code tools, should set it to true.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /schedules/{id}/rotations/{rotationId} (the `UpdateScheduleRotation` operationId).
+func (c *ClientWithResponses) UpdateScheduleRotationWithResponse(ctx context.Context, id int32, rotationId int32, body UpdateScheduleRotationJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateScheduleRotationResponse, error) {
+	rsp, err := c.UpdateScheduleRotation(ctx, id, rotationId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateScheduleRotationResponse(rsp)
+}
+
+// ListScheduleRotationOverridesWithResponse List rotation overrides
+//
+// Lists past and future non-deleted overrides for one rotation, ordered by schedule-clock startAt then id. from and to filter overlapping windows after conversion to the schedule timezone: endAt >= from and startAt <= to. Returned timestamps are UTC instants.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /schedules/{id}/rotations/{rotationId}/overrides (the `ListScheduleRotationOverrides` operationId).
+func (c *ClientWithResponses) ListScheduleRotationOverridesWithResponse(ctx context.Context, id int32, rotationId int32, params *ListScheduleRotationOverridesParams, reqEditors ...RequestEditorFn) (*ListScheduleRotationOverridesResponse, error) {
+	rsp, err := c.ListScheduleRotationOverrides(ctx, id, rotationId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListScheduleRotationOverridesResponse(rsp)
+}
+
+// CreateScheduleRotationOverrideWithBodyWithResponse Create a rotation override
+//
+// Assigns an organization user to the rotation for the requested window. startAt and endAt require ISO 8601 timestamps with explicit offsets. Each instant is converted to the schedule timezone before its clock boundary is saved.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /schedules/{id}/rotations/{rotationId}/overrides (the `CreateScheduleRotationOverride` operationId).
+func (c *ClientWithResponses) CreateScheduleRotationOverrideWithBodyWithResponse(ctx context.Context, id int32, rotationId int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateScheduleRotationOverrideResponse, error) {
+	rsp, err := c.CreateScheduleRotationOverrideWithBody(ctx, id, rotationId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateScheduleRotationOverrideResponse(rsp)
+}
+
+// CreateScheduleRotationOverrideWithResponse Create a rotation override
+//
+// Assigns an organization user to the rotation for the requested window. startAt and endAt require ISO 8601 timestamps with explicit offsets. Each instant is converted to the schedule timezone before its clock boundary is saved.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /schedules/{id}/rotations/{rotationId}/overrides (the `CreateScheduleRotationOverride` operationId).
+func (c *ClientWithResponses) CreateScheduleRotationOverrideWithResponse(ctx context.Context, id int32, rotationId int32, body CreateScheduleRotationOverrideJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateScheduleRotationOverrideResponse, error) {
+	rsp, err := c.CreateScheduleRotationOverride(ctx, id, rotationId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateScheduleRotationOverrideResponse(rsp)
+}
+
+// DeleteScheduleRotationOverrideWithResponse Delete a rotation override
+//
+// Soft-deletes an override in the API key organization.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /schedules/{id}/rotations/{rotationId}/overrides/{overrideId} (the `DeleteScheduleRotationOverride` operationId).
+func (c *ClientWithResponses) DeleteScheduleRotationOverrideWithResponse(ctx context.Context, id int32, rotationId int32, overrideId int32, reqEditors ...RequestEditorFn) (*DeleteScheduleRotationOverrideResponse, error) {
+	rsp, err := c.DeleteScheduleRotationOverride(ctx, id, rotationId, overrideId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteScheduleRotationOverrideResponse(rsp)
+}
+
+// UpdateScheduleRotationOverrideWithBodyWithResponse Replace a rotation override
+//
+// Replaces the assigned user and window. Send all three editable fields. Timestamps require explicit ISO 8601 offsets and are converted to schedule-local clock boundaries before saving.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /schedules/{id}/rotations/{rotationId}/overrides/{overrideId} (the `UpdateScheduleRotationOverride` operationId).
+func (c *ClientWithResponses) UpdateScheduleRotationOverrideWithBodyWithResponse(ctx context.Context, id int32, rotationId int32, overrideId int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateScheduleRotationOverrideResponse, error) {
+	rsp, err := c.UpdateScheduleRotationOverrideWithBody(ctx, id, rotationId, overrideId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateScheduleRotationOverrideResponse(rsp)
+}
+
+// UpdateScheduleRotationOverrideWithResponse Replace a rotation override
+//
+// Replaces the assigned user and window. Send all three editable fields. Timestamps require explicit ISO 8601 offsets and are converted to schedule-local clock boundaries before saving.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /schedules/{id}/rotations/{rotationId}/overrides/{overrideId} (the `UpdateScheduleRotationOverride` operationId).
+func (c *ClientWithResponses) UpdateScheduleRotationOverrideWithResponse(ctx context.Context, id int32, rotationId int32, overrideId int32, body UpdateScheduleRotationOverrideJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateScheduleRotationOverrideResponse, error) {
+	rsp, err := c.UpdateScheduleRotationOverride(ctx, id, rotationId, overrideId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateScheduleRotationOverrideResponse(rsp)
+}
+
+// ReplaceScheduleTeamsWithBodyWithResponse Replace a schedule's owning teams
+//
+// Replaces the complete set of teams that own the schedule. Requires schedule.manageTeamOwnership; it does not change the schedule configuration or rotations. Sending the current set changes nothing.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /schedules/{id}/teams (the `ReplaceScheduleTeams` operationId).
+func (c *ClientWithResponses) ReplaceScheduleTeamsWithBodyWithResponse(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ReplaceScheduleTeamsResponse, error) {
+	rsp, err := c.ReplaceScheduleTeamsWithBody(ctx, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseReplaceScheduleTeamsResponse(rsp)
+}
+
+// ReplaceScheduleTeamsWithResponse Replace a schedule's owning teams
+//
+// Replaces the complete set of teams that own the schedule. Requires schedule.manageTeamOwnership; it does not change the schedule configuration or rotations. Sending the current set changes nothing.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /schedules/{id}/teams (the `ReplaceScheduleTeams` operationId).
+func (c *ClientWithResponses) ReplaceScheduleTeamsWithResponse(ctx context.Context, id int32, body ReplaceScheduleTeamsJSONRequestBody, reqEditors ...RequestEditorFn) (*ReplaceScheduleTeamsResponse, error) {
+	rsp, err := c.ReplaceScheduleTeams(ctx, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseReplaceScheduleTeamsResponse(rsp)
+}
+
 // ListTeamsWithResponse List teams for the organization
 //
 // Returns a paginated list of teams for the organization associated with the API key.
@@ -5667,6 +10245,963 @@ func ParseGetMemberResponse(rsp *http.Response) (*GetMemberResponse, error) {
 			return nil, err
 		}
 		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListSchedulesResponse parses an HTTP response from a ListSchedulesWithResponse call
+func ParseListSchedulesResponse(rsp *http.Response) (*ListSchedulesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListSchedulesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PublicScheduleListResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateScheduleResponse parses an HTTP response from a CreateScheduleWithResponse call
+func ParseCreateScheduleResponse(rsp *http.Response) (*CreateScheduleResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateScheduleResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest PublicScheduleResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest CreateSchedule400JSONResponseBody
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ApiKeyDenialResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListSchedulesCurrentOnCallResponse parses an HTTP response from a ListSchedulesCurrentOnCallWithResponse call
+func ParseListSchedulesCurrentOnCallResponse(rsp *http.Response) (*ListSchedulesCurrentOnCallResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListSchedulesCurrentOnCallResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SchedulesOnCallResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetOnCallHoursReportResponse parses an HTTP response from a GetOnCallHoursReportWithResponse call
+func ParseGetOnCallHoursReportResponse(rsp *http.Response) (*GetOnCallHoursReportResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetOnCallHoursReportResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest OnCallHoursReportResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteScheduleResponse parses an HTTP response from a DeleteScheduleWithResponse call
+func ParseDeleteScheduleResponse(rsp *http.Response) (*DeleteScheduleResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteScheduleResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 204:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest DeleteSchedule400JSONResponseBody
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ApiKeyDenialResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetScheduleResponse parses an HTTP response from a GetScheduleWithResponse call
+func ParseGetScheduleResponse(rsp *http.Response) (*GetScheduleResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetScheduleResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PublicScheduleResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest GetSchedule400JSONResponseBody
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateScheduleResponse parses an HTTP response from a UpdateScheduleWithResponse call
+func ParseUpdateScheduleResponse(rsp *http.Response) (*UpdateScheduleResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateScheduleResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PublicScheduleResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest UpdateSchedule400JSONResponseBody
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ApiKeyDenialResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetScheduleCurrentOnCallResponse parses an HTTP response from a GetScheduleCurrentOnCallWithResponse call
+func ParseGetScheduleCurrentOnCallResponse(rsp *http.Response) (*GetScheduleCurrentOnCallResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetScheduleCurrentOnCallResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ScheduleCurrentOnCallResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateScheduleRotationResponse parses an HTTP response from a CreateScheduleRotationWithResponse call
+func ParseCreateScheduleRotationResponse(rsp *http.Response) (*CreateScheduleRotationResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateScheduleRotationResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest PublicRotationIdResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest CreateScheduleRotation400JSONResponseBody
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ApiKeyDenialResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteScheduleRotationResponse parses an HTTP response from a DeleteScheduleRotationWithResponse call
+func ParseDeleteScheduleRotationResponse(rsp *http.Response) (*DeleteScheduleRotationResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteScheduleRotationResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 204:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest DeleteScheduleRotation400JSONResponseBody
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ApiKeyDenialResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateScheduleRotationResponse parses an HTTP response from a UpdateScheduleRotationWithResponse call
+func ParseUpdateScheduleRotationResponse(rsp *http.Response) (*UpdateScheduleRotationResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateScheduleRotationResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PublicRotationIdResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest UpdateScheduleRotation400JSONResponseBody
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ApiKeyDenialResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListScheduleRotationOverridesResponse parses an HTTP response from a ListScheduleRotationOverridesWithResponse call
+func ParseListScheduleRotationOverridesResponse(rsp *http.Response) (*ListScheduleRotationOverridesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListScheduleRotationOverridesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PublicScheduleOverrideListResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ListScheduleRotationOverrides400JSONResponseBody
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateScheduleRotationOverrideResponse parses an HTTP response from a CreateScheduleRotationOverrideWithResponse call
+func ParseCreateScheduleRotationOverrideResponse(rsp *http.Response) (*CreateScheduleRotationOverrideResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateScheduleRotationOverrideResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest PublicScheduleOverrideResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest CreateScheduleRotationOverride400JSONResponseBody
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ApiKeyDenialResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteScheduleRotationOverrideResponse parses an HTTP response from a DeleteScheduleRotationOverrideWithResponse call
+func ParseDeleteScheduleRotationOverrideResponse(rsp *http.Response) (*DeleteScheduleRotationOverrideResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteScheduleRotationOverrideResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 204:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest DeleteScheduleRotationOverride400JSONResponseBody
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ApiKeyDenialResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateScheduleRotationOverrideResponse parses an HTTP response from a UpdateScheduleRotationOverrideWithResponse call
+func ParseUpdateScheduleRotationOverrideResponse(rsp *http.Response) (*UpdateScheduleRotationOverrideResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateScheduleRotationOverrideResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PublicScheduleOverrideResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest UpdateScheduleRotationOverride400JSONResponseBody
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ApiKeyDenialResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseReplaceScheduleTeamsResponse parses an HTTP response from a ReplaceScheduleTeamsWithResponse call
+func ParseReplaceScheduleTeamsResponse(rsp *http.Response) (*ReplaceScheduleTeamsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ReplaceScheduleTeamsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PublicScheduleResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ReplaceScheduleTeams400JSONResponseBody
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ApiKeyDenialResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest ErrorResponse

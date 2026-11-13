@@ -6,7 +6,9 @@ FEATURES:
 * **New Resource:** `vibeoncall_team_membership`
 * **New Resource:** `vibeoncall_escalation_policy`
 * **New Resource:** `vibeoncall_team_default_escalation_policy`
+* **New Resource:** `vibeoncall_schedule`
 * **New Data Source:** `vibeoncall_member`
 * **New Data Source:** `vibeoncall_team`
 * **New Data Source:** `vibeoncall_label`
 * **New Data Source:** `vibeoncall_chat_channel`
+* **New Data Source:** `vibeoncall_schedule`
