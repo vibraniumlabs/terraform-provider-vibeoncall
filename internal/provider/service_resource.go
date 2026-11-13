@@ -18,7 +18,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/oapi-codegen/nullable"
 
 	"github.com/vibraniumlabs/terraform-provider-vibeoncall/internal/client"
 )
@@ -128,7 +127,7 @@ func (r *ServiceResource) Create(ctx context.Context, req resource.CreateRequest
 	res, err := r.client.CreateServiceWithResponse(ctx, client.CreateServiceJSONRequestBody{
 		Name:              plan.Name.ValueString(),
 		Description:       nullableString(plan.Description),
-		TeamId:            nullableInt32(plan.TeamID),
+		TeamId:            nullableID[int32](plan.TeamID),
 		ExternalProvider:  nullableString(plan.ExternalProvider),
 		ExternalServiceId: nullableString(plan.ExternalServiceID),
 	})
@@ -235,7 +234,7 @@ func (r *ServiceResource) updateFields(ctx context.Context, id int32, state, pla
 	res, err := r.client.UpdateServiceWithResponse(ctx, id, client.UpdateServiceJSONRequestBody{
 		Name:              plan.Name.ValueStringPointer(),
 		Description:       nullableString(plan.Description),
-		TeamId:            nullableInt32(plan.TeamID),
+		TeamId:            nullableID[int32](plan.TeamID),
 		ExternalProvider:  nullableString(plan.ExternalProvider),
 		ExternalServiceId: nullableString(plan.ExternalServiceID),
 	})
@@ -327,10 +326,7 @@ func setServiceState(m *ServiceResourceModel, s *client.ServiceCatalogPublicSumm
 	m.ID = itoa(int(s.Id))
 	m.Name = types.StringValue(s.Name)
 	m.Description = stringFromNullable(s.Description)
-	m.TeamID = types.StringNull()
-	if teamID, err := s.TeamId.Get(); err == nil {
-		m.TeamID = itoa(int(teamID))
-	}
+	m.TeamID = idFromNullable(s.TeamId)
 	m.ExternalProvider = stringFromNullable(s.ExternalProvider)
 	m.ExternalServiceID = stringFromNullable(s.ExternalServiceId)
 
@@ -394,11 +390,4 @@ func responderRefs(teamIDs, userIDs []int) []serviceResponderRef {
 		refs = append(refs, serviceResponderRef{UserId: &userID})
 	}
 	return refs
-}
-
-func nullableInt32(v types.String) nullable.Nullable[int32] {
-	if v.IsNull() {
-		return nullable.NewNullNullable[int32]()
-	}
-	return nullable.NewNullableWithValue(int32(mustAtoi(v)))
 }

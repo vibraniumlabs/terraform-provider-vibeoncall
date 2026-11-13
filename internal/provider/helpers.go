@@ -105,6 +105,30 @@ func nullableString(v types.String) nullable.Nullable[string] {
 	return nullable.NewNullableWithValue(v.ValueString())
 }
 
+func nullableID[T int | int32](v types.String) nullable.Nullable[T] {
+	if v.IsNull() {
+		return nullable.NewNullNullable[T]()
+	}
+	return nullable.NewNullableWithValue(T(mustAtoi(v)))
+}
+
+func idFromNullable[T int | int32](v nullable.Nullable[T]) types.String {
+	id, err := v.Get()
+	if err != nil {
+		return types.StringNull()
+	}
+	return itoa(int(id))
+}
+
+func mustAtoi(v types.String) int {
+	n, _ := strconv.Atoi(v.ValueString())
+	return n
+}
+
+func itoa(n int) types.String {
+	return types.StringValue(strconv.Itoa(n))
+}
+
 func stringFromNullable(v nullable.Nullable[string]) types.String {
 	s, err := v.Get()
 	if err != nil {

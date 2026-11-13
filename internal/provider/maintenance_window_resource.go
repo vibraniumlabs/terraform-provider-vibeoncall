@@ -489,10 +489,7 @@ func setMaintenanceWindowState(m *MaintenanceWindowResourceModel, w *client.Main
 	if m.Description.ValueString() == "" {
 		m.Description = types.StringNull()
 	}
-	m.TeamID = types.StringNull()
-	if teamID, err := w.TeamId.Get(); err == nil {
-		m.TeamID = itoa(int(teamID))
-	}
+	m.TeamID = idFromNullable(w.TeamId)
 	m.StartAt = keepIfSameInstant(m.StartAt, w.StartAt)
 	m.EndAt = keepIfSameInstant(m.EndAt, w.EndAt)
 
