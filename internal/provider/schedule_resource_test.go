@@ -1,6 +1,7 @@
 package provider
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -398,6 +399,49 @@ func TestScheduleResourceRestoresRotationsBeforeRenamingImportedSchedule(t *test
 					resource.TestCheckResourceAttr("vibeoncall_schedule.test", "name", "Payments primary"),
 					api.checkRotations([]wantRotation{{1, "Primary", []int{7, 8}}}),
 				),
+			},
+		},
+	})
+}
+
+type expectNoDrift struct{}
+
+func (expectNoDrift) CheckPlan(_ context.Context, req plancheck.CheckPlanRequest, resp *plancheck.CheckPlanResponse) {
+	if len(req.Plan.ResourceDrift) > 0 {
+		resp.Error = fmt.Errorf("%s changed outside Terraform", req.Plan.ResourceDrift[0].Address)
+	}
+}
+
+func TestScheduleResourceSavesWhatAPartialUpdateApplied(t *testing.T) {
+	api, srv := newFakeAPI(t, scheduleUsers...)
+	config := func(rotations ...string) string {
+		return scheduleConfig(srv.URL, `
+  name      = "Primary"
+  time_zone = "Asia/Taipei"
+`+rotationsAttr(rotations...))
+	}
+	updated := config(weeklyRotation("Primary", "9", "7"), weeklyRotation("Backup", "9"), weeklyRotation("Weekend", "7"))
+
+	resource.UnitTest(t, resource.TestCase{
+		ProtoV6ProviderFactories: protoV6ProviderFactories(),
+		CheckDestroy:             api.checkNothingLeft,
+		Steps: []resource.TestStep{
+			{
+				Config: config(weeklyRotation("Primary", "7", "8"), weeklyRotation("Secondary", "8", "9"), weeklyRotation("Backup", "9")),
+			},
+			{
+				PreConfig:   func() { api.setRotationInUse(2, true) },
+				Config:      updated,
+				ExpectError: regexp.MustCompile(`Delete rotation failed`),
+			},
+			{
+				PreConfig: func() { api.setRotationInUse(2, false) },
+				Config:    updated,
+				ConfigPlanChecks: resource.ConfigPlanChecks{PreApply: []plancheck.PlanCheck{
+					expectNoDrift{},
+					plancheck.ExpectKnownValue("vibeoncall_schedule.test", tfjsonpath.New("rotations").AtSliceIndex(2).AtMapKey("id"), knownvalue.StringExact("4")),
+				}},
+				Check: api.checkRotations([]wantRotation{{1, "Primary", []int{9, 7}}, {3, "Backup", []int{9}}, {4, "Weekend", []int{7}}}),
 			},
 		},
 	})

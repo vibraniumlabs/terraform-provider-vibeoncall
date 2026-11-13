@@ -503,6 +503,7 @@ type fakeRotation struct {
 	StartAt        string          `json:"startAt"`
 	RotationConfig json.RawMessage `json:"rotationConfig"`
 	Participants   []int           `json:"participants"`
+	inUse          bool
 }
 
 type fakeSchedule struct {
@@ -625,6 +626,10 @@ func (a *fakeAPI) serveRotation(w http.ResponseWriter, r *http.Request, s *fakeS
 		a.rotationPuts++
 		writeJSON(w, http.StatusOK, map[string]int{"id": rotationID})
 	case http.MethodDelete:
+		if s.Rotations[index].inUse {
+			writeJSON(w, http.StatusConflict, map[string]string{"error": fmt.Sprintf("Rotation %d is still paged by escalation policy 3", rotationID)})
+			return
+		}
 		if len(s.Rotations) == 1 {
 			writeJSON(w, http.StatusConflict, map[string]string{"error": "Cannot delete the last active rotation of a schedule"})
 			return
@@ -747,6 +752,16 @@ func (a *fakeAPI) listSchedules(w http.ResponseWriter, r *http.Request) {
 	offset, _ := strconv.Atoi(r.URL.Query().Get("offset"))
 	start, end := min(offset, len(matched)), min(offset+fakeSchedulePageSize, len(matched))
 	writeJSON(w, http.StatusOK, map[string]any{"schedules": matched[start:end], "total": len(matched), "hasMore": end < len(matched)})
+}
+
+func (a *fakeAPI) setRotationInUse(rotationID int, inUse bool) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	for _, rot := range a.schedules[1].Rotations {
+		if rot.ID == rotationID {
+			rot.inUse = inUse
+		}
+	}
 }
 
 func (a *fakeAPI) setScheduleInUse(id int, inUse bool) {

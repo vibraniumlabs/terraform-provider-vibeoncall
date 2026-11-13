@@ -355,8 +355,19 @@ func (r *ScheduleResource) Update(ctx context.Context, req resource.UpdateReques
 		return
 	}
 
-	r.updateRotations(ctx, id, plan.Rotations, state.Rotations, &resp.Diagnostics)
-	if resp.Diagnostics.HasError() {
+	r.applyUpdate(ctx, id, plan, state, &resp.Diagnostics)
+	if !r.read(ctx, id, &plan, &resp.Diagnostics) {
+		if !resp.Diagnostics.HasError() {
+			resp.Diagnostics.AddError("Read schedule failed", "The schedule was deleted during the update.")
+		}
+		return
+	}
+	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
+}
+
+func (r *ScheduleResource) applyUpdate(ctx context.Context, id int32, plan, state ScheduleResourceModel, diags *diag.Diagnostics) {
+	r.updateRotations(ctx, id, plan.Rotations, state.Rotations, diags)
+	if diags.HasError() {
 		return
 	}
 
@@ -366,38 +377,30 @@ func (r *ScheduleResource) Update(ctx context.Context, req resource.UpdateReques
 			Timezone: plan.TimeZone.ValueStringPointer(),
 		})
 		if err != nil {
-			resp.Diagnostics.AddError("Update schedule failed", err.Error())
+			diags.AddError("Update schedule failed", err.Error())
 			return
 		}
 		if res.JSON200 == nil {
-			resp.Diagnostics.AddError("Update schedule failed", apiError(res.StatusCode(), res.Body))
+			diags.AddError("Update schedule failed", apiError(res.StatusCode(), res.Body))
 			return
 		}
 	}
 
 	if !plan.TeamIDs.Equal(state.TeamIDs) {
-		teamIDs := teamIDsToAPI(ctx, plan.TeamIDs, &resp.Diagnostics)
-		if resp.Diagnostics.HasError() {
+		teamIDs := teamIDsToAPI(ctx, plan.TeamIDs, diags)
+		if diags.HasError() {
 			return
 		}
 		res, err := r.client.ReplaceScheduleTeamsWithResponse(ctx, id, client.ReplaceScheduleTeamsJSONRequestBody{TeamIds: teamIDs})
 		if err != nil {
-			resp.Diagnostics.AddError("Update schedule teams failed", err.Error())
+			diags.AddError("Update schedule teams failed", err.Error())
 			return
 		}
 		if res.JSON200 == nil {
-			resp.Diagnostics.AddError("Update schedule teams failed", apiError(res.StatusCode(), res.Body))
+			diags.AddError("Update schedule teams failed", apiError(res.StatusCode(), res.Body))
 			return
 		}
 	}
-
-	if !r.read(ctx, id, &plan, &resp.Diagnostics) {
-		if !resp.Diagnostics.HasError() {
-			resp.Diagnostics.AddError("Read schedule failed", "The schedule was deleted during the update.")
-		}
-		return
-	}
-	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
 func (r *ScheduleResource) updateRotations(ctx context.Context, scheduleID int32, planned, prior []scheduleRotationModel, diags *diag.Diagnostics) {
