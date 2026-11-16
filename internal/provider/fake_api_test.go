@@ -76,6 +76,7 @@ type fakeAPI struct {
 	mu            sync.Mutex
 	nextTeamID    int
 	teams         map[int]*fakeTeam
+	teamPatches   int
 	users         []fakeUser
 	memberships   map[int]map[int]string
 	labels        []fakeLabel
@@ -144,6 +145,30 @@ func (a *fakeAPI) removeMembership(teamID, userID int) {
 	delete(a.memberships[teamID], userID)
 }
 
+func (a *fakeAPI) newTeam() *fakeTeam {
+	team := &fakeTeam{ID: a.nextTeamID, ShortID: fmt.Sprintf("VP-TEAM-%d", a.nextTeamID)}
+	a.nextTeamID++
+	a.teams[team.ID] = team
+	return team
+}
+
+func (a *fakeAPI) seedTeam(name string) int {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	team := a.newTeam()
+	team.Name = name
+	return team.ID
+}
+
+func (a *fakeAPI) addMembership(teamID, userID int, role string) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	if a.memberships[teamID] == nil {
+		a.memberships[teamID] = map[int]string{}
+	}
+	a.memberships[teamID][userID] = role
+}
+
 func writeJSON(w http.ResponseWriter, status int, v any) {
 	w.WriteHeader(status)
 	_ = json.NewEncoder(w).Encode(v)
@@ -174,10 +199,8 @@ func (a *fakeAPI) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	case r.URL.Path == "/integrations/chat/channels" && r.Method == http.MethodGet:
 		a.listChatChannels(w, r)
 	case len(parts) == 1 && parts[0] == "teams" && r.Method == http.MethodPost:
-		team := &fakeTeam{ID: a.nextTeamID, ShortID: fmt.Sprintf("VP-TEAM-%d", a.nextTeamID)}
-		a.nextTeamID++
+		team := a.newTeam()
 		applyTeamBody(team, body)
-		a.teams[team.ID] = team
 		writeJSON(w, http.StatusCreated, team)
 	case parts[0] == "services":
 		a.serveServices(w, r, parts[1:], body)
@@ -208,6 +231,7 @@ func (a *fakeAPI) serveTeam(w http.ResponseWriter, r *http.Request, team *fakeTe
 	case http.MethodGet:
 		writeJSON(w, http.StatusOK, team)
 	case http.MethodPatch:
+		a.teamPatches++
 		applyTeamBody(team, body)
 		writeJSON(w, http.StatusOK, team)
 	case http.MethodDelete:

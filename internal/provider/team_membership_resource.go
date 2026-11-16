@@ -3,17 +3,13 @@ package provider
 import (
 	"context"
 	"fmt"
-	"net/http"
-	"strconv"
 	"strings"
 
-	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -66,16 +62,7 @@ func (r *TeamMembershipResource) Schema(ctx context.Context, req resource.Schema
 				Validators:          []validator.String{numericID},
 				PlanModifiers:       []planmodifier.String{stringplanmodifier.RequiresReplace()},
 			},
-			"role": schema.StringAttribute{
-				MarkdownDescription: "Team role: `member` or `admin`. Defaults to `member`.",
-				Optional:            true,
-				Computed:            true,
-				Default:             stringdefault.StaticString(string(client.AssignTeamMemberRequestRoleMember)),
-				Validators: []validator.String{stringvalidator.OneOf(
-					string(client.AssignTeamMemberRequestRoleMember),
-					string(client.AssignTeamMemberRequestRoleAdmin),
-				)},
-			},
+			"role": teamRoleAttribute(),
 		},
 	}
 }
@@ -104,26 +91,18 @@ func (r *TeamMembershipResource) Read(ctx context.Context, req resource.ReadRequ
 		return
 	}
 
-	res, err := r.client.ListTeamMembersWithResponse(ctx, state.TeamID.ValueString(), nil)
-	if err != nil {
-		resp.Diagnostics.AddError("Read team membership failed", err.Error())
+	members := listTeamMembers(ctx, r.client, state.TeamID.ValueString(), &resp.Diagnostics)
+	if resp.Diagnostics.HasError() {
 		return
 	}
-	if res.StatusCode() == http.StatusNotFound {
-		resp.State.RemoveResource(ctx)
+	userID, ok := int32ID(state.UserID, "user_id", &resp.Diagnostics)
+	if !ok {
 		return
 	}
-	if res.JSON200 == nil {
-		resp.Diagnostics.AddError("Read team membership failed", apiError(res.StatusCode(), res.Body))
+	if role, ok := members[userID]; ok {
+		state.Role = types.StringValue(role)
+		resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 		return
-	}
-
-	for _, u := range res.JSON200.Users {
-		if strconv.Itoa(int(u.Id)) == state.UserID.ValueString() {
-			state.Role = types.StringValue(string(u.Role))
-			resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
-			return
-		}
 	}
 	resp.State.RemoveResource(ctx)
 }
@@ -146,19 +125,8 @@ func (r *TeamMembershipResource) Delete(ctx context.Context, req resource.Delete
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	userID, err := strconv.ParseInt(state.UserID.ValueString(), 10, 32)
-	if err != nil {
-		resp.Diagnostics.AddError("Invalid user_id", err.Error())
-		return
-	}
-
-	res, err := r.client.UnassignTeamMemberWithResponse(ctx, state.TeamID.ValueString(), int32(userID))
-	if err != nil {
-		resp.Diagnostics.AddError("Delete team membership failed", err.Error())
-		return
-	}
-	if res.StatusCode() != http.StatusOK && res.StatusCode() != http.StatusNotFound {
-		resp.Diagnostics.AddError("Delete team membership failed", apiError(res.StatusCode(), res.Body))
+	if userID, ok := int32ID(state.UserID, "user_id", &resp.Diagnostics); ok {
+		unassignTeamMember(ctx, r.client, state.TeamID.ValueString(), userID, &resp.Diagnostics)
 	}
 }
 
@@ -174,23 +142,6 @@ func (r *TeamMembershipResource) ImportState(ctx context.Context, req resource.I
 }
 
 func (r *TeamMembershipResource) assign(ctx context.Context, m TeamMembershipResourceModel, diags *diag.Diagnostics) bool {
-	userID, err := strconv.ParseInt(m.UserID.ValueString(), 10, 32)
-	if err != nil {
-		diags.AddError("Invalid user_id", err.Error())
-		return false
-	}
-	role := client.AssignTeamMemberRequestRole(m.Role.ValueString())
-	res, err := r.client.AssignTeamMemberWithResponse(ctx, m.TeamID.ValueString(), client.AssignTeamMemberJSONRequestBody{
-		UserId: int32(userID),
-		Role:   &role,
-	})
-	if err != nil {
-		diags.AddError("Assign team member failed", err.Error())
-		return false
-	}
-	if res.JSON200 == nil {
-		diags.AddError("Assign team member failed", apiError(res.StatusCode(), res.Body))
-		return false
-	}
-	return true
+	userID, ok := int32ID(m.UserID, "user_id", diags)
+	return ok && assignTeamMember(ctx, r.client, m.TeamID.ValueString(), userID, m.Role.ValueString(), diags)
 }

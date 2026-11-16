@@ -11,12 +11,29 @@ A Vibe OnCall team.
 
 ~> **Note** Team names are not unique. Creating this resource for a team that already exists in the app creates a second team with the same name; import the existing team instead.
 
+~> **Note** Don't set `members` on a team whose members are also managed with `vibeoncall_team_membership`. Each would remove what the other adds on every apply. Pick one per team.
+
+~> **Note** If a member can't be added while the team is being created, the team is still created but marked tainted, so the next apply replaces it with a new ID. To keep the team, fix the member and run `terraform untaint` on it before applying again.
+
 ## Example Usage
 
 ```terraform
+data "vibeoncall_member" "ada" {
+  email = "ada@example.com"
+}
+
+data "vibeoncall_member" "grace" {
+  email = "grace@example.com"
+}
+
 resource "vibeoncall_team" "sre" {
   name        = "SRE"
   description = "Site reliability engineering"
+
+  members = [
+    { user_id = data.vibeoncall_member.ada.id, role = "admin" },
+    { user_id = data.vibeoncall_member.grace.id },
+  ]
 }
 ```
 
@@ -30,11 +47,23 @@ resource "vibeoncall_team" "sre" {
 ### Optional
 
 - `description` (String) Team description. Remove the argument to clear it.
+- `members` (Attributes Set) Every member of the team. When set, Terraform removes members added elsewhere and adds back members removed elsewhere; `members = []` removes everyone. When omitted, it shows the team's current members and Terraform leaves them alone, for example to manage them with `vibeoncall_team_membership`. (see [below for nested schema](#nestedatt--members))
 
 ### Read-Only
 
 - `id` (String) Numeric team ID, referenced as `team_id` by schedules, escalation policies, and services. Import accepts this or the short ID.
 - `short_id` (String) Team short ID, e.g. `VP-TEAM-…`.
+
+<a id="nestedatt--members"></a>
+### Nested Schema for `members`
+
+Required:
+
+- `user_id` (String) Numeric user ID, usually from the `vibeoncall_member` data source.
+
+Optional:
+
+- `role` (String) Team role: `member` or `admin`. Defaults to `member`.
 
 ## Import
 
@@ -43,6 +72,6 @@ Import is supported using the following syntax:
 The [`terraform import` command](https://developer.hashicorp.com/terraform/cli/commands/import) can be used, for example:
 
 ```shell
-# Import by numeric team ID or by short ID.
+# Import by numeric team ID or by short ID. The team's current members are imported into `members`.
 terraform import vibeoncall_team.sre 42
 ```

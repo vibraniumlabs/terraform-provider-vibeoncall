@@ -7,21 +7,9 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/plancheck"
-	"github.com/hashicorp/terraform-plugin-testing/terraform"
 )
 
 const adaID = 7
-
-func (a *fakeAPI) checkAdaRole(teamID int, want string) resource.TestCheckFunc {
-	return func(*terraform.State) error {
-		a.mu.Lock()
-		defer a.mu.Unlock()
-		if got := a.memberships[teamID][adaID]; got != want {
-			return fmt.Errorf("team %d role = %q, want %q", teamID, got, want)
-		}
-		return nil
-	}
-}
 
 func membershipConfig(baseURL, team, role string) string {
 	roleLine := ""
@@ -62,7 +50,7 @@ func TestTeamMembershipResourceLifecycle(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("vibeoncall_team_membership.ada", "id", "1:7"),
 					resource.TestCheckResourceAttr("vibeoncall_team_membership.ada", "role", "member"),
-					api.checkAdaRole(1, "member"),
+					api.checkMembers(1, map[int]string{adaID: "member"}),
 				),
 			},
 			{
@@ -72,7 +60,7 @@ func TestTeamMembershipResourceLifecycle(t *testing.T) {
 						plancheck.ExpectResourceAction("vibeoncall_team_membership.ada", plancheck.ResourceActionUpdate),
 					},
 				},
-				Check: api.checkAdaRole(1, "admin"),
+				Check: api.checkMembers(1, map[int]string{adaID: "admin"}),
 			},
 			{
 				ResourceName:      "vibeoncall_team_membership.ada",
@@ -89,8 +77,8 @@ func TestTeamMembershipResourceLifecycle(t *testing.T) {
 				},
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("vibeoncall_team_membership.ada", "id", "2:7"),
-					api.checkAdaRole(1, ""),
-					api.checkAdaRole(2, "admin"),
+					api.checkMembers(1, map[int]string{}),
+					api.checkMembers(2, map[int]string{adaID: "admin"}),
 				),
 			},
 			{
