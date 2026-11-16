@@ -21,6 +21,10 @@ data "vibeoncall_member" "ada" {
 resource "vibeoncall_team_membership" "ada" {
   team_id = vibeoncall_team.payments.id
   user_id = data.vibeoncall_member.ada.id
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 data "vibeoncall_member" "grace" {
@@ -54,7 +58,7 @@ resource "vibeoncall_service" "checkout" {
 - `external_provider` (String) Provider the service is imported from, such as `backstage`. Set together with `external_service_id`.
 - `external_service_id` (String) The service's identifier in `external_provider`, unique per provider within the organization. Set together with `external_provider`.
 - `responder_team_ids` (Set of String) Numeric IDs of teams added as responders. The owning team responds without being listed; list it as well to keep it responding after `team_id` changes.
-- `responder_user_ids` (Set of String) Numeric IDs of users added as responders. For a member of the owning team, use `vibeoncall_team_membership.<name>.user_id`, so Terraform removes the user from this service before it removes them from the team. For anyone else, use `data.vibeoncall_member.<name>.id`.
+- `responder_user_ids` (Set of String) Numeric IDs of users added as responders. For a member of the owning team, use `vibeoncall_team_membership.<name>.user_id` and set `create_before_destroy` on that membership, so Terraform removes the user from this service before it removes them from the team. For anyone else, use `data.vibeoncall_member.<name>.id`.
 - `stakeholder_user_ids` (Set of String) Numeric IDs of users added as stakeholders of the service. Stakeholders matched by a condition set in the app are not managed here.
 - `team_id` (String) Numeric ID of the owning team, which always responds to the service.
 

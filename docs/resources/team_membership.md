@@ -13,6 +13,8 @@ A member's place on a team.
 
 ~> **Note** Don't use this resource on a team that sets `members` on `vibeoncall_team`; the team would remove this membership on its next apply.
 
+~> **Note** When a schedule, escalation policy, service or alert route references this membership's `user_id`, set `create_before_destroy` as in the example. Without it, removing the user deletes the membership first and only then takes them off what references it.
+
 ## Example Usage
 
 ```terraform
@@ -24,6 +26,10 @@ resource "vibeoncall_team_membership" "ada" {
   team_id = vibeoncall_team.sre.id
   user_id = data.vibeoncall_member.ada.id
   role    = "admin"
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 ```
 

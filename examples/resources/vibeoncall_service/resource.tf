@@ -5,6 +5,10 @@ data "vibeoncall_member" "ada" {
 resource "vibeoncall_team_membership" "ada" {
   team_id = vibeoncall_team.payments.id
   user_id = data.vibeoncall_member.ada.id
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 data "vibeoncall_member" "grace" {
