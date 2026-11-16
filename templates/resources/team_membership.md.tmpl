@@ -11,6 +11,8 @@ description: |-
 
 ~> **Note** If the user is already on the team, creating this resource takes over that membership and sets `role`, which defaults to `member`. The plan shows a create, not the role change. To review the change first, import the membership and run `terraform plan`.
 
+~> **Note** Don't use this resource on a team that sets `members` on `vibeoncall_team`; the team would remove this membership on its next apply.
+
 ## Example Usage
 
 {{ tffile .ExampleFile }}
