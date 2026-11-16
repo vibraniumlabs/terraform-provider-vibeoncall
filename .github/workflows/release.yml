@@ -16,6 +16,9 @@ permissions:
 jobs:
   goreleaser:
     runs-on: ubuntu-latest
+    # The release environment holds the signing secrets and requires a
+    # maintainer other than the tag pusher to approve before publishing.
+    environment: release
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
