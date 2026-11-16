@@ -11,6 +11,7 @@ data "vibeoncall_member" "grace" {
   email = "grace@example.com"
 }
 
+# On Microsoft Teams, also set microsoft_teams_team_id on the channel lookup.
 data "vibeoncall_chat_channel" "sre_alerts" {
   name = "sre-alerts"
 }
