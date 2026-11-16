@@ -11,10 +11,14 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 )
 
-func (a *fakeAPI) checkPolicyTiers(id int, want []fakeTier) resource.TestCheckFunc {
+// Every test here manages one policy, the first the fake API creates.
+const primaryPolicyID = 1
+
+func (a *fakeAPI) checkPolicyTiers(want []fakeTier) resource.TestCheckFunc {
 	return func(*terraform.State) error {
 		a.mu.Lock()
 		defer a.mu.Unlock()
+		id := primaryPolicyID
 		p := a.policies[id]
 		if p == nil {
 			return fmt.Errorf("policy %d not found", id)
@@ -32,10 +36,10 @@ func (a *fakeAPI) checkPolicyTiers(id int, want []fakeTier) resource.TestCheckFu
 }
 
 // setPolicyTierChannels changes a tier's channels behind Terraform's back, as the portal would.
-func (a *fakeAPI) setPolicyTierChannels(policyID, tierIndex int, channels []fakeChannelTarget) {
+func (a *fakeAPI) setPolicyTierChannels(tierIndex int, channels []fakeChannelTarget) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
-	a.policies[policyID].Tiers[tierIndex].ChannelTargets = channels
+	a.policies[primaryPolicyID].Tiers[tierIndex].ChannelTargets = channels
 }
 
 func (a *fakeAPI) checkFirstTierID(policyID, want int) resource.TestCheckFunc {
@@ -110,7 +114,7 @@ func TestEscalationPolicyResourceLifecycle(t *testing.T) {
 					resource.TestCheckResourceAttr("vibeoncall_escalation_policy.primary", "team_id", "1"),
 					resource.TestCheckNoResourceAttr("vibeoncall_escalation_policy.primary", "description"),
 					resource.TestCheckResourceAttr("vibeoncall_escalation_policy.primary", "tiers.0.schedule_targets.0.mode", "current"),
-					api.checkPolicyTiers(1, []fakeTier{
+					api.checkPolicyTiers([]fakeTier{
 						{AcknowledgementTimeThreshold: 300_000, ScheduleTargets: []fakeScheduleTarget{{ScheduleID: 11, Mode: "current"}}, RotationTargets: []fakeRotationTarget{}, ChannelTargets: []fakeChannelTarget{}, UserIDs: []int{}},
 						{AcknowledgementTimeThreshold: 600_000, ScheduleTargets: []fakeScheduleTarget{}, RotationTargets: []fakeRotationTarget{}, ChannelTargets: []fakeChannelTarget{}, UserIDs: []int{7}},
 					}),
@@ -125,7 +129,7 @@ func TestEscalationPolicyResourceLifecycle(t *testing.T) {
 				},
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("vibeoncall_escalation_policy.primary", "description", "Payments on-call"),
-					api.checkPolicyTiers(1, []fakeTier{
+					api.checkPolicyTiers([]fakeTier{
 						{AcknowledgementTimeThreshold: 90_000, ScheduleTargets: []fakeScheduleTarget{}, RotationTargets: []fakeRotationTarget{}, ChannelTargets: []fakeChannelTarget{}, UserIDs: []int{8, 7}},
 						{
 							AcknowledgementTimeThreshold: 300_000,
@@ -288,7 +292,7 @@ func TestEscalationPolicyResourceChannelTargets(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("vibeoncall_escalation_policy.primary", "tiers.0.channel_targets.0.channel_id", "C0SUPPORT"),
 					resource.TestCheckNoResourceAttr("vibeoncall_escalation_policy.primary", "tiers.0.user_ids.#"),
-					api.checkPolicyTiers(1, []fakeTier{
+					api.checkPolicyTiers([]fakeTier{
 						channelOnly,
 						{
 							AcknowledgementTimeThreshold: 600_000, ScheduleTargets: []fakeScheduleTarget{}, RotationTargets: []fakeRotationTarget{},
@@ -310,7 +314,7 @@ func TestEscalationPolicyResourceChannelTargets(t *testing.T) {
 						plancheck.ExpectResourceAction("vibeoncall_escalation_policy.primary", plancheck.ResourceActionUpdate),
 					},
 				},
-				Check: api.checkPolicyTiers(1, []fakeTier{
+				Check: api.checkPolicyTiers([]fakeTier{
 					channelOnly,
 					{AcknowledgementTimeThreshold: 600_000, ScheduleTargets: []fakeScheduleTarget{}, RotationTargets: []fakeRotationTarget{}, ChannelTargets: []fakeChannelTarget{}, UserIDs: []int{7}},
 				}),
@@ -318,7 +322,7 @@ func TestEscalationPolicyResourceChannelTargets(t *testing.T) {
 			{
 				// Someone adds a channel in the portal: the next plan must show it, not hide it.
 				PreConfig: func() {
-					api.setPolicyTierChannels(1, 1, []fakeChannelTarget{{ID: "C0PORTAL", Label: "added-in-portal"}})
+					api.setPolicyTierChannels(1, []fakeChannelTarget{{ID: "C0PORTAL", Label: "added-in-portal"}})
 				},
 				Config:             escalationPolicyConfig(srv.URL, "payments", channelRemoved),
 				PlanOnly:           true,
