@@ -2435,6 +2435,15 @@ type OnCallHoursSummary struct {
 	TotalPeople int32 `json:"totalPeople"`
 }
 
+// PublicEscalationPolicyChannelTarget defines model for PublicEscalationPolicyChannelTarget.
+type PublicEscalationPolicyChannelTarget struct {
+	// Id The channel ID in the workspace chat platform, for example a Slack channel ID or a Teams conversation ID.
+	Id string `json:"id"`
+
+	// Label The channel name shown in the policy.
+	Label string `json:"label"`
+}
+
 // PublicEscalationPolicyListResponse defines model for PublicEscalationPolicyListResponse.
 type PublicEscalationPolicyListResponse struct {
 	HasMore  bool                             `json:"hasMore"`
@@ -2487,11 +2496,14 @@ type PublicEscalationPolicyScheduleTargetInputMode string
 // PublicEscalationPolicyTierInput defines model for PublicEscalationPolicyTierInput.
 type PublicEscalationPolicyTierInput struct {
 	// AcknowledgementTimeThreshold Acknowledgement timeout in milliseconds.
-	AcknowledgementTimeThreshold int                                          `json:"acknowledgementTimeThreshold"`
-	RotationTargets              *[]PublicEscalationPolicyRotationTargetInput `json:"rotationTargets,omitempty"`
-	ScheduleTargets              *[]PublicEscalationPolicyScheduleTargetInput `json:"scheduleTargets,omitempty"`
-	UserIds                      *[]int                                       `json:"userIds,omitempty"`
-	union                        json.RawMessage
+	AcknowledgementTimeThreshold int `json:"acknowledgementTimeThreshold"`
+
+	// ChannelTargets Slack or Teams channels the tier posts the alert or incident card to. Acknowledging the alert from the card stops the escalation.
+	ChannelTargets  *[]PublicEscalationPolicyChannelTarget       `json:"channelTargets,omitempty"`
+	RotationTargets *[]PublicEscalationPolicyRotationTargetInput `json:"rotationTargets,omitempty"`
+	ScheduleTargets *[]PublicEscalationPolicyScheduleTargetInput `json:"scheduleTargets,omitempty"`
+	UserIds         *[]int                                       `json:"userIds,omitempty"`
+	union           json.RawMessage
 }
 
 // PublicEscalationPolicyTierInput0 defines model for PublicEscalationPolicyTierInput.0.
@@ -2506,12 +2518,18 @@ type PublicEscalationPolicyTierInput1 struct {
 
 // PublicEscalationPolicyTierInput2 defines model for PublicEscalationPolicyTierInput.2.
 type PublicEscalationPolicyTierInput2 struct {
+	ChannelTargets []interface{} `json:"channelTargets"`
+}
+
+// PublicEscalationPolicyTierInput3 defines model for PublicEscalationPolicyTierInput.3.
+type PublicEscalationPolicyTierInput3 struct {
 	UserIds []interface{} `json:"userIds"`
 }
 
 // PublicEscalationPolicyTierResponse defines model for PublicEscalationPolicyTierResponse.
 type PublicEscalationPolicyTierResponse struct {
 	AcknowledgementTimeThreshold int                                            `json:"acknowledgementTimeThreshold"`
+	ChannelTargets               []PublicEscalationPolicyChannelTarget          `json:"channelTargets"`
 	Id                           int                                            `json:"id"`
 	RotationTargets              []PublicEscalationPolicyRotationTargetResponse `json:"rotationTargets"`
 	ScheduleTargets              []struct {
@@ -5402,6 +5420,32 @@ func (t *PublicEscalationPolicyTierInput) MergePublicEscalationPolicyTierInput2(
 	return err
 }
 
+// AsPublicEscalationPolicyTierInput3 returns the union data inside the PublicEscalationPolicyTierInput as a PublicEscalationPolicyTierInput3
+func (t PublicEscalationPolicyTierInput) AsPublicEscalationPolicyTierInput3() (PublicEscalationPolicyTierInput3, error) {
+	var body PublicEscalationPolicyTierInput3
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPublicEscalationPolicyTierInput3 overwrites any union data inside the PublicEscalationPolicyTierInput as the provided PublicEscalationPolicyTierInput3
+func (t *PublicEscalationPolicyTierInput) FromPublicEscalationPolicyTierInput3(v PublicEscalationPolicyTierInput3) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePublicEscalationPolicyTierInput3 performs a merge with any union data inside the PublicEscalationPolicyTierInput, using the provided PublicEscalationPolicyTierInput3
+func (t *PublicEscalationPolicyTierInput) MergePublicEscalationPolicyTierInput3(v PublicEscalationPolicyTierInput3) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
 func (t PublicEscalationPolicyTierInput) MarshalJSON() ([]byte, error) {
 	b, err := t.union.MarshalJSON()
 	if err != nil {
@@ -5418,6 +5462,13 @@ func (t PublicEscalationPolicyTierInput) MarshalJSON() ([]byte, error) {
 	object["acknowledgementTimeThreshold"], err = json.Marshal(t.AcknowledgementTimeThreshold)
 	if err != nil {
 		return nil, fmt.Errorf("error marshaling 'acknowledgementTimeThreshold': %w", err)
+	}
+
+	if t.ChannelTargets != nil {
+		object["channelTargets"], err = json.Marshal(t.ChannelTargets)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'channelTargets': %w", err)
+		}
 	}
 
 	if t.RotationTargets != nil {
@@ -5459,6 +5510,13 @@ func (t *PublicEscalationPolicyTierInput) UnmarshalJSON(b []byte) error {
 		err = json.Unmarshal(raw, &t.AcknowledgementTimeThreshold)
 		if err != nil {
 			return fmt.Errorf("error reading 'acknowledgementTimeThreshold': %w", err)
+		}
+	}
+
+	if raw, found := object["channelTargets"]; found {
+		err = json.Unmarshal(raw, &t.ChannelTargets)
+		if err != nil {
+			return fmt.Errorf("error reading 'channelTargets': %w", err)
 		}
 	}
 

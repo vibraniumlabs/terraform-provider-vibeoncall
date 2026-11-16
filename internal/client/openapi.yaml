@@ -1187,6 +1187,21 @@ components:
         - scheduleId
         - mode
         - rotationId
+    PublicEscalationPolicyChannelTarget:
+      type: object
+      properties:
+        id:
+          type: string
+          minLength: 1
+          description: The channel ID in the workspace chat platform, for example a Slack channel ID or a Teams conversation ID.
+        label:
+          type: string
+          minLength: 1
+          description: The channel name shown in the policy.
+      required:
+        - id
+        - label
+      additionalProperties: false
     PublicEscalationPolicyTierResponse:
       type: object
       properties:
@@ -1217,6 +1232,10 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/PublicEscalationPolicyRotationTargetResponse"
+        channelTargets:
+          type: array
+          items:
+            $ref: "#/components/schemas/PublicEscalationPolicyChannelTarget"
         userIds:
           type: array
           items:
@@ -1227,6 +1246,7 @@ components:
         - acknowledgementTimeThreshold
         - scheduleTargets
         - rotationTargets
+        - channelTargets
         - userIds
     PublicEscalationPolicyResponse:
       type: object
@@ -1325,6 +1345,11 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/PublicEscalationPolicyRotationTargetInput"
+        channelTargets:
+          type: array
+          items:
+            $ref: "#/components/schemas/PublicEscalationPolicyChannelTarget"
+          description: Slack or Teams channels the tier posts the alert or incident card to. Acknowledging the alert from the card stops the escalation.
         userIds:
           type: array
           items:
@@ -1344,6 +1369,12 @@ components:
             - rotationTargets
           properties:
             rotationTargets:
+              type: array
+              minItems: 1
+        - required:
+            - channelTargets
+          properties:
+            channelTargets:
               type: array
               minItems: 1
         - required:
