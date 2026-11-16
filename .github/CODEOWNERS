@@ -1,0 +1,3 @@
+# Every change to this repository needs a review from a provider maintainer.
+# Enforced by the main-protection ruleset (require review from Code Owners).
+* @vibraniumlabs/terraform-provider-maintainers
