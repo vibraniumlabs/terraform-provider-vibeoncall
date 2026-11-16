@@ -52,13 +52,13 @@ const threeRules = `
     {
       name = "Flapping"
       condition_groups = [
-        { operator = "AND", conditions = [{ count = { threshold = 5, timeframe_minutes = 10 } }] },
+        { operator = "AND", conditions = [{ count = { threshold = 5, timeframe_seconds = 600 } }] },
         { operator = "OR", conditions = [{ provider = { providers = ["sentry"] } }] },
       ]
       escalate = {
         schedule_ids  = ["9", "3"]
         user_ids      = ["4"]
-        delay_minutes = 15
+        delay_seconds = 90
       }
     },
     {
@@ -86,11 +86,11 @@ func TestAlertRouteResourceLifecycle(t *testing.T) {
 					resource.TestCheckResourceAttr(route, "rules.0.name", "Critical"),
 					resource.TestCheckResourceAttr(route, "rules.0.condition_groups.0.conditions.1.field.case_sensitive", "false"),
 					resource.TestCheckResourceAttr(route, "rules.0.escalate.urgency", "HIGH"),
-					resource.TestCheckNoResourceAttr(route, "rules.0.escalate.delay_minutes"),
+					resource.TestCheckNoResourceAttr(route, "rules.0.escalate.delay_seconds"),
 					resource.TestCheckResourceAttr(route, "rules.1.condition_groups.#", "2"),
-					resource.TestCheckResourceAttr(route, "rules.1.condition_groups.0.conditions.0.count.timeframe_minutes", "10"),
+					resource.TestCheckResourceAttr(route, "rules.1.condition_groups.0.conditions.0.count.timeframe_seconds", "600"),
 					resource.TestCheckResourceAttr(route, "rules.1.escalate.schedule_ids.#", "2"),
-					resource.TestCheckResourceAttr(route, "rules.1.escalate.delay_minutes", "15"),
+					resource.TestCheckResourceAttr(route, "rules.1.escalate.delay_seconds", "90"),
 					resource.TestCheckResourceAttr(route, "rules.2.do_nothing", "true"),
 					resource.TestCheckNoResourceAttr(route, "rules.2.condition_groups"),
 					api.checkRoutingRules(1, `[
@@ -101,7 +101,7 @@ func TestAlertRouteResourceLifecycle(t *testing.T) {
 						{"name":"Flapping","logicalOperator":"OR","conditions":[
 							{"type":"group","operator":"AND","conditions":[{"type":"count","rule":{"countThreshold":5,"timeframe":600000}}]},
 							{"type":"group","operator":"OR","conditions":[{"type":"provider","rule":{"operator":"one_of","providers":["sentry"]}}]}
-						],"action":{"type":"ESCALATE","value":{"escalation":[{"type":"schedule","value":3},{"type":"schedule","value":9},{"type":"user","value":4}],"delayMs":900000}}},
+						],"action":{"type":"ESCALATE","value":{"escalation":[{"type":"schedule","value":3},{"type":"schedule","value":9},{"type":"user","value":4}],"delayMs":90000}}},
 						{"name":"Everything else","logicalOperator":"AND","conditions":[],"action":{"type":"DO_NOTHING"}}
 					]`),
 				),
@@ -266,9 +266,10 @@ func TestAlertRouteResourceValidation(t *testing.T) {
 		"escalate without targets":   {`escalate = { urgency = "HIGH" }`, `Missing escalation target`},
 		"empty target set":           {`escalate = { user_ids = [] }`, `set must contain at least 1 elements`},
 		"severity alias":             {`do_nothing = true` + "\n" + fmt.Sprintf(severity, "P1"), `must be one of`},
-		"count threshold below two":  {`do_nothing = true` + "\n" + `condition_groups = [{ operator = "AND", conditions = [{ count = { threshold = 1, timeframe_minutes = 5 } }] }]`, `must be at least 2`},
-		"two kinds in one condition": {`do_nothing = true` + "\n" + `condition_groups = [{ operator = "AND", conditions = [{ count = { threshold = 2, timeframe_minutes = 5 }, severity = { operator = "equal_to", severity = "SEV1" } }] }]`, `2 attributes specified when one \(and only one\)`},
-		"delay beyond a day":         {`escalate = { user_ids = ["1"], delay_minutes = 1441 }`, `between 1 and 1440`},
+		"count threshold below two":  {`do_nothing = true` + "\n" + `condition_groups = [{ operator = "AND", conditions = [{ count = { threshold = 1, timeframe_seconds = 300 } }] }]`, `must be at least 2`},
+		"two kinds in one condition": {`do_nothing = true` + "\n" + `condition_groups = [{ operator = "AND", conditions = [{ count = { threshold = 2, timeframe_seconds = 300 }, severity = { operator = "equal_to", severity = "SEV1" } }] }]`, `2 attributes specified when one \(and only one\)`},
+		"delay beyond a day":         {`escalate = { user_ids = ["1"], delay_seconds = 86401 }`, `between 60 and 86400`},
+		"timeframe under a minute":   {`do_nothing = true` + "\n" + `condition_groups = [{ operator = "AND", conditions = [{ count = { threshold = 2, timeframe_seconds = 59 } }] }]`, `must be at least 60`},
 	} {
 		t.Run(name, func(t *testing.T) {
 			resource.UnitTest(t, resource.TestCase{

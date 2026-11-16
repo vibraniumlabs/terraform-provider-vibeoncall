@@ -29,13 +29,13 @@ resource "vibeoncall_alert_route" "payments" {
       condition_groups = [{
         operator = "AND"
         conditions = [
-          { count = { threshold = 3, timeframe_minutes = 10 } },
+          { count = { threshold = 3, timeframe_seconds = 600 } },
           { time = { timezone = "Asia/Taipei", daily = { start_time = "19:00", end_time = "09:00" } } },
         ]
       }]
       escalate = {
         schedule_ids  = [vibeoncall_schedule.payments.id]
-        delay_minutes = 5
+        delay_seconds = 300
       }
     },
     {

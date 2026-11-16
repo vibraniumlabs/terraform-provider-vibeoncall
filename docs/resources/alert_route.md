@@ -49,13 +49,13 @@ resource "vibeoncall_alert_route" "payments" {
       condition_groups = [{
         operator = "AND"
         conditions = [
-          { count = { threshold = 3, timeframe_minutes = 10 } },
+          { count = { threshold = 3, timeframe_seconds = 600 } },
           { time = { timezone = "Asia/Taipei", daily = { start_time = "19:00", end_time = "09:00" } } },
         ]
       }]
       escalate = {
         schedule_ids  = [vibeoncall_schedule.payments.id]
-        delay_minutes = 5
+        delay_seconds = 300
       }
     },
     {
@@ -205,7 +205,7 @@ Required:
 
 Optional:
 
-- `count` (Attributes) Matches once `threshold` alerts arrived within `timeframe_minutes`. (see [below for nested schema](#nestedatt--rules--condition_groups--conditions--count))
+- `count` (Attributes) Matches once `threshold` alerts arrived within `timeframe_seconds`. (see [below for nested schema](#nestedatt--rules--condition_groups--conditions--count))
 - `field` (Attributes) Matches a field of the incoming alert payload. (see [below for nested schema](#nestedatt--rules--condition_groups--conditions--field))
 - `provider` (Attributes) Matches alerts from any of the given alert sources. (see [below for nested schema](#nestedatt--rules--condition_groups--conditions--provider))
 - `severity` (Attributes) Matches the alert severity. `SEV0` is the most severe and `SIGNAL` the least. (see [below for nested schema](#nestedatt--rules--condition_groups--conditions--severity))
@@ -217,7 +217,7 @@ Optional:
 Required:
 
 - `threshold` (Number) Number of alerts, at least 2.
-- `timeframe_minutes` (Number) Window the alerts must arrive within, in minutes.
+- `timeframe_seconds` (Number) Window the alerts must arrive within, in seconds, at least 60.
 
 
 <a id="nestedatt--rules--condition_groups--conditions--field"></a>
@@ -291,7 +291,7 @@ Required:
 
 Optional:
 
-- `delay_minutes` (Number) Minutes to wait before paging, from 1 to 1440.
+- `delay_seconds` (Number) Seconds to wait before paging, from 60 to 86400.
 - `escalation_policy_ids` (Set of String) Numeric IDs of escalation policies to page.
 - `schedule_ids` (Set of String) Numeric IDs of schedules whose on-call members to page.
 - `urgency` (String) `HIGH`, `MEDIUM` or `LOW`. Overrides the urgency the targets are paged with.

@@ -60,7 +60,7 @@ type escalateActionModel struct {
 	ScheduleIDs         []types.String `tfsdk:"schedule_ids"`
 	UserIDs             []types.String `tfsdk:"user_ids"`
 	Urgency             types.String   `tfsdk:"urgency"`
-	DelayMinutes        types.Int64    `tfsdk:"delay_minutes"`
+	DelaySeconds        types.Int64    `tfsdk:"delay_seconds"`
 }
 
 type routeConditionModel struct {
@@ -70,7 +70,7 @@ type routeConditionModel struct {
 
 type countConditionModel struct {
 	Threshold        types.Int64 `tfsdk:"threshold"`
-	TimeframeMinutes types.Int64 `tfsdk:"timeframe_minutes"`
+	TimeframeSeconds types.Int64 `tfsdk:"timeframe_seconds"`
 }
 
 type routeRuleJSON struct {
@@ -117,7 +117,7 @@ func (r *AlertRouteResource) Metadata(ctx context.Context, req resource.Metadata
 func routeConditionAttributes() map[string]schema.SingleNestedAttribute {
 	attrs := conditionAttributes()
 	attrs["count"] = schema.SingleNestedAttribute{
-		MarkdownDescription: "Matches once `threshold` alerts arrived within `timeframe_minutes`.",
+		MarkdownDescription: "Matches once `threshold` alerts arrived within `timeframe_seconds`.",
 		Optional:            true,
 		Attributes: map[string]schema.Attribute{
 			"threshold": schema.Int64Attribute{
@@ -125,10 +125,10 @@ func routeConditionAttributes() map[string]schema.SingleNestedAttribute {
 				Required:            true,
 				Validators:          []validator.Int64{int64validator.AtLeast(2)},
 			},
-			"timeframe_minutes": schema.Int64Attribute{
-				MarkdownDescription: "Window the alerts must arrive within, in minutes.",
+			"timeframe_seconds": schema.Int64Attribute{
+				MarkdownDescription: "Window the alerts must arrive within, in seconds, at least 60.",
 				Required:            true,
-				Validators:          []validator.Int64{int64validator.AtLeast(1)},
+				Validators:          []validator.Int64{int64validator.AtLeast(60)},
 			},
 		},
 	}
@@ -208,10 +208,10 @@ func (r *AlertRouteResource) Schema(ctx context.Context, req resource.SchemaRequ
 									Optional:            true,
 									Validators:          []validator.String{stringvalidator.OneOf("HIGH", "MEDIUM", "LOW")},
 								},
-								"delay_minutes": schema.Int64Attribute{
-									MarkdownDescription: "Minutes to wait before paging, from 1 to 1440.",
+								"delay_seconds": schema.Int64Attribute{
+									MarkdownDescription: "Seconds to wait before paging, from 60 to 86400.",
 									Optional:            true,
-									Validators:          []validator.Int64{int64validator.Between(1, 1440)},
+									Validators:          []validator.Int64{int64validator.Between(60, 86400)},
 								},
 							},
 						},
@@ -444,8 +444,8 @@ func alertRouteRulesToAPI(rules []alertRouteRuleModel) ([]client.AlertRoutingRul
 					value.Escalation = append(value.Escalation, escalationTargetJSON{Type: t.kind, Value: mustAtoi(id)})
 				}
 			}
-			if !e.DelayMinutes.IsNull() {
-				ms := e.DelayMinutes.ValueInt64() * millisecondsPerMinute
+			if !e.DelaySeconds.IsNull() {
+				ms := e.DelaySeconds.ValueInt64() * millisecondsPerSecond
 				value.DelayMs = &ms
 			}
 			r.Action = routeActionJSON{Type: actionEscalate, Value: value}
@@ -497,7 +497,7 @@ func alertRouteRuleFromAPI(rule routeRuleJSON) (alertRouteRuleModel, error) {
 	case actionDoNothing:
 		m.DoNothing = types.BoolValue(true)
 	case actionEscalate:
-		e := &escalateActionModel{Urgency: types.StringNull(), DelayMinutes: types.Int64Null()}
+		e := &escalateActionModel{Urgency: types.StringNull(), DelaySeconds: types.Int64Null()}
 		if v := rule.Action.Value; v != nil {
 			for _, t := range v.Escalation {
 				id := types.StringValue(strconv.Itoa(t.Value))
@@ -512,7 +512,7 @@ func alertRouteRuleFromAPI(rule routeRuleJSON) (alertRouteRuleModel, error) {
 			}
 			e.Urgency = types.StringPointerValue(v.NotificationUrgency)
 			if v.DelayMs != nil && *v.DelayMs > 0 {
-				e.DelayMinutes = types.Int64Value(minutesFromMs(*v.DelayMs))
+				e.DelaySeconds = types.Int64Value(secondsFromMs(*v.DelayMs))
 			}
 		}
 		m.Escalate = e
@@ -534,7 +534,7 @@ func (c routeConditionModel) toJSON() (json.RawMessage, error) {
 	}
 	return json.Marshal(leafJSON{Type: "count", Rule: countRuleJSON{
 		CountThreshold: c.Count.Threshold.ValueInt64(),
-		Timeframe:      c.Count.TimeframeMinutes.ValueInt64() * millisecondsPerMinute,
+		Timeframe:      c.Count.TimeframeSeconds.ValueInt64() * millisecondsPerSecond,
 	}})
 }
 
@@ -556,6 +556,6 @@ func routeConditionFromJSON(raw []byte) (routeConditionModel, error) {
 	}
 	return routeConditionModel{Count: &countConditionModel{
 		Threshold:        types.Int64Value(v.CountThreshold),
-		TimeframeMinutes: types.Int64Value(minutesFromMs(v.Timeframe)),
+		TimeframeSeconds: types.Int64Value(secondsFromMs(v.Timeframe)),
 	}}, nil
 }
