@@ -43,7 +43,7 @@ The `Release` workflow stops at the `release` environment. Another maintainer op
    ```
 
 3. The new version appears on the [Registry](https://registry.terraform.io/providers/vibraniumlabs/vibeoncall/latest). For the first release only, publish the provider from HCP Terraform: **Registry** → **Public namespaces** → `vibraniumlabs` → **Publish** → **Provider**.
-4. A clean `terraform init` and `tofu init` both install the new version.
+4. A clean `terraform init` installs the new version, and so does `tofu init` once the provider is in the OpenTofu registry.
 
 ## When a release is wrong
 

@@ -3,7 +3,7 @@
 Manage Vibe OnCall configuration as code with Terraform or OpenTofu: teams and their members, schedules, escalation policies, services, maintenance windows, alert sources and alert routes.
 
 - Documentation: [Terraform Registry](https://registry.terraform.io/providers/vibraniumlabs/vibeoncall/latest/docs)
-- Complete example: [`examples/complete`](examples/complete), a team with a weekly rotation, a two-tier escalation policy, and a service
+- Complete example: [`examples/complete`](examples/complete), a team with a weekly rotation, a two-tier escalation policy, a service, and an alert source feeding an alert route
 
 ## Usage
 
