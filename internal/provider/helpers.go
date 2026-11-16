@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
+	"unicode/utf16"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
@@ -43,6 +44,30 @@ func (v int32IDValidator) ValidateString(ctx context.Context, req validator.Stri
 	}
 }
 
+// The API checks lengths with JavaScript's String length, which counts UTF-16 code units: an emoji counts as two.
+func utf16LengthAtMost(limit int) validator.String {
+	return utf16LengthValidator{max: limit}
+}
+
+type utf16LengthValidator struct{ max int }
+
+func (v utf16LengthValidator) Description(context.Context) string {
+	return fmt.Sprintf("must be at most %d UTF-16 code units long, where characters such as emoji count as two", v.max)
+}
+
+func (v utf16LengthValidator) MarkdownDescription(ctx context.Context) string {
+	return v.Description(ctx)
+}
+
+func (v utf16LengthValidator) ValidateString(ctx context.Context, req validator.StringRequest, resp *validator.StringResponse) {
+	if req.ConfigValue.IsNull() || req.ConfigValue.IsUnknown() {
+		return
+	}
+	if n := len(utf16.Encode([]rune(req.ConfigValue.ValueString()))); n > v.max {
+		resp.Diagnostics.AddAttributeError(req.Path, "Invalid Attribute Value Length", fmt.Sprintf("Attribute %s %s, got: %d", req.Path, v.Description(ctx), n))
+	}
+}
+
 // Matches the characters JavaScript's String.prototype.trim removes, which the API applies to names, descriptions and searches.
 var noSurroundingWhitespace = stringvalidator.RegexMatches(
 	regexp.MustCompile(`(?s)^[^\s\x0B\p{Z}\x{FEFF}](.*[^\s\x0B\p{Z}\x{FEFF}])?$`),
@@ -78,6 +103,30 @@ func nullableString(v types.String) nullable.Nullable[string] {
 		return nullable.NewNullNullable[string]()
 	}
 	return nullable.NewNullableWithValue(v.ValueString())
+}
+
+func nullableID[T int | int32](v types.String) nullable.Nullable[T] {
+	if v.IsNull() {
+		return nullable.NewNullNullable[T]()
+	}
+	return nullable.NewNullableWithValue(T(mustAtoi(v)))
+}
+
+func idFromNullable[T int | int32](v nullable.Nullable[T]) types.String {
+	id, err := v.Get()
+	if err != nil {
+		return types.StringNull()
+	}
+	return itoa(int(id))
+}
+
+func mustAtoi(v types.String) int {
+	n, _ := strconv.Atoi(v.ValueString())
+	return n
+}
+
+func itoa(n int) types.String {
+	return types.StringValue(strconv.Itoa(n))
 }
 
 func stringFromNullable(v nullable.Nullable[string]) types.String {

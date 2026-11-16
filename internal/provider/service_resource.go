@@ -8,7 +8,6 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/resourcevalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
-	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -19,7 +18,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/oapi-codegen/nullable"
 
 	"github.com/vibraniumlabs/terraform-provider-vibeoncall/internal/client"
 )
@@ -80,12 +78,12 @@ func (r *ServiceResource) Schema(ctx context.Context, req resource.SchemaRequest
 			"name": schema.StringAttribute{
 				MarkdownDescription: "Service name, unique within the organization regardless of case.",
 				Required:            true,
-				Validators:          []validator.String{stringvalidator.UTF8LengthAtMost(255), noSurroundingWhitespace},
+				Validators:          []validator.String{utf16LengthAtMost(255), noSurroundingWhitespace},
 			},
 			"description": schema.StringAttribute{
 				MarkdownDescription: "Service description. Remove the argument to clear it.",
 				Optional:            true,
-				Validators:          []validator.String{stringvalidator.UTF8LengthAtMost(1000), noSurroundingWhitespace},
+				Validators:          []validator.String{utf16LengthAtMost(1000), noSurroundingWhitespace},
 			},
 			"team_id": schema.StringAttribute{
 				MarkdownDescription: "Numeric ID of the owning team, which always responds to the service.",
@@ -95,12 +93,12 @@ func (r *ServiceResource) Schema(ctx context.Context, req resource.SchemaRequest
 			"external_provider": schema.StringAttribute{
 				MarkdownDescription: "Provider the service is imported from, such as `backstage`. Set together with `external_service_id`.",
 				Optional:            true,
-				Validators:          []validator.String{stringvalidator.UTF8LengthAtMost(32), noSurroundingWhitespace},
+				Validators:          []validator.String{utf16LengthAtMost(32), noSurroundingWhitespace},
 			},
 			"external_service_id": schema.StringAttribute{
 				MarkdownDescription: "The service's identifier in `external_provider`, unique per provider within the organization. Set together with `external_provider`.",
 				Optional:            true,
-				Validators:          []validator.String{stringvalidator.UTF8LengthAtMost(128), noSurroundingWhitespace},
+				Validators:          []validator.String{utf16LengthAtMost(128), noSurroundingWhitespace},
 			},
 			"responder_team_ids":   idSetAttribute("Numeric IDs of teams added as responders. The owning team responds without being listed; list it as well to keep it responding after `team_id` changes."),
 			"responder_user_ids":   idSetAttribute("Numeric IDs of users added as responders. For a member of the owning team, use `vibeoncall_team_membership.<name>.user_id`, so Terraform removes the user from this service before it removes them from the team. For anyone else, use `data.vibeoncall_member.<name>.id`."),
@@ -129,7 +127,7 @@ func (r *ServiceResource) Create(ctx context.Context, req resource.CreateRequest
 	res, err := r.client.CreateServiceWithResponse(ctx, client.CreateServiceJSONRequestBody{
 		Name:              plan.Name.ValueString(),
 		Description:       nullableString(plan.Description),
-		TeamId:            nullableInt32(plan.TeamID),
+		TeamId:            nullableID[int32](plan.TeamID),
 		ExternalProvider:  nullableString(plan.ExternalProvider),
 		ExternalServiceId: nullableString(plan.ExternalServiceID),
 	})
@@ -236,7 +234,7 @@ func (r *ServiceResource) updateFields(ctx context.Context, id int32, state, pla
 	res, err := r.client.UpdateServiceWithResponse(ctx, id, client.UpdateServiceJSONRequestBody{
 		Name:              plan.Name.ValueStringPointer(),
 		Description:       nullableString(plan.Description),
-		TeamId:            nullableInt32(plan.TeamID),
+		TeamId:            nullableID[int32](plan.TeamID),
 		ExternalProvider:  nullableString(plan.ExternalProvider),
 		ExternalServiceId: nullableString(plan.ExternalServiceID),
 	})
@@ -328,10 +326,7 @@ func setServiceState(m *ServiceResourceModel, s *client.ServiceCatalogPublicSumm
 	m.ID = itoa(int(s.Id))
 	m.Name = types.StringValue(s.Name)
 	m.Description = stringFromNullable(s.Description)
-	m.TeamID = types.StringNull()
-	if teamID, err := s.TeamId.Get(); err == nil {
-		m.TeamID = itoa(int(teamID))
-	}
+	m.TeamID = idFromNullable(s.TeamId)
 	m.ExternalProvider = stringFromNullable(s.ExternalProvider)
 	m.ExternalServiceID = stringFromNullable(s.ExternalServiceId)
 
@@ -395,11 +390,4 @@ func responderRefs(teamIDs, userIDs []int) []serviceResponderRef {
 		refs = append(refs, serviceResponderRef{UserId: &userID})
 	}
 	return refs
-}
-
-func nullableInt32(v types.String) nullable.Nullable[int32] {
-	if v.IsNull() {
-		return nullable.NewNullNullable[int32]()
-	}
-	return nullable.NewNullableWithValue(int32(mustAtoi(v)))
 }

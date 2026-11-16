@@ -289,7 +289,8 @@ func TestServiceResourceValidation(t *testing.T) {
 	}{
 		"team_id beyond int32":             {`name = "X"` + "\n" + `team_id = "4294967298"`, `at most 2147483647`},
 		"responder beyond int32":           {`name = "X"` + "\n" + `responder_user_ids = ["2147483648"]`, `at most 2147483647`},
-		"name over 255 characters":         {`name = "` + strings.Repeat("服", 256) + `"`, `character count must be at most 255`},
+		"name over 255 characters":         {`name = "` + strings.Repeat("服", 256) + `"`, `at most 255 UTF-16 code units`},
+		"name of 128 emoji":                {`name = "` + strings.Repeat("🚨", 128) + `"`, `at most 255 UTF-16 code units`},
 		"name of 255 multibyte characters": {`name = "` + strings.Repeat("服", 255) + `"`, ``},
 	} {
 		t.Run(name, func(t *testing.T) {

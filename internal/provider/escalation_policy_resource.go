@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"reflect"
-	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
@@ -18,7 +17,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/oapi-codegen/nullable"
 
 	"github.com/vibraniumlabs/terraform-provider-vibeoncall/internal/client"
 )
@@ -94,12 +92,12 @@ func (r *EscalationPolicyResource) Schema(ctx context.Context, req resource.Sche
 			"name": schema.StringAttribute{
 				MarkdownDescription: "Policy name, unique within its team.",
 				Required:            true,
-				Validators:          []validator.String{stringvalidator.LengthAtMost(255), noSurroundingWhitespace},
+				Validators:          []validator.String{utf16LengthAtMost(255), noSurroundingWhitespace},
 			},
 			"description": schema.StringAttribute{
 				MarkdownDescription: "Policy description. Remove the argument to clear it.",
 				Optional:            true,
-				Validators:          []validator.String{stringvalidator.LengthBetween(1, 1000)},
+				Validators:          []validator.String{stringvalidator.LengthAtLeast(1), utf16LengthAtMost(1000)},
 			},
 			"team_id": schema.StringAttribute{
 				MarkdownDescription: "Numeric ID of the owning team. Omit for a global policy. Changing it replaces the policy.",
@@ -184,14 +182,10 @@ func (r *EscalationPolicyResource) Create(ctx context.Context, req resource.Crea
 		return
 	}
 
-	teamID := nullable.NewNullNullable[int]()
-	if !plan.TeamID.IsNull() {
-		teamID = nullable.NewNullableWithValue(mustAtoi(plan.TeamID))
-	}
 	res, err := r.client.CreateEscalationPolicyWithResponse(ctx, client.CreateEscalationPolicyJSONRequestBody{
 		Name:        plan.Name.ValueString(),
 		Description: plan.Description.ValueString(),
-		TeamId:      teamID,
+		TeamId:      nullableID[int](plan.TeamID),
 		Tiers:       tiersToAPI(plan.Tiers),
 	})
 	if err != nil {
@@ -302,15 +296,6 @@ func (r *EscalationPolicyResource) ImportState(ctx context.Context, req resource
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }
 
-func mustAtoi(v types.String) int {
-	n, _ := strconv.Atoi(v.ValueString())
-	return n
-}
-
-func itoa(n int) types.String {
-	return types.StringValue(strconv.Itoa(n))
-}
-
 func tiersToAPI(tiers []escalationTierModel) []client.PublicEscalationPolicyTierInput {
 	out := make([]client.PublicEscalationPolicyTierInput, 0, len(tiers))
 	for _, t := range tiers {
@@ -359,10 +344,7 @@ func setEscalationPolicyState(m *EscalationPolicyResourceModel, p *client.Public
 	if p.Description != "" {
 		m.Description = types.StringValue(p.Description)
 	}
-	m.TeamID = types.StringNull()
-	if teamID, err := p.TeamId.Get(); err == nil {
-		m.TeamID = itoa(teamID)
-	}
+	m.TeamID = idFromNullable(p.TeamId)
 
 	m.Tiers = make([]escalationTierModel, 0, len(p.Tiers))
 	for _, t := range p.Tiers {

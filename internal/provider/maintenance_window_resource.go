@@ -112,10 +112,10 @@ func conditionAttributes() map[string]schema.Attribute {
 					Validators: []validator.Set{
 						setvalidator.SizeAtLeast(1),
 						setvalidator.ValueStringsAre(stringvalidator.OneOf(
-							string(client.Opsgenie), string(client.Grafana), string(client.Datadog), string(client.Coralogix),
-							string(client.Newrelic), string(client.Prometheus), string(client.Cloudwatch), string(client.Sns),
-							string(client.Heartbeat), string(client.Email), string(client.Sentry), string(client.Embraceio),
-							string(client.Http), string(client.Azuremonitor), string(client.Cloudamqp),
+							string(client.MaintenanceWindowProviderConditionRuleProvidersOpsgenie), string(client.MaintenanceWindowProviderConditionRuleProvidersGrafana), string(client.MaintenanceWindowProviderConditionRuleProvidersDatadog), string(client.MaintenanceWindowProviderConditionRuleProvidersCoralogix),
+							string(client.MaintenanceWindowProviderConditionRuleProvidersNewrelic), string(client.MaintenanceWindowProviderConditionRuleProvidersPrometheus), string(client.MaintenanceWindowProviderConditionRuleProvidersCloudwatch), string(client.MaintenanceWindowProviderConditionRuleProvidersSns),
+							string(client.MaintenanceWindowProviderConditionRuleProvidersHeartbeat), string(client.MaintenanceWindowProviderConditionRuleProvidersEmail), string(client.MaintenanceWindowProviderConditionRuleProvidersSentry), string(client.MaintenanceWindowProviderConditionRuleProvidersEmbraceio),
+							string(client.MaintenanceWindowProviderConditionRuleProvidersHttp), string(client.MaintenanceWindowProviderConditionRuleProvidersAzuremonitor), string(client.MaintenanceWindowProviderConditionRuleProvidersCloudamqp),
 						)),
 					},
 				},
@@ -175,12 +175,12 @@ func (r *MaintenanceWindowResource) Schema(ctx context.Context, req resource.Sch
 			"name": schema.StringAttribute{
 				MarkdownDescription: "Window name.",
 				Required:            true,
-				Validators:          []validator.String{stringvalidator.LengthAtMost(64), noSurroundingWhitespace},
+				Validators:          []validator.String{utf16LengthAtMost(64), noSurroundingWhitespace},
 			},
 			"description": schema.StringAttribute{
 				MarkdownDescription: "Window description. Remove the argument to clear it.",
 				Optional:            true,
-				Validators:          []validator.String{stringvalidator.LengthAtMost(512), noSurroundingWhitespace},
+				Validators:          []validator.String{utf16LengthAtMost(512), noSurroundingWhitespace},
 			},
 			"team_id": schema.StringAttribute{
 				MarkdownDescription: "Numeric ID of the team whose alerts the window covers. Omit for a global window that covers every team. Changing it replaces the window, which fails once `start_at` has passed.",
@@ -489,10 +489,7 @@ func setMaintenanceWindowState(m *MaintenanceWindowResourceModel, w *client.Main
 	if m.Description.ValueString() == "" {
 		m.Description = types.StringNull()
 	}
-	m.TeamID = types.StringNull()
-	if teamID, err := w.TeamId.Get(); err == nil {
-		m.TeamID = itoa(int(teamID))
-	}
+	m.TeamID = idFromNullable(w.TeamId)
 	m.StartAt = keepIfSameInstant(m.StartAt, w.StartAt)
 	m.EndAt = keepIfSameInstant(m.EndAt, w.EndAt)
 
