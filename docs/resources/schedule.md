@@ -16,6 +16,32 @@ An on-call schedule and its rotations.
 ## Example Usage
 
 ```terraform
+data "vibeoncall_member" "ada" {
+  email = "ada@example.com"
+}
+
+resource "vibeoncall_team_membership" "ada" {
+  team_id = vibeoncall_team.sre.id
+  user_id = data.vibeoncall_member.ada.id
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+data "vibeoncall_member" "alan" {
+  email = "alan@example.com"
+}
+
+resource "vibeoncall_team_membership" "alan" {
+  team_id = vibeoncall_team.sre.id
+  user_id = data.vibeoncall_member.alan.id
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
 resource "vibeoncall_schedule" "sre" {
   name      = "SRE primary"
   time_zone = "America/New_York"
@@ -71,7 +97,7 @@ resource "vibeoncall_schedule" "sre" {
 Required:
 
 - `name` (String) Rotation name.
-- `participant_ids` (List of String) Numeric user IDs in the order they take turns. Removing someone can change who is on call now.
+- `participant_ids` (List of String) Numeric user IDs in the order they take turns. Removing someone can change who is on call now. For a member of the schedule's team, use `vibeoncall_team_membership.<name>.user_id` and set `create_before_destroy` on that membership, so Terraform removes the user from this rotation before it removes them from the team.
 - `start_date` (String) First date the rotation takes effect, in `YYYY-MM-DD` format. The first participant is on call from this date, so it and the participant order together decide who is on call now.
 
 Optional:

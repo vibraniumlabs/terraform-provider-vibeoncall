@@ -1,6 +1,9 @@
 # Terraform Provider for Vibe OnCall
 
-Manage Vibe OnCall configuration as code with Terraform.
+Manage Vibe OnCall configuration as code with Terraform or OpenTofu: teams and their members, schedules, escalation policies, services, maintenance windows, alert sources and alert routes.
+
+- Documentation: [Terraform Registry](https://registry.terraform.io/providers/vibraniumlabs/vibeoncall/latest/docs)
+- Complete example: [`examples/complete`](examples/complete), a team with a weekly rotation, a two-tier escalation policy, a service, and an alert source feeding an alert route
 
 ## Usage
 
@@ -8,7 +11,8 @@ Manage Vibe OnCall configuration as code with Terraform.
 terraform {
   required_providers {
     vibeoncall = {
-      source = "vibraniumlabs/vibeoncall"
+      source  = "vibraniumlabs/vibeoncall"
+      version = "~> 0.1.0"
     }
   }
 }
@@ -20,7 +24,7 @@ resource "vibeoncall_team" "sre" {
 }
 ```
 
-Set the API key with the `VIBEONCALL_API_KEY` environment variable, or with `api_key` in the provider block. See [`docs/`](docs/) for every resource and attribute.
+Set the API key with the `VIBEONCALL_API_KEY` environment variable, or with `api_key` in the provider block.
 
 ## Development
 
@@ -51,3 +55,7 @@ terraform plan
 
 - API client: `go generate ./internal/client` regenerates `internal/client/client.gen.go` from `internal/client/openapi.yaml`.
 - Docs: `make generate` regenerates `docs/` from the provider schema and `examples/`.
+
+## Releasing
+
+See [RELEASE.md](RELEASE.md).

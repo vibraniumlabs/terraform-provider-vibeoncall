@@ -186,7 +186,7 @@ func (r *ScheduleResource) Schema(ctx context.Context, req resource.SchemaReques
 							Validators:          []validator.String{calendarDate{}},
 						},
 						"participant_ids": schema.ListAttribute{
-							MarkdownDescription: "Numeric user IDs in the order they take turns. Removing someone can change who is on call now.",
+							MarkdownDescription: "Numeric user IDs in the order they take turns. Removing someone can change who is on call now. For a member of the schedule's team, use `vibeoncall_team_membership.<name>.user_id` and set `create_before_destroy` on that membership, so Terraform removes the user from this rotation before it removes them from the team.",
 							ElementType:         types.StringType,
 							Required:            true,
 							Validators: []validator.List{

@@ -202,7 +202,7 @@ func (r *AlertRouteResource) Schema(ctx context.Context, req resource.SchemaRequ
 							Attributes: map[string]schema.Attribute{
 								"escalation_policy_ids": targetIDsAttribute("Numeric IDs of escalation policies to page."),
 								"schedule_ids":          targetIDsAttribute("Numeric IDs of schedules whose on-call members to page."),
-								"user_ids":              targetIDsAttribute("Numeric IDs of members to page."),
+								"user_ids":              targetIDsAttribute("Numeric IDs of members to page. For a member of the routing's team, use `vibeoncall_team_membership.<name>.user_id` and set `create_before_destroy` on that membership, so Terraform removes the user from this rule before it removes them from the team."),
 								"urgency": schema.StringAttribute{
 									MarkdownDescription: "`HIGH`, `MEDIUM` or `LOW`. Overrides the urgency the targets are paged with.",
 									Optional:            true,
