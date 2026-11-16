@@ -49,7 +49,7 @@ func (d *ChatChannelDataSource) Schema(ctx context.Context, req datasource.Schem
 				Validators:          []validator.String{stringvalidator.LengthAtLeast(1)},
 			},
 			"id": schema.StringAttribute{
-				MarkdownDescription: "Platform channel ID, referenced by maintenance window announcement channels.",
+				MarkdownDescription: "Platform channel ID, referenced by maintenance window announcement channels and escalation policy channel targets.",
 				Computed:            true,
 			},
 		},

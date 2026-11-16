@@ -46,6 +46,7 @@ type escalationTierModel struct {
 	AcknowledgementTimeoutSeconds types.Int64           `tfsdk:"acknowledgement_timeout_seconds"`
 	ScheduleTargets               []scheduleTargetModel `tfsdk:"schedule_targets"`
 	RotationTargets               []rotationTargetModel `tfsdk:"rotation_targets"`
+	ChannelTargets                []channelTargetModel  `tfsdk:"channel_targets"`
 	UserIDs                       []types.String        `tfsdk:"user_ids"`
 }
 
@@ -58,6 +59,11 @@ type rotationTargetModel struct {
 	ScheduleID types.String `tfsdk:"schedule_id"`
 	RotationID types.String `tfsdk:"rotation_id"`
 	Mode       types.String `tfsdk:"mode"`
+}
+
+type channelTargetModel struct {
+	ChannelID types.String `tfsdk:"channel_id"`
+	Name      types.String `tfsdk:"name"`
 }
 
 func targetModeAttribute() schema.StringAttribute {
@@ -80,7 +86,7 @@ func (r *EscalationPolicyResource) Metadata(ctx context.Context, req resource.Me
 
 func (r *EscalationPolicyResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "An escalation policy: who is paged, in what order, and how long each tier waits for an acknowledgement. Set a team's default policy with `vibeoncall_team_default_escalation_policy`.",
+		MarkdownDescription: "An escalation policy: who is paged or which channels are posted to, in what order, and how long each tier waits for an acknowledgement. Set a team's default policy with `vibeoncall_team_default_escalation_policy`.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				MarkdownDescription: "Numeric escalation policy ID.",
@@ -149,6 +155,25 @@ func (r *EscalationPolicyResource) Schema(ctx context.Context, req resource.Sche
 								},
 							},
 						},
+						"channel_targets": schema.ListNestedAttribute{
+							MarkdownDescription: "Slack or Microsoft Teams channels the tier posts the alert or incident card to, alone or alongside the people it pages. Acknowledging the alert from the card stops the escalation.",
+							Optional:            true,
+							Validators:          []validator.List{listvalidator.SizeAtLeast(1)},
+							NestedObject: schema.NestedAttributeObject{
+								Attributes: map[string]schema.Attribute{
+									"channel_id": schema.StringAttribute{
+										MarkdownDescription: "Platform channel ID, from `data.vibeoncall_chat_channel.<name>.id`. A channel may appear only once in a tier.",
+										Required:            true,
+										Validators:          []validator.String{stringvalidator.LengthAtLeast(1), noSurroundingWhitespace},
+									},
+									"name": schema.StringAttribute{
+										MarkdownDescription: "Channel name shown on the policy and in the page log, from `data.vibeoncall_chat_channel.<name>.name`.",
+										Required:            true,
+										Validators:          []validator.String{stringvalidator.LengthAtLeast(1), noSurroundingWhitespace},
+									},
+								},
+							},
+						},
 						"user_ids": schema.ListAttribute{
 							MarkdownDescription: "Numeric IDs of users to page. For a member of the policy's team, use `vibeoncall_team_membership.<name>.user_id`, so Terraform removes the user from this policy before it removes them from the team. For anyone else, use `data.vibeoncall_member.<name>.id`.",
 							ElementType:         types.StringType,
@@ -159,6 +184,7 @@ func (r *EscalationPolicyResource) Schema(ctx context.Context, req resource.Sche
 								listvalidator.AtLeastOneOf(
 									path.MatchRelative().AtParent().AtName("schedule_targets"),
 									path.MatchRelative().AtParent().AtName("rotation_targets"),
+									path.MatchRelative().AtParent().AtName("channel_targets"),
 								),
 							},
 						},
@@ -323,6 +349,16 @@ func tiersToAPI(tiers []escalationTierModel) []client.PublicEscalationPolicyTier
 			}
 			in.RotationTargets = &targets
 		}
+		if t.ChannelTargets != nil {
+			targets := make([]client.PublicEscalationPolicyChannelTarget, 0, len(t.ChannelTargets))
+			for _, ct := range t.ChannelTargets {
+				targets = append(targets, client.PublicEscalationPolicyChannelTarget{
+					Id:    ct.ChannelID.ValueString(),
+					Label: ct.Name.ValueString(),
+				})
+			}
+			in.ChannelTargets = &targets
+		}
 		if t.UserIDs != nil {
 			ids := make([]int, 0, len(t.UserIDs))
 			for _, id := range t.UserIDs {
@@ -360,6 +396,12 @@ func setEscalationPolicyState(m *EscalationPolicyResourceModel, p *client.Public
 				ScheduleID: itoa(rt.ScheduleId),
 				RotationID: itoa(rt.RotationId),
 				Mode:       types.StringValue(string(rt.Mode)),
+			})
+		}
+		for _, ct := range t.ChannelTargets {
+			tier.ChannelTargets = append(tier.ChannelTargets, channelTargetModel{
+				ChannelID: types.StringValue(ct.Id),
+				Name:      types.StringValue(ct.Label),
 			})
 		}
 		for _, id := range t.UserIds {

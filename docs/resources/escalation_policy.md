@@ -2,12 +2,12 @@
 page_title: "vibeoncall_escalation_policy Resource - vibeoncall"
 subcategory: ""
 description: |-
-  An escalation policy: who is paged, in what order, and how long each tier waits for an acknowledgement. Set a team's default policy with vibeoncall_team_default_escalation_policy.
+  An escalation policy: who is paged or which channels are posted to, in what order, and how long each tier waits for an acknowledgement. Set a team's default policy with vibeoncall_team_default_escalation_policy.
 ---
 
 # vibeoncall_escalation_policy (Resource)
 
-An escalation policy: who is paged, in what order, and how long each tier waits for an acknowledgement. Set a team's default policy with `vibeoncall_team_default_escalation_policy`.
+An escalation policy: who is paged or which channels are posted to, in what order, and how long each tier waits for an acknowledgement. Set a team's default policy with `vibeoncall_team_default_escalation_policy`.
 
 ~> **Note** Destroying a policy that is its team's default, including replacing it by changing `team_id`, leaves the team with no default, and the plan does not show it.
 
@@ -27,12 +27,24 @@ data "vibeoncall_member" "grace" {
   email = "grace@example.com"
 }
 
+data "vibeoncall_chat_channel" "sre_alerts" {
+  name = "sre-alerts"
+}
+
 resource "vibeoncall_escalation_policy" "sre" {
   name        = "SRE primary"
-  description = "Page the primary on-call, then Ada, then the platform lead."
+  description = "Post to the SRE channel, then page the primary on-call, then Ada, then the platform lead."
   team_id     = vibeoncall_team.sre.id
 
   tiers = [
+    {
+      # Anyone in the channel can acknowledge from the card before the on-call is paged.
+      acknowledgement_timeout_seconds = 120
+      channel_targets = [{
+        channel_id = data.vibeoncall_chat_channel.sre_alerts.id
+        name       = data.vibeoncall_chat_channel.sre_alerts.name
+      }]
+    },
     {
       acknowledgement_timeout_seconds = 300
       schedule_targets                = [{ schedule_id = "12" }]
@@ -77,9 +89,19 @@ Required:
 
 Optional:
 
+- `channel_targets` (Attributes List) Slack or Microsoft Teams channels the tier posts the alert or incident card to, alone or alongside the people it pages. Acknowledging the alert from the card stops the escalation. (see [below for nested schema](#nestedatt--tiers--channel_targets))
 - `rotation_targets` (Attributes List) Schedule rotations whose on-call is paged. (see [below for nested schema](#nestedatt--tiers--rotation_targets))
 - `schedule_targets` (Attributes List) Schedules whose on-call is paged. (see [below for nested schema](#nestedatt--tiers--schedule_targets))
 - `user_ids` (List of String) Numeric IDs of users to page. For a member of the policy's team, use `vibeoncall_team_membership.<name>.user_id`, so Terraform removes the user from this policy before it removes them from the team. For anyone else, use `data.vibeoncall_member.<name>.id`.
+
+<a id="nestedatt--tiers--channel_targets"></a>
+### Nested Schema for `tiers.channel_targets`
+
+Required:
+
+- `channel_id` (String) Platform channel ID, from `data.vibeoncall_chat_channel.<name>.id`. A channel may appear only once in a tier.
+- `name` (String) Channel name shown on the policy and in the page log, from `data.vibeoncall_chat_channel.<name>.name`.
+
 
 <a id="nestedatt--tiers--rotation_targets"></a>
 ### Nested Schema for `tiers.rotation_targets`

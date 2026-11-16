@@ -11,12 +11,24 @@ data "vibeoncall_member" "grace" {
   email = "grace@example.com"
 }
 
+data "vibeoncall_chat_channel" "sre_alerts" {
+  name = "sre-alerts"
+}
+
 resource "vibeoncall_escalation_policy" "sre" {
   name        = "SRE primary"
-  description = "Page the primary on-call, then Ada, then the platform lead."
+  description = "Post to the SRE channel, then page the primary on-call, then Ada, then the platform lead."
   team_id     = vibeoncall_team.sre.id
 
   tiers = [
+    {
+      # Anyone in the channel can acknowledge from the card before the on-call is paged.
+      acknowledgement_timeout_seconds = 120
+      channel_targets = [{
+        channel_id = data.vibeoncall_chat_channel.sre_alerts.id
+        name       = data.vibeoncall_chat_channel.sre_alerts.name
+      }]
+    },
     {
       acknowledgement_timeout_seconds = 300
       schedule_targets                = [{ schedule_id = "12" }]

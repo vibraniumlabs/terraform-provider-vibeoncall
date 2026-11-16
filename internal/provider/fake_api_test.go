@@ -55,11 +55,17 @@ type fakeRotationTarget struct {
 	Mode       string `json:"mode"`
 }
 
+type fakeChannelTarget struct {
+	ID    string `json:"id"`
+	Label string `json:"label"`
+}
+
 type fakeTier struct {
 	ID                           int                  `json:"id"`
 	AcknowledgementTimeThreshold int                  `json:"acknowledgementTimeThreshold"`
 	ScheduleTargets              []fakeScheduleTarget `json:"scheduleTargets"`
 	RotationTargets              []fakeRotationTarget `json:"rotationTargets"`
+	ChannelTargets               []fakeChannelTarget  `json:"channelTargets"`
 	UserIDs                      []int                `json:"userIds"`
 }
 
@@ -521,6 +527,7 @@ func (a *fakeAPI) applyPolicyBody(p *fakePolicy, body map[string]json.RawMessage
 			a.nextTierID++
 			tiers[i].ScheduleTargets = append([]fakeScheduleTarget{}, tiers[i].ScheduleTargets...)
 			tiers[i].RotationTargets = append([]fakeRotationTarget{}, tiers[i].RotationTargets...)
+			tiers[i].ChannelTargets = append([]fakeChannelTarget{}, tiers[i].ChannelTargets...)
 			tiers[i].UserIDs = append([]int{}, tiers[i].UserIDs...)
 		}
 		p.Tiers = tiers

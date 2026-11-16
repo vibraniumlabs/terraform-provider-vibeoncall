@@ -31,4 +31,4 @@ data "vibeoncall_chat_channel" "incidents" {
 
 ### Read-Only
 
-- `id` (String) Platform channel ID, referenced by maintenance window announcement channels.
+- `id` (String) Platform channel ID, referenced by maintenance window announcement channels and escalation policy channel targets.
