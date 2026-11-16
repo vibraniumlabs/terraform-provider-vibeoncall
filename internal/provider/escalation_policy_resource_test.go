@@ -64,11 +64,11 @@ resource "vibeoncall_escalation_policy" "primary" {
 const scheduleThenUser = `
   tiers = [
     {
-      acknowledgement_timeout_minutes = 5
+      acknowledgement_timeout_seconds = 300
       schedule_targets                = [{ schedule_id = "11" }]
     },
     {
-      acknowledgement_timeout_minutes = 10
+      acknowledgement_timeout_seconds = 600
       user_ids                        = ["7"]
     },
   ]
@@ -78,11 +78,11 @@ const userThenRotationAndSchedule = `
   description = "Payments on-call"
   tiers = [
     {
-      acknowledgement_timeout_minutes = 15
+      acknowledgement_timeout_seconds = 90
       user_ids                        = ["8", "7"]
     },
     {
-      acknowledgement_timeout_minutes = 5
+      acknowledgement_timeout_seconds = 300
       rotation_targets                = [{ schedule_id = "11", rotation_id = "21", mode = "next" }]
       schedule_targets                = [{ schedule_id = "12", mode = "previous" }, { schedule_id = "11" }]
     },
@@ -119,7 +119,7 @@ func TestEscalationPolicyResourceLifecycle(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("vibeoncall_escalation_policy.primary", "description", "Payments on-call"),
 					api.checkPolicyTiers(1, []fakeTier{
-						{AcknowledgementTimeThreshold: 900_000, ScheduleTargets: []fakeScheduleTarget{}, RotationTargets: []fakeRotationTarget{}, UserIDs: []int{8, 7}},
+						{AcknowledgementTimeThreshold: 90_000, ScheduleTargets: []fakeScheduleTarget{}, RotationTargets: []fakeRotationTarget{}, UserIDs: []int{8, 7}},
 						{
 							AcknowledgementTimeThreshold: 300_000,
 							ScheduleTargets:              []fakeScheduleTarget{{ScheduleID: 12, Mode: "previous"}, {ScheduleID: 11, Mode: "current"}},
@@ -171,7 +171,7 @@ func TestEscalationPolicyResourceGlobalPolicy(t *testing.T) {
 				Config: providerConfig(srv.URL) + `
 resource "vibeoncall_escalation_policy" "global" {
   name  = "Global"
-  tiers = [{ acknowledgement_timeout_minutes = 5, user_ids = ["7"] }]
+  tiers = [{ acknowledgement_timeout_seconds = 300, user_ids = ["7"] }]
 }
 `,
 				Check: resource.TestCheckNoResourceAttr("vibeoncall_escalation_policy.global", "team_id"),
@@ -215,7 +215,7 @@ func TestEscalationPolicyResourceRenameKeepsTiers(t *testing.T) {
 		return providerConfig(srv.URL) + fmt.Sprintf(`
 resource "vibeoncall_escalation_policy" "p" {
   name  = %q
-  tiers = [{ acknowledgement_timeout_minutes = 5, user_ids = ["7"] }]
+  tiers = [{ acknowledgement_timeout_seconds = 300, user_ids = ["7"] }]
 }
 `, name)
 	}
@@ -243,8 +243,8 @@ func TestEscalationPolicyResourceRejectsTierWithoutTargets(t *testing.T) {
 		tier string
 		want string
 	}{
-		"no target attributes": {`{ acknowledgement_timeout_minutes = 5 }`, `At least one attribute out of`},
-		"empty target list":    {`{ acknowledgement_timeout_minutes = 5, user_ids = [] }`, `at least 1`},
+		"no target attributes": {`{ acknowledgement_timeout_seconds = 300 }`, `At least one attribute out of`},
+		"empty target list":    {`{ acknowledgement_timeout_seconds = 300, user_ids = [] }`, `at least 1`},
 	} {
 		t.Run(name, func(t *testing.T) {
 			resource.UnitTest(t, resource.TestCase{
@@ -265,7 +265,7 @@ func TestEscalationPolicyResourceRejectsMalformedImportID(t *testing.T) {
 	resource.UnitTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: protoV6ProviderFactories(),
 		Steps: []resource.TestStep{{
-			Config:        providerConfig(srv.URL) + `resource "vibeoncall_escalation_policy" "x" {` + "\n" + `name = "X"` + "\n" + `tiers = [{ acknowledgement_timeout_minutes = 5, user_ids = ["7"] }]` + "\n}",
+			Config:        providerConfig(srv.URL) + `resource "vibeoncall_escalation_policy" "x" {` + "\n" + `name = "X"` + "\n" + `tiers = [{ acknowledgement_timeout_seconds = 300, user_ids = ["7"] }]` + "\n}",
 			ResourceName:  "vibeoncall_escalation_policy.x",
 			ImportState:   true,
 			ImportStateId: "Primary",

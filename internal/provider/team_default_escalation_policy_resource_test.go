@@ -30,13 +30,13 @@ resource "vibeoncall_team" "payments" {
 resource "vibeoncall_escalation_policy" "primary" {
   name    = "Primary"
   team_id = vibeoncall_team.payments.id
-  tiers   = [{ acknowledgement_timeout_minutes = 5, user_ids = ["7"] }]
+  tiers   = [{ acknowledgement_timeout_seconds = 300, user_ids = ["7"] }]
 }
 
 resource "vibeoncall_escalation_policy" "secondary" {
   name       = "Secondary"
   team_id    = vibeoncall_team.payments.id
-  tiers      = [{ acknowledgement_timeout_minutes = 5, user_ids = ["7"] }]
+  tiers      = [{ acknowledgement_timeout_seconds = 300, user_ids = ["7"] }]
   depends_on = [vibeoncall_escalation_policy.primary]
 }
 ` + defaultBlock
@@ -141,7 +141,7 @@ resource "vibeoncall_team" "platform" {
 
 resource "vibeoncall_escalation_policy" "p" {
   name  = "P"
-  tiers = [{ acknowledgement_timeout_minutes = 5, user_ids = ["7"] }]
+  tiers = [{ acknowledgement_timeout_seconds = 300, user_ids = ["7"] }]
   %s
 }
 

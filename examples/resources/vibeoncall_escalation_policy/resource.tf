@@ -18,17 +18,17 @@ resource "vibeoncall_escalation_policy" "sre" {
 
   tiers = [
     {
-      acknowledgement_timeout_minutes = 5
+      acknowledgement_timeout_seconds = 300
       schedule_targets                = [{ schedule_id = "12" }]
     },
     {
       # Ada is on the SRE team, so reference her membership.
-      acknowledgement_timeout_minutes = 10
+      acknowledgement_timeout_seconds = 600
       user_ids                        = [vibeoncall_team_membership.ada.user_id]
     },
     {
       # Grace is not on the SRE team, so reference the data source.
-      acknowledgement_timeout_minutes = 15
+      acknowledgement_timeout_seconds = 900
       user_ids                        = [data.vibeoncall_member.grace.id]
     },
   ]
