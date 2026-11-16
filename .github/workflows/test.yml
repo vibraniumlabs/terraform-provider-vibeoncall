@@ -36,6 +36,7 @@ jobs:
 
   generate:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
@@ -51,6 +52,21 @@ jobs:
         run: |
           git diff --compact-summary --exit-code || \
             (echo; echo "Unexpected difference in directories after code generation. Run 'make generate' command and commit."; exit 1)
+      - name: Validate docs
+        working-directory: tools
+        run: go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs validate --provider-dir .. --provider-name vibeoncall
+      - name: Validate the complete example
+        run: |
+          go build -o "$RUNNER_TEMP/bin/terraform-provider-vibeoncall" .
+          cat > "$RUNNER_TEMP/dev.tfrc" <<EOF
+          provider_installation {
+            dev_overrides {
+              "vibraniumlabs/vibeoncall" = "$RUNNER_TEMP/bin"
+            }
+            direct {}
+          }
+          EOF
+          TF_CLI_CONFIG_FILE="$RUNNER_TEMP/dev.tfrc" terraform -chdir=examples/complete validate
 
   # Run acceptance tests in a matrix with Terraform CLI versions
   test:
