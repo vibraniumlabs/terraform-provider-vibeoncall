@@ -20,6 +20,462 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
+// Defines values for AlertRoutingCondition5Conditions5Conditions5Conditions5Operator.
+const (
+	AlertRoutingCondition5Conditions5Conditions5Conditions5OperatorAND AlertRoutingCondition5Conditions5Conditions5Conditions5Operator = "AND"
+	AlertRoutingCondition5Conditions5Conditions5Conditions5OperatorOR  AlertRoutingCondition5Conditions5Conditions5Conditions5Operator = "OR"
+)
+
+// Valid indicates whether the value is a known member of the AlertRoutingCondition5Conditions5Conditions5Conditions5Operator enum.
+func (e AlertRoutingCondition5Conditions5Conditions5Conditions5Operator) Valid() bool {
+	switch e {
+	case AlertRoutingCondition5Conditions5Conditions5Conditions5OperatorAND:
+		return true
+	case AlertRoutingCondition5Conditions5Conditions5Conditions5OperatorOR:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AlertRoutingCondition5Conditions5Conditions5Conditions5Type.
+const (
+	AlertRoutingCondition5Conditions5Conditions5Conditions5TypeGroup AlertRoutingCondition5Conditions5Conditions5Conditions5Type = "group"
+)
+
+// Valid indicates whether the value is a known member of the AlertRoutingCondition5Conditions5Conditions5Conditions5Type enum.
+func (e AlertRoutingCondition5Conditions5Conditions5Conditions5Type) Valid() bool {
+	switch e {
+	case AlertRoutingCondition5Conditions5Conditions5Conditions5TypeGroup:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AlertRoutingCondition5Conditions5Conditions5Operator.
+const (
+	AlertRoutingCondition5Conditions5Conditions5OperatorAND AlertRoutingCondition5Conditions5Conditions5Operator = "AND"
+	AlertRoutingCondition5Conditions5Conditions5OperatorOR  AlertRoutingCondition5Conditions5Conditions5Operator = "OR"
+)
+
+// Valid indicates whether the value is a known member of the AlertRoutingCondition5Conditions5Conditions5Operator enum.
+func (e AlertRoutingCondition5Conditions5Conditions5Operator) Valid() bool {
+	switch e {
+	case AlertRoutingCondition5Conditions5Conditions5OperatorAND:
+		return true
+	case AlertRoutingCondition5Conditions5Conditions5OperatorOR:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AlertRoutingCondition5Conditions5Conditions5Type.
+const (
+	AlertRoutingCondition5Conditions5Conditions5TypeGroup AlertRoutingCondition5Conditions5Conditions5Type = "group"
+)
+
+// Valid indicates whether the value is a known member of the AlertRoutingCondition5Conditions5Conditions5Type enum.
+func (e AlertRoutingCondition5Conditions5Conditions5Type) Valid() bool {
+	switch e {
+	case AlertRoutingCondition5Conditions5Conditions5TypeGroup:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AlertRoutingCondition5Conditions5Operator.
+const (
+	AlertRoutingCondition5Conditions5OperatorAND AlertRoutingCondition5Conditions5Operator = "AND"
+	AlertRoutingCondition5Conditions5OperatorOR  AlertRoutingCondition5Conditions5Operator = "OR"
+)
+
+// Valid indicates whether the value is a known member of the AlertRoutingCondition5Conditions5Operator enum.
+func (e AlertRoutingCondition5Conditions5Operator) Valid() bool {
+	switch e {
+	case AlertRoutingCondition5Conditions5OperatorAND:
+		return true
+	case AlertRoutingCondition5Conditions5OperatorOR:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AlertRoutingCondition5Conditions5Type.
+const (
+	AlertRoutingCondition5Conditions5TypeGroup AlertRoutingCondition5Conditions5Type = "group"
+)
+
+// Valid indicates whether the value is a known member of the AlertRoutingCondition5Conditions5Type enum.
+func (e AlertRoutingCondition5Conditions5Type) Valid() bool {
+	switch e {
+	case AlertRoutingCondition5Conditions5TypeGroup:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AlertRoutingCondition5Operator.
+const (
+	AlertRoutingCondition5OperatorAND AlertRoutingCondition5Operator = "AND"
+	AlertRoutingCondition5OperatorOR  AlertRoutingCondition5Operator = "OR"
+)
+
+// Valid indicates whether the value is a known member of the AlertRoutingCondition5Operator enum.
+func (e AlertRoutingCondition5Operator) Valid() bool {
+	switch e {
+	case AlertRoutingCondition5OperatorAND:
+		return true
+	case AlertRoutingCondition5OperatorOR:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AlertRoutingCondition5Type.
+const (
+	AlertRoutingCondition5TypeGroup AlertRoutingCondition5Type = "group"
+)
+
+// Valid indicates whether the value is a known member of the AlertRoutingCondition5Type enum.
+func (e AlertRoutingCondition5Type) Valid() bool {
+	switch e {
+	case AlertRoutingCondition5TypeGroup:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AlertRoutingCountConditionType.
+const (
+	Count AlertRoutingCountConditionType = "count"
+)
+
+// Valid indicates whether the value is a known member of the AlertRoutingCountConditionType enum.
+func (e AlertRoutingCountConditionType) Valid() bool {
+	switch e {
+	case Count:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AlertRoutingDoNothingActionType.
+const (
+	DONOTHING AlertRoutingDoNothingActionType = "DO_NOTHING"
+)
+
+// Valid indicates whether the value is a known member of the AlertRoutingDoNothingActionType enum.
+func (e AlertRoutingDoNothingActionType) Valid() bool {
+	switch e {
+	case DONOTHING:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AlertRoutingEscalateActionType.
+const (
+	ESCALATE AlertRoutingEscalateActionType = "ESCALATE"
+)
+
+// Valid indicates whether the value is a known member of the AlertRoutingEscalateActionType enum.
+func (e AlertRoutingEscalateActionType) Valid() bool {
+	switch e {
+	case ESCALATE:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AlertRoutingEscalateActionValueEscalationType.
+const (
+	AlertRoutingEscalateActionValueEscalationTypeEscalationPolicy AlertRoutingEscalateActionValueEscalationType = "escalationPolicy"
+	AlertRoutingEscalateActionValueEscalationTypeSchedule         AlertRoutingEscalateActionValueEscalationType = "schedule"
+	AlertRoutingEscalateActionValueEscalationTypeUser             AlertRoutingEscalateActionValueEscalationType = "user"
+)
+
+// Valid indicates whether the value is a known member of the AlertRoutingEscalateActionValueEscalationType enum.
+func (e AlertRoutingEscalateActionValueEscalationType) Valid() bool {
+	switch e {
+	case AlertRoutingEscalateActionValueEscalationTypeEscalationPolicy:
+		return true
+	case AlertRoutingEscalateActionValueEscalationTypeSchedule:
+		return true
+	case AlertRoutingEscalateActionValueEscalationTypeUser:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AlertRoutingEscalateActionValueNotificationUrgency.
+const (
+	HIGH   AlertRoutingEscalateActionValueNotificationUrgency = "HIGH"
+	LOW    AlertRoutingEscalateActionValueNotificationUrgency = "LOW"
+	MEDIUM AlertRoutingEscalateActionValueNotificationUrgency = "MEDIUM"
+)
+
+// Valid indicates whether the value is a known member of the AlertRoutingEscalateActionValueNotificationUrgency enum.
+func (e AlertRoutingEscalateActionValueNotificationUrgency) Valid() bool {
+	switch e {
+	case HIGH:
+		return true
+	case LOW:
+		return true
+	case MEDIUM:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AlertRoutingFieldConditionRuleOperator.
+const (
+	AlertRoutingFieldConditionRuleOperatorContains     AlertRoutingFieldConditionRuleOperator = "contains"
+	AlertRoutingFieldConditionRuleOperatorExactMatch   AlertRoutingFieldConditionRuleOperator = "exact_match"
+	AlertRoutingFieldConditionRuleOperatorMatchesRegex AlertRoutingFieldConditionRuleOperator = "matches_regex"
+	AlertRoutingFieldConditionRuleOperatorNotContains  AlertRoutingFieldConditionRuleOperator = "not_contains"
+)
+
+// Valid indicates whether the value is a known member of the AlertRoutingFieldConditionRuleOperator enum.
+func (e AlertRoutingFieldConditionRuleOperator) Valid() bool {
+	switch e {
+	case AlertRoutingFieldConditionRuleOperatorContains:
+		return true
+	case AlertRoutingFieldConditionRuleOperatorExactMatch:
+		return true
+	case AlertRoutingFieldConditionRuleOperatorMatchesRegex:
+		return true
+	case AlertRoutingFieldConditionRuleOperatorNotContains:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AlertRoutingFieldConditionType.
+const (
+	AlertRoutingFieldConditionTypeField AlertRoutingFieldConditionType = "field"
+)
+
+// Valid indicates whether the value is a known member of the AlertRoutingFieldConditionType enum.
+func (e AlertRoutingFieldConditionType) Valid() bool {
+	switch e {
+	case AlertRoutingFieldConditionTypeField:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AlertRoutingProviderConditionRuleOperator.
+const (
+	AlertRoutingProviderConditionRuleOperatorOneOf AlertRoutingProviderConditionRuleOperator = "one_of"
+)
+
+// Valid indicates whether the value is a known member of the AlertRoutingProviderConditionRuleOperator enum.
+func (e AlertRoutingProviderConditionRuleOperator) Valid() bool {
+	switch e {
+	case AlertRoutingProviderConditionRuleOperatorOneOf:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AlertRoutingProviderConditionRuleProviders.
+const (
+	AlertRoutingProviderConditionRuleProvidersAzuremonitor AlertRoutingProviderConditionRuleProviders = "azuremonitor"
+	AlertRoutingProviderConditionRuleProvidersCloudamqp    AlertRoutingProviderConditionRuleProviders = "cloudamqp"
+	AlertRoutingProviderConditionRuleProvidersCloudwatch   AlertRoutingProviderConditionRuleProviders = "cloudwatch"
+	AlertRoutingProviderConditionRuleProvidersCoralogix    AlertRoutingProviderConditionRuleProviders = "coralogix"
+	AlertRoutingProviderConditionRuleProvidersDatadog      AlertRoutingProviderConditionRuleProviders = "datadog"
+	AlertRoutingProviderConditionRuleProvidersEmail        AlertRoutingProviderConditionRuleProviders = "email"
+	AlertRoutingProviderConditionRuleProvidersEmbraceio    AlertRoutingProviderConditionRuleProviders = "embraceio"
+	AlertRoutingProviderConditionRuleProvidersGrafana      AlertRoutingProviderConditionRuleProviders = "grafana"
+	AlertRoutingProviderConditionRuleProvidersHeartbeat    AlertRoutingProviderConditionRuleProviders = "heartbeat"
+	AlertRoutingProviderConditionRuleProvidersHttp         AlertRoutingProviderConditionRuleProviders = "http"
+	AlertRoutingProviderConditionRuleProvidersNewrelic     AlertRoutingProviderConditionRuleProviders = "newrelic"
+	AlertRoutingProviderConditionRuleProvidersOpsgenie     AlertRoutingProviderConditionRuleProviders = "opsgenie"
+	AlertRoutingProviderConditionRuleProvidersPrometheus   AlertRoutingProviderConditionRuleProviders = "prometheus"
+	AlertRoutingProviderConditionRuleProvidersSentry       AlertRoutingProviderConditionRuleProviders = "sentry"
+	AlertRoutingProviderConditionRuleProvidersSns          AlertRoutingProviderConditionRuleProviders = "sns"
+)
+
+// Valid indicates whether the value is a known member of the AlertRoutingProviderConditionRuleProviders enum.
+func (e AlertRoutingProviderConditionRuleProviders) Valid() bool {
+	switch e {
+	case AlertRoutingProviderConditionRuleProvidersAzuremonitor:
+		return true
+	case AlertRoutingProviderConditionRuleProvidersCloudamqp:
+		return true
+	case AlertRoutingProviderConditionRuleProvidersCloudwatch:
+		return true
+	case AlertRoutingProviderConditionRuleProvidersCoralogix:
+		return true
+	case AlertRoutingProviderConditionRuleProvidersDatadog:
+		return true
+	case AlertRoutingProviderConditionRuleProvidersEmail:
+		return true
+	case AlertRoutingProviderConditionRuleProvidersEmbraceio:
+		return true
+	case AlertRoutingProviderConditionRuleProvidersGrafana:
+		return true
+	case AlertRoutingProviderConditionRuleProvidersHeartbeat:
+		return true
+	case AlertRoutingProviderConditionRuleProvidersHttp:
+		return true
+	case AlertRoutingProviderConditionRuleProvidersNewrelic:
+		return true
+	case AlertRoutingProviderConditionRuleProvidersOpsgenie:
+		return true
+	case AlertRoutingProviderConditionRuleProvidersPrometheus:
+		return true
+	case AlertRoutingProviderConditionRuleProvidersSentry:
+		return true
+	case AlertRoutingProviderConditionRuleProvidersSns:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AlertRoutingProviderConditionType.
+const (
+	AlertRoutingProviderConditionTypeProvider AlertRoutingProviderConditionType = "provider"
+)
+
+// Valid indicates whether the value is a known member of the AlertRoutingProviderConditionType enum.
+func (e AlertRoutingProviderConditionType) Valid() bool {
+	switch e {
+	case AlertRoutingProviderConditionTypeProvider:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AlertRoutingRuleLogicalOperator.
+const (
+	AlertRoutingRuleLogicalOperatorAND AlertRoutingRuleLogicalOperator = "AND"
+	AlertRoutingRuleLogicalOperatorOR  AlertRoutingRuleLogicalOperator = "OR"
+)
+
+// Valid indicates whether the value is a known member of the AlertRoutingRuleLogicalOperator enum.
+func (e AlertRoutingRuleLogicalOperator) Valid() bool {
+	switch e {
+	case AlertRoutingRuleLogicalOperatorAND:
+		return true
+	case AlertRoutingRuleLogicalOperatorOR:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AlertRoutingRuleInputLogicalOperator.
+const (
+	AlertRoutingRuleInputLogicalOperatorAND AlertRoutingRuleInputLogicalOperator = "AND"
+	AlertRoutingRuleInputLogicalOperatorOR  AlertRoutingRuleInputLogicalOperator = "OR"
+)
+
+// Valid indicates whether the value is a known member of the AlertRoutingRuleInputLogicalOperator enum.
+func (e AlertRoutingRuleInputLogicalOperator) Valid() bool {
+	switch e {
+	case AlertRoutingRuleInputLogicalOperatorAND:
+		return true
+	case AlertRoutingRuleInputLogicalOperatorOR:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AlertRoutingSeverityConditionRuleOperator.
+const (
+	AlertRoutingSeverityConditionRuleOperatorEqualTo            AlertRoutingSeverityConditionRuleOperator = "equal_to"
+	AlertRoutingSeverityConditionRuleOperatorGreaterThan        AlertRoutingSeverityConditionRuleOperator = "greater_than"
+	AlertRoutingSeverityConditionRuleOperatorGreaterThanOrEqual AlertRoutingSeverityConditionRuleOperator = "greater_than_or_equal"
+	AlertRoutingSeverityConditionRuleOperatorLessThan           AlertRoutingSeverityConditionRuleOperator = "less_than"
+	AlertRoutingSeverityConditionRuleOperatorLessThanOrEqual    AlertRoutingSeverityConditionRuleOperator = "less_than_or_equal"
+)
+
+// Valid indicates whether the value is a known member of the AlertRoutingSeverityConditionRuleOperator enum.
+func (e AlertRoutingSeverityConditionRuleOperator) Valid() bool {
+	switch e {
+	case AlertRoutingSeverityConditionRuleOperatorEqualTo:
+		return true
+	case AlertRoutingSeverityConditionRuleOperatorGreaterThan:
+		return true
+	case AlertRoutingSeverityConditionRuleOperatorGreaterThanOrEqual:
+		return true
+	case AlertRoutingSeverityConditionRuleOperatorLessThan:
+		return true
+	case AlertRoutingSeverityConditionRuleOperatorLessThanOrEqual:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AlertRoutingSeverityConditionType.
+const (
+	AlertRoutingSeverityConditionTypeSeverity AlertRoutingSeverityConditionType = "severity"
+)
+
+// Valid indicates whether the value is a known member of the AlertRoutingSeverityConditionType enum.
+func (e AlertRoutingSeverityConditionType) Valid() bool {
+	switch e {
+	case AlertRoutingSeverityConditionTypeSeverity:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AlertRoutingTimeConditionRuleOperator.
+const (
+	AlertRoutingTimeConditionRuleOperatorDayInBetween  AlertRoutingTimeConditionRuleOperator = "day_in_between"
+	AlertRoutingTimeConditionRuleOperatorWeekInBetween AlertRoutingTimeConditionRuleOperator = "week_in_between"
+)
+
+// Valid indicates whether the value is a known member of the AlertRoutingTimeConditionRuleOperator enum.
+func (e AlertRoutingTimeConditionRuleOperator) Valid() bool {
+	switch e {
+	case AlertRoutingTimeConditionRuleOperatorDayInBetween:
+		return true
+	case AlertRoutingTimeConditionRuleOperatorWeekInBetween:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AlertRoutingTimeConditionType.
+const (
+	AlertRoutingTimeConditionTypeTime AlertRoutingTimeConditionType = "time"
+)
+
+// Valid indicates whether the value is a known member of the AlertRoutingTimeConditionType enum.
+func (e AlertRoutingTimeConditionType) Valid() bool {
+	switch e {
+	case AlertRoutingTimeConditionTypeTime:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for AlertSourceProvider.
 const (
 	AlertSourceProviderAzuremonitor AlertSourceProvider = "azuremonitor"
@@ -427,22 +883,22 @@ func (e MaintenanceWindowCondition4Type) Valid() bool {
 
 // Defines values for MaintenanceWindowFieldConditionRuleOperator.
 const (
-	Contains     MaintenanceWindowFieldConditionRuleOperator = "contains"
-	ExactMatch   MaintenanceWindowFieldConditionRuleOperator = "exact_match"
-	MatchesRegex MaintenanceWindowFieldConditionRuleOperator = "matches_regex"
-	NotContains  MaintenanceWindowFieldConditionRuleOperator = "not_contains"
+	MaintenanceWindowFieldConditionRuleOperatorContains     MaintenanceWindowFieldConditionRuleOperator = "contains"
+	MaintenanceWindowFieldConditionRuleOperatorExactMatch   MaintenanceWindowFieldConditionRuleOperator = "exact_match"
+	MaintenanceWindowFieldConditionRuleOperatorMatchesRegex MaintenanceWindowFieldConditionRuleOperator = "matches_regex"
+	MaintenanceWindowFieldConditionRuleOperatorNotContains  MaintenanceWindowFieldConditionRuleOperator = "not_contains"
 )
 
 // Valid indicates whether the value is a known member of the MaintenanceWindowFieldConditionRuleOperator enum.
 func (e MaintenanceWindowFieldConditionRuleOperator) Valid() bool {
 	switch e {
-	case Contains:
+	case MaintenanceWindowFieldConditionRuleOperatorContains:
 		return true
-	case ExactMatch:
+	case MaintenanceWindowFieldConditionRuleOperatorExactMatch:
 		return true
-	case MatchesRegex:
+	case MaintenanceWindowFieldConditionRuleOperatorMatchesRegex:
 		return true
-	case NotContains:
+	case MaintenanceWindowFieldConditionRuleOperatorNotContains:
 		return true
 	default:
 		return false
@@ -451,13 +907,13 @@ func (e MaintenanceWindowFieldConditionRuleOperator) Valid() bool {
 
 // Defines values for MaintenanceWindowFieldConditionType.
 const (
-	Field MaintenanceWindowFieldConditionType = "field"
+	MaintenanceWindowFieldConditionTypeField MaintenanceWindowFieldConditionType = "field"
 )
 
 // Valid indicates whether the value is a known member of the MaintenanceWindowFieldConditionType enum.
 func (e MaintenanceWindowFieldConditionType) Valid() bool {
 	switch e {
-	case Field:
+	case MaintenanceWindowFieldConditionTypeField:
 		return true
 	default:
 		return false
@@ -466,13 +922,13 @@ func (e MaintenanceWindowFieldConditionType) Valid() bool {
 
 // Defines values for MaintenanceWindowProviderConditionRuleOperator.
 const (
-	OneOf MaintenanceWindowProviderConditionRuleOperator = "one_of"
+	MaintenanceWindowProviderConditionRuleOperatorOneOf MaintenanceWindowProviderConditionRuleOperator = "one_of"
 )
 
 // Valid indicates whether the value is a known member of the MaintenanceWindowProviderConditionRuleOperator enum.
 func (e MaintenanceWindowProviderConditionRuleOperator) Valid() bool {
 	switch e {
-	case OneOf:
+	case MaintenanceWindowProviderConditionRuleOperatorOneOf:
 		return true
 	default:
 		return false
@@ -538,13 +994,13 @@ func (e MaintenanceWindowProviderConditionRuleProviders) Valid() bool {
 
 // Defines values for MaintenanceWindowProviderConditionType.
 const (
-	Provider MaintenanceWindowProviderConditionType = "provider"
+	MaintenanceWindowProviderConditionTypeProvider MaintenanceWindowProviderConditionType = "provider"
 )
 
 // Valid indicates whether the value is a known member of the MaintenanceWindowProviderConditionType enum.
 func (e MaintenanceWindowProviderConditionType) Valid() bool {
 	switch e {
-	case Provider:
+	case MaintenanceWindowProviderConditionTypeProvider:
 		return true
 	default:
 		return false
@@ -553,25 +1009,25 @@ func (e MaintenanceWindowProviderConditionType) Valid() bool {
 
 // Defines values for MaintenanceWindowSeverityConditionRuleOperator.
 const (
-	EqualTo            MaintenanceWindowSeverityConditionRuleOperator = "equal_to"
-	GreaterThan        MaintenanceWindowSeverityConditionRuleOperator = "greater_than"
-	GreaterThanOrEqual MaintenanceWindowSeverityConditionRuleOperator = "greater_than_or_equal"
-	LessThan           MaintenanceWindowSeverityConditionRuleOperator = "less_than"
-	LessThanOrEqual    MaintenanceWindowSeverityConditionRuleOperator = "less_than_or_equal"
+	MaintenanceWindowSeverityConditionRuleOperatorEqualTo            MaintenanceWindowSeverityConditionRuleOperator = "equal_to"
+	MaintenanceWindowSeverityConditionRuleOperatorGreaterThan        MaintenanceWindowSeverityConditionRuleOperator = "greater_than"
+	MaintenanceWindowSeverityConditionRuleOperatorGreaterThanOrEqual MaintenanceWindowSeverityConditionRuleOperator = "greater_than_or_equal"
+	MaintenanceWindowSeverityConditionRuleOperatorLessThan           MaintenanceWindowSeverityConditionRuleOperator = "less_than"
+	MaintenanceWindowSeverityConditionRuleOperatorLessThanOrEqual    MaintenanceWindowSeverityConditionRuleOperator = "less_than_or_equal"
 )
 
 // Valid indicates whether the value is a known member of the MaintenanceWindowSeverityConditionRuleOperator enum.
 func (e MaintenanceWindowSeverityConditionRuleOperator) Valid() bool {
 	switch e {
-	case EqualTo:
+	case MaintenanceWindowSeverityConditionRuleOperatorEqualTo:
 		return true
-	case GreaterThan:
+	case MaintenanceWindowSeverityConditionRuleOperatorGreaterThan:
 		return true
-	case GreaterThanOrEqual:
+	case MaintenanceWindowSeverityConditionRuleOperatorGreaterThanOrEqual:
 		return true
-	case LessThan:
+	case MaintenanceWindowSeverityConditionRuleOperatorLessThan:
 		return true
-	case LessThanOrEqual:
+	case MaintenanceWindowSeverityConditionRuleOperatorLessThanOrEqual:
 		return true
 	default:
 		return false
@@ -580,13 +1036,13 @@ func (e MaintenanceWindowSeverityConditionRuleOperator) Valid() bool {
 
 // Defines values for MaintenanceWindowSeverityConditionType.
 const (
-	Severity MaintenanceWindowSeverityConditionType = "severity"
+	MaintenanceWindowSeverityConditionTypeSeverity MaintenanceWindowSeverityConditionType = "severity"
 )
 
 // Valid indicates whether the value is a known member of the MaintenanceWindowSeverityConditionType enum.
 func (e MaintenanceWindowSeverityConditionType) Valid() bool {
 	switch e {
-	case Severity:
+	case MaintenanceWindowSeverityConditionTypeSeverity:
 		return true
 	default:
 		return false
@@ -616,16 +1072,16 @@ func (e MaintenanceWindowStatus) Valid() bool {
 
 // Defines values for MaintenanceWindowTimeConditionRuleOperator.
 const (
-	DayInBetween  MaintenanceWindowTimeConditionRuleOperator = "day_in_between"
-	WeekInBetween MaintenanceWindowTimeConditionRuleOperator = "week_in_between"
+	MaintenanceWindowTimeConditionRuleOperatorDayInBetween  MaintenanceWindowTimeConditionRuleOperator = "day_in_between"
+	MaintenanceWindowTimeConditionRuleOperatorWeekInBetween MaintenanceWindowTimeConditionRuleOperator = "week_in_between"
 )
 
 // Valid indicates whether the value is a known member of the MaintenanceWindowTimeConditionRuleOperator enum.
 func (e MaintenanceWindowTimeConditionRuleOperator) Valid() bool {
 	switch e {
-	case DayInBetween:
+	case MaintenanceWindowTimeConditionRuleOperatorDayInBetween:
 		return true
-	case WeekInBetween:
+	case MaintenanceWindowTimeConditionRuleOperatorWeekInBetween:
 		return true
 	default:
 		return false
@@ -634,13 +1090,13 @@ func (e MaintenanceWindowTimeConditionRuleOperator) Valid() bool {
 
 // Defines values for MaintenanceWindowTimeConditionType.
 const (
-	Time MaintenanceWindowTimeConditionType = "time"
+	MaintenanceWindowTimeConditionTypeTime MaintenanceWindowTimeConditionType = "time"
 )
 
 // Valid indicates whether the value is a known member of the MaintenanceWindowTimeConditionType enum.
 func (e MaintenanceWindowTimeConditionType) Valid() bool {
 	switch e {
-	case Time:
+	case MaintenanceWindowTimeConditionTypeTime:
 		return true
 	default:
 		return false
@@ -820,13 +1276,13 @@ func (e ServiceTeamResponderType) Valid() bool {
 
 // Defines values for ServiceUserResponderType.
 const (
-	User ServiceUserResponderType = "user"
+	ServiceUserResponderTypeUser ServiceUserResponderType = "user"
 )
 
 // Valid indicates whether the value is a known member of the ServiceUserResponderType enum.
 func (e ServiceUserResponderType) Valid() bool {
 	switch e {
-	case User:
+	case ServiceUserResponderTypeUser:
 		return true
 	default:
 		return false
@@ -929,6 +1385,21 @@ func (e UpdateMaintenanceWindowRequestConditionsLogicalOperator) Valid() bool {
 	}
 }
 
+// Defines values for ListAlertRoutingsParamsTeamId0.
+const (
+	ListAlertRoutingsParamsTeamId0Null ListAlertRoutingsParamsTeamId0 = "null"
+)
+
+// Valid indicates whether the value is a known member of the ListAlertRoutingsParamsTeamId0 enum.
+func (e ListAlertRoutingsParamsTeamId0) Valid() bool {
+	switch e {
+	case ListAlertRoutingsParamsTeamId0Null:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for ListAlertSourcesParamsTeamId0.
 const (
 	ListAlertSourcesParamsTeamId0Null ListAlertSourcesParamsTeamId0 = "null"
@@ -979,6 +1450,285 @@ func (e ListMembersParamsStatus) Valid() bool {
 		return false
 	}
 }
+
+// AlertRouting defines model for AlertRouting.
+type AlertRouting struct {
+	CreatedAt   time.Time                 `json:"createdAt"`
+	Description nullable.Nullable[string] `json:"description"`
+	Id          int                       `json:"id"`
+	IsEnabled   bool                      `json:"isEnabled"`
+	Name        string                    `json:"name"`
+
+	// Rules Rules in evaluation order.
+	Rules     []AlertRoutingRule     `json:"rules"`
+	TeamId    nullable.Nullable[int] `json:"teamId"`
+	UpdatedAt time.Time              `json:"updatedAt"`
+}
+
+// AlertRoutingCondition A leaf condition or a parenthesised group of conditions. Groups may nest up to 5 levels deep.
+type AlertRoutingCondition struct {
+	union json.RawMessage
+}
+
+// AlertRoutingCondition5 defines model for AlertRoutingCondition.5.
+type AlertRoutingCondition5 struct {
+	Conditions []AlertRoutingCondition_5_Conditions_Item `json:"conditions"`
+
+	// Operator How the conditions inside this group combine.
+	Operator AlertRoutingCondition5Operator `json:"operator"`
+	Type     AlertRoutingCondition5Type     `json:"type"`
+}
+
+// AlertRoutingCondition5Conditions5 defines model for AlertRoutingCondition.5.Conditions.5.
+type AlertRoutingCondition5Conditions5 struct {
+	Conditions []AlertRoutingCondition_5_Conditions_5_Conditions_Item `json:"conditions"`
+
+	// Operator How the conditions inside this group combine.
+	Operator AlertRoutingCondition5Conditions5Operator `json:"operator"`
+	Type     AlertRoutingCondition5Conditions5Type     `json:"type"`
+}
+
+// AlertRoutingCondition5Conditions5Conditions5 defines model for AlertRoutingCondition.5.Conditions.5.Conditions.5.
+type AlertRoutingCondition5Conditions5Conditions5 struct {
+	Conditions []AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item `json:"conditions"`
+
+	// Operator How the conditions inside this group combine.
+	Operator AlertRoutingCondition5Conditions5Conditions5Operator `json:"operator"`
+	Type     AlertRoutingCondition5Conditions5Conditions5Type     `json:"type"`
+}
+
+// AlertRoutingCondition5Conditions5Conditions5Conditions5 defines model for AlertRoutingCondition.5.Conditions.5.Conditions.5.Conditions.5.
+type AlertRoutingCondition5Conditions5Conditions5Conditions5 struct {
+	Conditions []AlertRoutingLeafCondition `json:"conditions"`
+
+	// Operator How the conditions inside this group combine.
+	Operator AlertRoutingCondition5Conditions5Conditions5Conditions5Operator `json:"operator"`
+	Type     AlertRoutingCondition5Conditions5Conditions5Conditions5Type     `json:"type"`
+}
+
+// AlertRoutingCondition5Conditions5Conditions5Conditions5Operator How the conditions inside this group combine.
+type AlertRoutingCondition5Conditions5Conditions5Conditions5Operator string
+
+// AlertRoutingCondition5Conditions5Conditions5Conditions5Type defines model for AlertRoutingCondition.5.Conditions.5.Conditions.5.Conditions.5.Type.
+type AlertRoutingCondition5Conditions5Conditions5Conditions5Type string
+
+// AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item defines model for AlertRoutingCondition.5.Conditions.5.Conditions.5.Conditions.Item.
+type AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item struct {
+	union json.RawMessage
+}
+
+// AlertRoutingCondition5Conditions5Conditions5Operator How the conditions inside this group combine.
+type AlertRoutingCondition5Conditions5Conditions5Operator string
+
+// AlertRoutingCondition5Conditions5Conditions5Type defines model for AlertRoutingCondition.5.Conditions.5.Conditions.5.Type.
+type AlertRoutingCondition5Conditions5Conditions5Type string
+
+// AlertRoutingCondition_5_Conditions_5_Conditions_Item defines model for AlertRoutingCondition.5.Conditions.5.Conditions.Item.
+type AlertRoutingCondition_5_Conditions_5_Conditions_Item struct {
+	union json.RawMessage
+}
+
+// AlertRoutingCondition5Conditions5Operator How the conditions inside this group combine.
+type AlertRoutingCondition5Conditions5Operator string
+
+// AlertRoutingCondition5Conditions5Type defines model for AlertRoutingCondition.5.Conditions.5.Type.
+type AlertRoutingCondition5Conditions5Type string
+
+// AlertRoutingCondition_5_Conditions_Item defines model for AlertRoutingCondition.5.Conditions.Item.
+type AlertRoutingCondition_5_Conditions_Item struct {
+	union json.RawMessage
+}
+
+// AlertRoutingCondition5Operator How the conditions inside this group combine.
+type AlertRoutingCondition5Operator string
+
+// AlertRoutingCondition5Type defines model for AlertRoutingCondition.5.Type.
+type AlertRoutingCondition5Type string
+
+// AlertRoutingCountCondition Matches once countThreshold alerts arrived within timeframe milliseconds.
+type AlertRoutingCountCondition struct {
+	Rule struct {
+		CountThreshold int `json:"countThreshold"`
+
+		// Timeframe Milliseconds
+		Timeframe int `json:"timeframe"`
+	} `json:"rule"`
+	Type AlertRoutingCountConditionType `json:"type"`
+}
+
+// AlertRoutingCountConditionType defines model for AlertRoutingCountCondition.Type.
+type AlertRoutingCountConditionType string
+
+// AlertRoutingDoNothingAction Silence: create the alert without paging anyone.
+type AlertRoutingDoNothingAction struct {
+	Type AlertRoutingDoNothingActionType `json:"type"`
+}
+
+// AlertRoutingDoNothingActionType defines model for AlertRoutingDoNothingAction.Type.
+type AlertRoutingDoNothingActionType string
+
+// AlertRoutingEscalateAction Page the targets. delayMs waits before paging; notificationUrgency overrides the paging urgency.
+type AlertRoutingEscalateAction struct {
+	Type  AlertRoutingEscalateActionType `json:"type"`
+	Value struct {
+		DelayMs    *int `json:"delayMs,omitempty"`
+		Escalation []struct {
+			Type AlertRoutingEscalateActionValueEscalationType `json:"type"`
+
+			// Value ID of the escalation policy, schedule or member.
+			Value int `json:"value"`
+		} `json:"escalation"`
+		NotificationUrgency *AlertRoutingEscalateActionValueNotificationUrgency `json:"notificationUrgency,omitempty"`
+	} `json:"value"`
+}
+
+// AlertRoutingEscalateActionType defines model for AlertRoutingEscalateAction.Type.
+type AlertRoutingEscalateActionType string
+
+// AlertRoutingEscalateActionValueEscalationType defines model for AlertRoutingEscalateAction.Value.Escalation.Type.
+type AlertRoutingEscalateActionValueEscalationType string
+
+// AlertRoutingEscalateActionValueNotificationUrgency defines model for AlertRoutingEscalateAction.Value.NotificationUrgency.
+type AlertRoutingEscalateActionValueNotificationUrgency string
+
+// AlertRoutingFieldCondition defines model for AlertRoutingFieldCondition.
+type AlertRoutingFieldCondition struct {
+	Rule struct {
+		ConditionValue string `json:"conditionValue"`
+
+		// FieldPath Dot-path into the payload this rule is evaluated against. Alert routing, enrichment and maintenance-window rules evaluate the incoming payload, where the source's own fields are under `details`; automation rules evaluate the stored alert, where the same fields are under `metadata`. A path that matches nothing makes the rule silently never fire.
+		FieldPath       string                                 `json:"fieldPath"`
+		IsCaseSensitive nullable.Nullable[bool]                `json:"isCaseSensitive,omitempty"`
+		Operator        AlertRoutingFieldConditionRuleOperator `json:"operator"`
+	} `json:"rule"`
+	Type AlertRoutingFieldConditionType `json:"type"`
+}
+
+// AlertRoutingFieldConditionRuleOperator defines model for AlertRoutingFieldCondition.Rule.Operator.
+type AlertRoutingFieldConditionRuleOperator string
+
+// AlertRoutingFieldConditionType defines model for AlertRoutingFieldCondition.Type.
+type AlertRoutingFieldConditionType string
+
+// AlertRoutingLeafCondition One condition on the incoming alert payload. field matches a dot-path in the payload (source fields live under `details`).
+type AlertRoutingLeafCondition struct {
+	union json.RawMessage
+}
+
+// AlertRoutingListResponse defines model for AlertRoutingListResponse.
+type AlertRoutingListResponse struct {
+	AlertRoutings []AlertRouting `json:"alertRoutings"`
+}
+
+// AlertRoutingProviderCondition defines model for AlertRoutingProviderCondition.
+type AlertRoutingProviderCondition struct {
+	Rule struct {
+		Operator  AlertRoutingProviderConditionRuleOperator    `json:"operator"`
+		Providers []AlertRoutingProviderConditionRuleProviders `json:"providers"`
+	} `json:"rule"`
+	Type AlertRoutingProviderConditionType `json:"type"`
+}
+
+// AlertRoutingProviderConditionRuleOperator defines model for AlertRoutingProviderCondition.Rule.Operator.
+type AlertRoutingProviderConditionRuleOperator string
+
+// AlertRoutingProviderConditionRuleProviders defines model for AlertRoutingProviderCondition.Rule.Providers.
+type AlertRoutingProviderConditionRuleProviders string
+
+// AlertRoutingProviderConditionType defines model for AlertRoutingProviderCondition.Type.
+type AlertRoutingProviderConditionType string
+
+// AlertRoutingRule defines model for AlertRoutingRule.
+type AlertRoutingRule struct {
+	Action AlertRoutingRule_Action `json:"action"`
+
+	// Conditions An empty list with logicalOperator AND is the fallback rule, which matches every alert.
+	Conditions []AlertRoutingCondition `json:"conditions"`
+
+	// LogicalOperator How the top-level conditions combine.
+	LogicalOperator AlertRoutingRuleLogicalOperator `json:"logicalOperator"`
+	Name            nullable.Nullable[string]       `json:"name"`
+}
+
+// AlertRoutingRule_Action defines model for AlertRoutingRule.Action.
+type AlertRoutingRule_Action struct {
+	union json.RawMessage
+}
+
+// AlertRoutingRuleLogicalOperator How the top-level conditions combine.
+type AlertRoutingRuleLogicalOperator string
+
+// AlertRoutingRuleInput defines model for AlertRoutingRuleInput.
+type AlertRoutingRuleInput struct {
+	Action AlertRoutingRuleInput_Action `json:"action"`
+
+	// Conditions An empty list with logicalOperator AND is the fallback rule, which matches every alert.
+	Conditions []AlertRoutingCondition `json:"conditions"`
+
+	// LogicalOperator How the top-level conditions combine.
+	LogicalOperator AlertRoutingRuleInputLogicalOperator `json:"logicalOperator"`
+	Name            nullable.Nullable[string]            `json:"name,omitempty"`
+}
+
+// AlertRoutingRuleInput_Action defines model for AlertRoutingRuleInput.Action.
+type AlertRoutingRuleInput_Action struct {
+	union json.RawMessage
+}
+
+// AlertRoutingRuleInputLogicalOperator How the top-level conditions combine.
+type AlertRoutingRuleInputLogicalOperator string
+
+// AlertRoutingSeverityCondition rule.severity accepts the canonical SEV0-SEV5 or SIGNAL, or an alias such as P1 or critical; an alias reads back as its canonical value.
+type AlertRoutingSeverityCondition struct {
+	Rule struct {
+		Operator AlertRoutingSeverityConditionRuleOperator `json:"operator"`
+		Severity string                                    `json:"severity"`
+	} `json:"rule"`
+	Type AlertRoutingSeverityConditionType `json:"type"`
+}
+
+// AlertRoutingSeverityConditionRuleOperator defines model for AlertRoutingSeverityCondition.Rule.Operator.
+type AlertRoutingSeverityConditionRuleOperator string
+
+// AlertRoutingSeverityConditionType defines model for AlertRoutingSeverityCondition.Type.
+type AlertRoutingSeverityConditionType string
+
+// AlertRoutingTimeCondition defines model for AlertRoutingTimeCondition.
+type AlertRoutingTimeCondition struct {
+	Rule struct {
+		Operator     AlertRoutingTimeConditionRuleOperator       `json:"operator"`
+		TimeInterval AlertRoutingTimeCondition_Rule_TimeInterval `json:"timeInterval"`
+		Timezone     string                                      `json:"timezone"`
+	} `json:"rule"`
+	Type AlertRoutingTimeConditionType `json:"type"`
+}
+
+// AlertRoutingTimeConditionRuleOperator defines model for AlertRoutingTimeCondition.Rule.Operator.
+type AlertRoutingTimeConditionRuleOperator string
+
+// AlertRoutingTimeConditionRuleTimeInterval0 defines model for AlertRoutingTimeCondition.Rule.TimeInterval.0.
+type AlertRoutingTimeConditionRuleTimeInterval0 struct {
+	EndHourOffset   string `json:"endHourOffset"`
+	StartHourOffset string `json:"startHourOffset"`
+}
+
+// AlertRoutingTimeConditionRuleTimeInterval1 defines model for AlertRoutingTimeCondition.Rule.TimeInterval.1.
+type AlertRoutingTimeConditionRuleTimeInterval1 struct {
+	WeekRanges []struct {
+		EndDay          int    `json:"endDay"`
+		EndHourOffset   string `json:"endHourOffset"`
+		StartDay        int    `json:"startDay"`
+		StartHourOffset string `json:"startHourOffset"`
+	} `json:"weekRanges"`
+}
+
+// AlertRoutingTimeCondition_Rule_TimeInterval defines model for AlertRoutingTimeCondition.Rule.TimeInterval.
+type AlertRoutingTimeCondition_Rule_TimeInterval struct {
+	union json.RawMessage
+}
+
+// AlertRoutingTimeConditionType defines model for AlertRoutingTimeCondition.Type.
+type AlertRoutingTimeConditionType string
 
 // AlertSource defines model for AlertSource.
 type AlertSource struct {
@@ -1135,6 +1885,21 @@ type ChatChannelsListResponse struct {
 
 // ChatPlatform The chat platform the organization is connected to: `slack` or `microsoftTeams`.
 type ChatPlatform string
+
+// CreateAlertRoutingRequest defines model for CreateAlertRoutingRequest.
+type CreateAlertRoutingRequest struct {
+	Description nullable.Nullable[string] `json:"description,omitempty"`
+
+	// IsEnabled A routing that is off evaluates none of its rules. Defaults to true.
+	IsEnabled *bool  `json:"isEnabled,omitempty"`
+	Name      string `json:"name"`
+
+	// Rules Rules in evaluation order; the first rule that matches decides. The list replaces every rule of the routing and reads back in the order sent. At most one fallback rule, and only last.
+	Rules *[]AlertRoutingRuleInput `json:"rules,omitempty"`
+
+	// TeamId Omit or send null for an organization-level routing. Cannot be changed later.
+	TeamId nullable.Nullable[int] `json:"teamId,omitempty"`
+}
 
 // CreateAlertSourceRequest defines model for CreateAlertSourceRequest.
 type CreateAlertSourceRequest struct {
@@ -2259,6 +3024,16 @@ type TeamsListResponse struct {
 	Total int32 `json:"total"`
 }
 
+// UpdateAlertRoutingRequest defines model for UpdateAlertRoutingRequest.
+type UpdateAlertRoutingRequest struct {
+	Description nullable.Nullable[string] `json:"description,omitempty"`
+	IsEnabled   *bool                     `json:"isEnabled,omitempty"`
+	Name        *string                   `json:"name,omitempty"`
+
+	// Rules Rules in evaluation order; the first rule that matches decides. The list replaces every rule of the routing and reads back in the order sent. At most one fallback rule, and only last.
+	Rules *[]AlertRoutingRuleInput `json:"rules,omitempty"`
+}
+
 // UpdateAlertSourceRequest defines model for UpdateAlertSourceRequest.
 type UpdateAlertSourceRequest struct {
 	// AlertRoutingId The alert routing in the same scope that handles alerts arriving on this source.
@@ -2333,6 +3108,44 @@ type ValidationErrorResponse struct {
 		// Path Path to the field that caused the error.
 		Path *[]string `json:"path,omitempty"`
 	} `json:"error"`
+}
+
+// ListAlertRoutingsParams defines parameters for ListAlertRoutings.
+type ListAlertRoutingsParams struct {
+	TeamId *struct {
+		union json.RawMessage
+	} `form:"teamId,omitempty" json:"teamId,omitempty"`
+}
+
+// ListAlertRoutingsParamsTeamId0 defines parameters for ListAlertRoutings.
+type ListAlertRoutingsParamsTeamId0 string
+
+// ListAlertRoutingsParamsTeamId1 defines parameters for ListAlertRoutings.
+type ListAlertRoutingsParamsTeamId1 = int
+
+// ListAlertRoutings400JSONResponseBody defines parameters for ListAlertRoutings.
+type ListAlertRoutings400JSONResponseBody struct {
+	union json.RawMessage
+}
+
+// CreateAlertRouting400JSONResponseBody defines parameters for CreateAlertRouting.
+type CreateAlertRouting400JSONResponseBody struct {
+	union json.RawMessage
+}
+
+// DeleteAlertRouting400JSONResponseBody defines parameters for DeleteAlertRouting.
+type DeleteAlertRouting400JSONResponseBody struct {
+	union json.RawMessage
+}
+
+// GetAlertRouting400JSONResponseBody defines parameters for GetAlertRouting.
+type GetAlertRouting400JSONResponseBody struct {
+	union json.RawMessage
+}
+
+// UpdateAlertRouting400JSONResponseBody defines parameters for UpdateAlertRouting.
+type UpdateAlertRouting400JSONResponseBody struct {
+	union json.RawMessage
 }
 
 // ListAlertSourcesParams defines parameters for ListAlertSources.
@@ -2651,6 +3464,12 @@ type ListTeamMembersParams struct {
 	Offset *int32 `form:"offset,omitempty" json:"offset,omitempty"`
 }
 
+// CreateAlertRoutingJSONRequestBody defines body for CreateAlertRouting for application/json ContentType.
+type CreateAlertRoutingJSONRequestBody = CreateAlertRoutingRequest
+
+// UpdateAlertRoutingJSONRequestBody defines body for UpdateAlertRouting for application/json ContentType.
+type UpdateAlertRoutingJSONRequestBody = UpdateAlertRoutingRequest
+
 // CreateAlertSourceJSONRequestBody defines body for CreateAlertSource for application/json ContentType.
 type CreateAlertSourceJSONRequestBody = CreateAlertSourceRequest
 
@@ -2716,6 +3535,996 @@ type UpdateTeamJSONRequestBody = UpdateTeamRequest
 
 // AssignTeamMemberJSONRequestBody defines body for AssignTeamMember for application/json ContentType.
 type AssignTeamMemberJSONRequestBody = AssignTeamMemberRequest
+
+// AsAlertRoutingSeverityCondition returns the union data inside the AlertRoutingCondition as a AlertRoutingSeverityCondition
+func (t AlertRoutingCondition) AsAlertRoutingSeverityCondition() (AlertRoutingSeverityCondition, error) {
+	var body AlertRoutingSeverityCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAlertRoutingSeverityCondition overwrites any union data inside the AlertRoutingCondition as the provided AlertRoutingSeverityCondition
+func (t *AlertRoutingCondition) FromAlertRoutingSeverityCondition(v AlertRoutingSeverityCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAlertRoutingSeverityCondition performs a merge with any union data inside the AlertRoutingCondition, using the provided AlertRoutingSeverityCondition
+func (t *AlertRoutingCondition) MergeAlertRoutingSeverityCondition(v AlertRoutingSeverityCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAlertRoutingFieldCondition returns the union data inside the AlertRoutingCondition as a AlertRoutingFieldCondition
+func (t AlertRoutingCondition) AsAlertRoutingFieldCondition() (AlertRoutingFieldCondition, error) {
+	var body AlertRoutingFieldCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAlertRoutingFieldCondition overwrites any union data inside the AlertRoutingCondition as the provided AlertRoutingFieldCondition
+func (t *AlertRoutingCondition) FromAlertRoutingFieldCondition(v AlertRoutingFieldCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAlertRoutingFieldCondition performs a merge with any union data inside the AlertRoutingCondition, using the provided AlertRoutingFieldCondition
+func (t *AlertRoutingCondition) MergeAlertRoutingFieldCondition(v AlertRoutingFieldCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAlertRoutingProviderCondition returns the union data inside the AlertRoutingCondition as a AlertRoutingProviderCondition
+func (t AlertRoutingCondition) AsAlertRoutingProviderCondition() (AlertRoutingProviderCondition, error) {
+	var body AlertRoutingProviderCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAlertRoutingProviderCondition overwrites any union data inside the AlertRoutingCondition as the provided AlertRoutingProviderCondition
+func (t *AlertRoutingCondition) FromAlertRoutingProviderCondition(v AlertRoutingProviderCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAlertRoutingProviderCondition performs a merge with any union data inside the AlertRoutingCondition, using the provided AlertRoutingProviderCondition
+func (t *AlertRoutingCondition) MergeAlertRoutingProviderCondition(v AlertRoutingProviderCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAlertRoutingCountCondition returns the union data inside the AlertRoutingCondition as a AlertRoutingCountCondition
+func (t AlertRoutingCondition) AsAlertRoutingCountCondition() (AlertRoutingCountCondition, error) {
+	var body AlertRoutingCountCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAlertRoutingCountCondition overwrites any union data inside the AlertRoutingCondition as the provided AlertRoutingCountCondition
+func (t *AlertRoutingCondition) FromAlertRoutingCountCondition(v AlertRoutingCountCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAlertRoutingCountCondition performs a merge with any union data inside the AlertRoutingCondition, using the provided AlertRoutingCountCondition
+func (t *AlertRoutingCondition) MergeAlertRoutingCountCondition(v AlertRoutingCountCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAlertRoutingTimeCondition returns the union data inside the AlertRoutingCondition as a AlertRoutingTimeCondition
+func (t AlertRoutingCondition) AsAlertRoutingTimeCondition() (AlertRoutingTimeCondition, error) {
+	var body AlertRoutingTimeCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAlertRoutingTimeCondition overwrites any union data inside the AlertRoutingCondition as the provided AlertRoutingTimeCondition
+func (t *AlertRoutingCondition) FromAlertRoutingTimeCondition(v AlertRoutingTimeCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAlertRoutingTimeCondition performs a merge with any union data inside the AlertRoutingCondition, using the provided AlertRoutingTimeCondition
+func (t *AlertRoutingCondition) MergeAlertRoutingTimeCondition(v AlertRoutingTimeCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAlertRoutingCondition5 returns the union data inside the AlertRoutingCondition as a AlertRoutingCondition5
+func (t AlertRoutingCondition) AsAlertRoutingCondition5() (AlertRoutingCondition5, error) {
+	var body AlertRoutingCondition5
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAlertRoutingCondition5 overwrites any union data inside the AlertRoutingCondition as the provided AlertRoutingCondition5
+func (t *AlertRoutingCondition) FromAlertRoutingCondition5(v AlertRoutingCondition5) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAlertRoutingCondition5 performs a merge with any union data inside the AlertRoutingCondition, using the provided AlertRoutingCondition5
+func (t *AlertRoutingCondition) MergeAlertRoutingCondition5(v AlertRoutingCondition5) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t AlertRoutingCondition) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *AlertRoutingCondition) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsAlertRoutingSeverityCondition returns the union data inside the AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item as a AlertRoutingSeverityCondition
+func (t AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item) AsAlertRoutingSeverityCondition() (AlertRoutingSeverityCondition, error) {
+	var body AlertRoutingSeverityCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAlertRoutingSeverityCondition overwrites any union data inside the AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item as the provided AlertRoutingSeverityCondition
+func (t *AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item) FromAlertRoutingSeverityCondition(v AlertRoutingSeverityCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAlertRoutingSeverityCondition performs a merge with any union data inside the AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item, using the provided AlertRoutingSeverityCondition
+func (t *AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item) MergeAlertRoutingSeverityCondition(v AlertRoutingSeverityCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAlertRoutingFieldCondition returns the union data inside the AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item as a AlertRoutingFieldCondition
+func (t AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item) AsAlertRoutingFieldCondition() (AlertRoutingFieldCondition, error) {
+	var body AlertRoutingFieldCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAlertRoutingFieldCondition overwrites any union data inside the AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item as the provided AlertRoutingFieldCondition
+func (t *AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item) FromAlertRoutingFieldCondition(v AlertRoutingFieldCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAlertRoutingFieldCondition performs a merge with any union data inside the AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item, using the provided AlertRoutingFieldCondition
+func (t *AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item) MergeAlertRoutingFieldCondition(v AlertRoutingFieldCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAlertRoutingProviderCondition returns the union data inside the AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item as a AlertRoutingProviderCondition
+func (t AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item) AsAlertRoutingProviderCondition() (AlertRoutingProviderCondition, error) {
+	var body AlertRoutingProviderCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAlertRoutingProviderCondition overwrites any union data inside the AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item as the provided AlertRoutingProviderCondition
+func (t *AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item) FromAlertRoutingProviderCondition(v AlertRoutingProviderCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAlertRoutingProviderCondition performs a merge with any union data inside the AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item, using the provided AlertRoutingProviderCondition
+func (t *AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item) MergeAlertRoutingProviderCondition(v AlertRoutingProviderCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAlertRoutingCountCondition returns the union data inside the AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item as a AlertRoutingCountCondition
+func (t AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item) AsAlertRoutingCountCondition() (AlertRoutingCountCondition, error) {
+	var body AlertRoutingCountCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAlertRoutingCountCondition overwrites any union data inside the AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item as the provided AlertRoutingCountCondition
+func (t *AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item) FromAlertRoutingCountCondition(v AlertRoutingCountCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAlertRoutingCountCondition performs a merge with any union data inside the AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item, using the provided AlertRoutingCountCondition
+func (t *AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item) MergeAlertRoutingCountCondition(v AlertRoutingCountCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAlertRoutingTimeCondition returns the union data inside the AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item as a AlertRoutingTimeCondition
+func (t AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item) AsAlertRoutingTimeCondition() (AlertRoutingTimeCondition, error) {
+	var body AlertRoutingTimeCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAlertRoutingTimeCondition overwrites any union data inside the AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item as the provided AlertRoutingTimeCondition
+func (t *AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item) FromAlertRoutingTimeCondition(v AlertRoutingTimeCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAlertRoutingTimeCondition performs a merge with any union data inside the AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item, using the provided AlertRoutingTimeCondition
+func (t *AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item) MergeAlertRoutingTimeCondition(v AlertRoutingTimeCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAlertRoutingCondition5Conditions5Conditions5Conditions5 returns the union data inside the AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item as a AlertRoutingCondition5Conditions5Conditions5Conditions5
+func (t AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item) AsAlertRoutingCondition5Conditions5Conditions5Conditions5() (AlertRoutingCondition5Conditions5Conditions5Conditions5, error) {
+	var body AlertRoutingCondition5Conditions5Conditions5Conditions5
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAlertRoutingCondition5Conditions5Conditions5Conditions5 overwrites any union data inside the AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item as the provided AlertRoutingCondition5Conditions5Conditions5Conditions5
+func (t *AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item) FromAlertRoutingCondition5Conditions5Conditions5Conditions5(v AlertRoutingCondition5Conditions5Conditions5Conditions5) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAlertRoutingCondition5Conditions5Conditions5Conditions5 performs a merge with any union data inside the AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item, using the provided AlertRoutingCondition5Conditions5Conditions5Conditions5
+func (t *AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item) MergeAlertRoutingCondition5Conditions5Conditions5Conditions5(v AlertRoutingCondition5Conditions5Conditions5Conditions5) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *AlertRoutingCondition_5_Conditions_5_Conditions_5_Conditions_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsAlertRoutingSeverityCondition returns the union data inside the AlertRoutingCondition_5_Conditions_5_Conditions_Item as a AlertRoutingSeverityCondition
+func (t AlertRoutingCondition_5_Conditions_5_Conditions_Item) AsAlertRoutingSeverityCondition() (AlertRoutingSeverityCondition, error) {
+	var body AlertRoutingSeverityCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAlertRoutingSeverityCondition overwrites any union data inside the AlertRoutingCondition_5_Conditions_5_Conditions_Item as the provided AlertRoutingSeverityCondition
+func (t *AlertRoutingCondition_5_Conditions_5_Conditions_Item) FromAlertRoutingSeverityCondition(v AlertRoutingSeverityCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAlertRoutingSeverityCondition performs a merge with any union data inside the AlertRoutingCondition_5_Conditions_5_Conditions_Item, using the provided AlertRoutingSeverityCondition
+func (t *AlertRoutingCondition_5_Conditions_5_Conditions_Item) MergeAlertRoutingSeverityCondition(v AlertRoutingSeverityCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAlertRoutingFieldCondition returns the union data inside the AlertRoutingCondition_5_Conditions_5_Conditions_Item as a AlertRoutingFieldCondition
+func (t AlertRoutingCondition_5_Conditions_5_Conditions_Item) AsAlertRoutingFieldCondition() (AlertRoutingFieldCondition, error) {
+	var body AlertRoutingFieldCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAlertRoutingFieldCondition overwrites any union data inside the AlertRoutingCondition_5_Conditions_5_Conditions_Item as the provided AlertRoutingFieldCondition
+func (t *AlertRoutingCondition_5_Conditions_5_Conditions_Item) FromAlertRoutingFieldCondition(v AlertRoutingFieldCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAlertRoutingFieldCondition performs a merge with any union data inside the AlertRoutingCondition_5_Conditions_5_Conditions_Item, using the provided AlertRoutingFieldCondition
+func (t *AlertRoutingCondition_5_Conditions_5_Conditions_Item) MergeAlertRoutingFieldCondition(v AlertRoutingFieldCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAlertRoutingProviderCondition returns the union data inside the AlertRoutingCondition_5_Conditions_5_Conditions_Item as a AlertRoutingProviderCondition
+func (t AlertRoutingCondition_5_Conditions_5_Conditions_Item) AsAlertRoutingProviderCondition() (AlertRoutingProviderCondition, error) {
+	var body AlertRoutingProviderCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAlertRoutingProviderCondition overwrites any union data inside the AlertRoutingCondition_5_Conditions_5_Conditions_Item as the provided AlertRoutingProviderCondition
+func (t *AlertRoutingCondition_5_Conditions_5_Conditions_Item) FromAlertRoutingProviderCondition(v AlertRoutingProviderCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAlertRoutingProviderCondition performs a merge with any union data inside the AlertRoutingCondition_5_Conditions_5_Conditions_Item, using the provided AlertRoutingProviderCondition
+func (t *AlertRoutingCondition_5_Conditions_5_Conditions_Item) MergeAlertRoutingProviderCondition(v AlertRoutingProviderCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAlertRoutingCountCondition returns the union data inside the AlertRoutingCondition_5_Conditions_5_Conditions_Item as a AlertRoutingCountCondition
+func (t AlertRoutingCondition_5_Conditions_5_Conditions_Item) AsAlertRoutingCountCondition() (AlertRoutingCountCondition, error) {
+	var body AlertRoutingCountCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAlertRoutingCountCondition overwrites any union data inside the AlertRoutingCondition_5_Conditions_5_Conditions_Item as the provided AlertRoutingCountCondition
+func (t *AlertRoutingCondition_5_Conditions_5_Conditions_Item) FromAlertRoutingCountCondition(v AlertRoutingCountCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAlertRoutingCountCondition performs a merge with any union data inside the AlertRoutingCondition_5_Conditions_5_Conditions_Item, using the provided AlertRoutingCountCondition
+func (t *AlertRoutingCondition_5_Conditions_5_Conditions_Item) MergeAlertRoutingCountCondition(v AlertRoutingCountCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAlertRoutingTimeCondition returns the union data inside the AlertRoutingCondition_5_Conditions_5_Conditions_Item as a AlertRoutingTimeCondition
+func (t AlertRoutingCondition_5_Conditions_5_Conditions_Item) AsAlertRoutingTimeCondition() (AlertRoutingTimeCondition, error) {
+	var body AlertRoutingTimeCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAlertRoutingTimeCondition overwrites any union data inside the AlertRoutingCondition_5_Conditions_5_Conditions_Item as the provided AlertRoutingTimeCondition
+func (t *AlertRoutingCondition_5_Conditions_5_Conditions_Item) FromAlertRoutingTimeCondition(v AlertRoutingTimeCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAlertRoutingTimeCondition performs a merge with any union data inside the AlertRoutingCondition_5_Conditions_5_Conditions_Item, using the provided AlertRoutingTimeCondition
+func (t *AlertRoutingCondition_5_Conditions_5_Conditions_Item) MergeAlertRoutingTimeCondition(v AlertRoutingTimeCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAlertRoutingCondition5Conditions5Conditions5 returns the union data inside the AlertRoutingCondition_5_Conditions_5_Conditions_Item as a AlertRoutingCondition5Conditions5Conditions5
+func (t AlertRoutingCondition_5_Conditions_5_Conditions_Item) AsAlertRoutingCondition5Conditions5Conditions5() (AlertRoutingCondition5Conditions5Conditions5, error) {
+	var body AlertRoutingCondition5Conditions5Conditions5
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAlertRoutingCondition5Conditions5Conditions5 overwrites any union data inside the AlertRoutingCondition_5_Conditions_5_Conditions_Item as the provided AlertRoutingCondition5Conditions5Conditions5
+func (t *AlertRoutingCondition_5_Conditions_5_Conditions_Item) FromAlertRoutingCondition5Conditions5Conditions5(v AlertRoutingCondition5Conditions5Conditions5) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAlertRoutingCondition5Conditions5Conditions5 performs a merge with any union data inside the AlertRoutingCondition_5_Conditions_5_Conditions_Item, using the provided AlertRoutingCondition5Conditions5Conditions5
+func (t *AlertRoutingCondition_5_Conditions_5_Conditions_Item) MergeAlertRoutingCondition5Conditions5Conditions5(v AlertRoutingCondition5Conditions5Conditions5) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t AlertRoutingCondition_5_Conditions_5_Conditions_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *AlertRoutingCondition_5_Conditions_5_Conditions_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsAlertRoutingSeverityCondition returns the union data inside the AlertRoutingCondition_5_Conditions_Item as a AlertRoutingSeverityCondition
+func (t AlertRoutingCondition_5_Conditions_Item) AsAlertRoutingSeverityCondition() (AlertRoutingSeverityCondition, error) {
+	var body AlertRoutingSeverityCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAlertRoutingSeverityCondition overwrites any union data inside the AlertRoutingCondition_5_Conditions_Item as the provided AlertRoutingSeverityCondition
+func (t *AlertRoutingCondition_5_Conditions_Item) FromAlertRoutingSeverityCondition(v AlertRoutingSeverityCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAlertRoutingSeverityCondition performs a merge with any union data inside the AlertRoutingCondition_5_Conditions_Item, using the provided AlertRoutingSeverityCondition
+func (t *AlertRoutingCondition_5_Conditions_Item) MergeAlertRoutingSeverityCondition(v AlertRoutingSeverityCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAlertRoutingFieldCondition returns the union data inside the AlertRoutingCondition_5_Conditions_Item as a AlertRoutingFieldCondition
+func (t AlertRoutingCondition_5_Conditions_Item) AsAlertRoutingFieldCondition() (AlertRoutingFieldCondition, error) {
+	var body AlertRoutingFieldCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAlertRoutingFieldCondition overwrites any union data inside the AlertRoutingCondition_5_Conditions_Item as the provided AlertRoutingFieldCondition
+func (t *AlertRoutingCondition_5_Conditions_Item) FromAlertRoutingFieldCondition(v AlertRoutingFieldCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAlertRoutingFieldCondition performs a merge with any union data inside the AlertRoutingCondition_5_Conditions_Item, using the provided AlertRoutingFieldCondition
+func (t *AlertRoutingCondition_5_Conditions_Item) MergeAlertRoutingFieldCondition(v AlertRoutingFieldCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAlertRoutingProviderCondition returns the union data inside the AlertRoutingCondition_5_Conditions_Item as a AlertRoutingProviderCondition
+func (t AlertRoutingCondition_5_Conditions_Item) AsAlertRoutingProviderCondition() (AlertRoutingProviderCondition, error) {
+	var body AlertRoutingProviderCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAlertRoutingProviderCondition overwrites any union data inside the AlertRoutingCondition_5_Conditions_Item as the provided AlertRoutingProviderCondition
+func (t *AlertRoutingCondition_5_Conditions_Item) FromAlertRoutingProviderCondition(v AlertRoutingProviderCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAlertRoutingProviderCondition performs a merge with any union data inside the AlertRoutingCondition_5_Conditions_Item, using the provided AlertRoutingProviderCondition
+func (t *AlertRoutingCondition_5_Conditions_Item) MergeAlertRoutingProviderCondition(v AlertRoutingProviderCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAlertRoutingCountCondition returns the union data inside the AlertRoutingCondition_5_Conditions_Item as a AlertRoutingCountCondition
+func (t AlertRoutingCondition_5_Conditions_Item) AsAlertRoutingCountCondition() (AlertRoutingCountCondition, error) {
+	var body AlertRoutingCountCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAlertRoutingCountCondition overwrites any union data inside the AlertRoutingCondition_5_Conditions_Item as the provided AlertRoutingCountCondition
+func (t *AlertRoutingCondition_5_Conditions_Item) FromAlertRoutingCountCondition(v AlertRoutingCountCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAlertRoutingCountCondition performs a merge with any union data inside the AlertRoutingCondition_5_Conditions_Item, using the provided AlertRoutingCountCondition
+func (t *AlertRoutingCondition_5_Conditions_Item) MergeAlertRoutingCountCondition(v AlertRoutingCountCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAlertRoutingTimeCondition returns the union data inside the AlertRoutingCondition_5_Conditions_Item as a AlertRoutingTimeCondition
+func (t AlertRoutingCondition_5_Conditions_Item) AsAlertRoutingTimeCondition() (AlertRoutingTimeCondition, error) {
+	var body AlertRoutingTimeCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAlertRoutingTimeCondition overwrites any union data inside the AlertRoutingCondition_5_Conditions_Item as the provided AlertRoutingTimeCondition
+func (t *AlertRoutingCondition_5_Conditions_Item) FromAlertRoutingTimeCondition(v AlertRoutingTimeCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAlertRoutingTimeCondition performs a merge with any union data inside the AlertRoutingCondition_5_Conditions_Item, using the provided AlertRoutingTimeCondition
+func (t *AlertRoutingCondition_5_Conditions_Item) MergeAlertRoutingTimeCondition(v AlertRoutingTimeCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAlertRoutingCondition5Conditions5 returns the union data inside the AlertRoutingCondition_5_Conditions_Item as a AlertRoutingCondition5Conditions5
+func (t AlertRoutingCondition_5_Conditions_Item) AsAlertRoutingCondition5Conditions5() (AlertRoutingCondition5Conditions5, error) {
+	var body AlertRoutingCondition5Conditions5
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAlertRoutingCondition5Conditions5 overwrites any union data inside the AlertRoutingCondition_5_Conditions_Item as the provided AlertRoutingCondition5Conditions5
+func (t *AlertRoutingCondition_5_Conditions_Item) FromAlertRoutingCondition5Conditions5(v AlertRoutingCondition5Conditions5) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAlertRoutingCondition5Conditions5 performs a merge with any union data inside the AlertRoutingCondition_5_Conditions_Item, using the provided AlertRoutingCondition5Conditions5
+func (t *AlertRoutingCondition_5_Conditions_Item) MergeAlertRoutingCondition5Conditions5(v AlertRoutingCondition5Conditions5) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t AlertRoutingCondition_5_Conditions_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *AlertRoutingCondition_5_Conditions_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsAlertRoutingSeverityCondition returns the union data inside the AlertRoutingLeafCondition as a AlertRoutingSeverityCondition
+func (t AlertRoutingLeafCondition) AsAlertRoutingSeverityCondition() (AlertRoutingSeverityCondition, error) {
+	var body AlertRoutingSeverityCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAlertRoutingSeverityCondition overwrites any union data inside the AlertRoutingLeafCondition as the provided AlertRoutingSeverityCondition
+func (t *AlertRoutingLeafCondition) FromAlertRoutingSeverityCondition(v AlertRoutingSeverityCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAlertRoutingSeverityCondition performs a merge with any union data inside the AlertRoutingLeafCondition, using the provided AlertRoutingSeverityCondition
+func (t *AlertRoutingLeafCondition) MergeAlertRoutingSeverityCondition(v AlertRoutingSeverityCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAlertRoutingFieldCondition returns the union data inside the AlertRoutingLeafCondition as a AlertRoutingFieldCondition
+func (t AlertRoutingLeafCondition) AsAlertRoutingFieldCondition() (AlertRoutingFieldCondition, error) {
+	var body AlertRoutingFieldCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAlertRoutingFieldCondition overwrites any union data inside the AlertRoutingLeafCondition as the provided AlertRoutingFieldCondition
+func (t *AlertRoutingLeafCondition) FromAlertRoutingFieldCondition(v AlertRoutingFieldCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAlertRoutingFieldCondition performs a merge with any union data inside the AlertRoutingLeafCondition, using the provided AlertRoutingFieldCondition
+func (t *AlertRoutingLeafCondition) MergeAlertRoutingFieldCondition(v AlertRoutingFieldCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAlertRoutingProviderCondition returns the union data inside the AlertRoutingLeafCondition as a AlertRoutingProviderCondition
+func (t AlertRoutingLeafCondition) AsAlertRoutingProviderCondition() (AlertRoutingProviderCondition, error) {
+	var body AlertRoutingProviderCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAlertRoutingProviderCondition overwrites any union data inside the AlertRoutingLeafCondition as the provided AlertRoutingProviderCondition
+func (t *AlertRoutingLeafCondition) FromAlertRoutingProviderCondition(v AlertRoutingProviderCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAlertRoutingProviderCondition performs a merge with any union data inside the AlertRoutingLeafCondition, using the provided AlertRoutingProviderCondition
+func (t *AlertRoutingLeafCondition) MergeAlertRoutingProviderCondition(v AlertRoutingProviderCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAlertRoutingCountCondition returns the union data inside the AlertRoutingLeafCondition as a AlertRoutingCountCondition
+func (t AlertRoutingLeafCondition) AsAlertRoutingCountCondition() (AlertRoutingCountCondition, error) {
+	var body AlertRoutingCountCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAlertRoutingCountCondition overwrites any union data inside the AlertRoutingLeafCondition as the provided AlertRoutingCountCondition
+func (t *AlertRoutingLeafCondition) FromAlertRoutingCountCondition(v AlertRoutingCountCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAlertRoutingCountCondition performs a merge with any union data inside the AlertRoutingLeafCondition, using the provided AlertRoutingCountCondition
+func (t *AlertRoutingLeafCondition) MergeAlertRoutingCountCondition(v AlertRoutingCountCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAlertRoutingTimeCondition returns the union data inside the AlertRoutingLeafCondition as a AlertRoutingTimeCondition
+func (t AlertRoutingLeafCondition) AsAlertRoutingTimeCondition() (AlertRoutingTimeCondition, error) {
+	var body AlertRoutingTimeCondition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAlertRoutingTimeCondition overwrites any union data inside the AlertRoutingLeafCondition as the provided AlertRoutingTimeCondition
+func (t *AlertRoutingLeafCondition) FromAlertRoutingTimeCondition(v AlertRoutingTimeCondition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAlertRoutingTimeCondition performs a merge with any union data inside the AlertRoutingLeafCondition, using the provided AlertRoutingTimeCondition
+func (t *AlertRoutingLeafCondition) MergeAlertRoutingTimeCondition(v AlertRoutingTimeCondition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t AlertRoutingLeafCondition) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *AlertRoutingLeafCondition) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsAlertRoutingEscalateAction returns the union data inside the AlertRoutingRule_Action as a AlertRoutingEscalateAction
+func (t AlertRoutingRule_Action) AsAlertRoutingEscalateAction() (AlertRoutingEscalateAction, error) {
+	var body AlertRoutingEscalateAction
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAlertRoutingEscalateAction overwrites any union data inside the AlertRoutingRule_Action as the provided AlertRoutingEscalateAction
+func (t *AlertRoutingRule_Action) FromAlertRoutingEscalateAction(v AlertRoutingEscalateAction) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAlertRoutingEscalateAction performs a merge with any union data inside the AlertRoutingRule_Action, using the provided AlertRoutingEscalateAction
+func (t *AlertRoutingRule_Action) MergeAlertRoutingEscalateAction(v AlertRoutingEscalateAction) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAlertRoutingDoNothingAction returns the union data inside the AlertRoutingRule_Action as a AlertRoutingDoNothingAction
+func (t AlertRoutingRule_Action) AsAlertRoutingDoNothingAction() (AlertRoutingDoNothingAction, error) {
+	var body AlertRoutingDoNothingAction
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAlertRoutingDoNothingAction overwrites any union data inside the AlertRoutingRule_Action as the provided AlertRoutingDoNothingAction
+func (t *AlertRoutingRule_Action) FromAlertRoutingDoNothingAction(v AlertRoutingDoNothingAction) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAlertRoutingDoNothingAction performs a merge with any union data inside the AlertRoutingRule_Action, using the provided AlertRoutingDoNothingAction
+func (t *AlertRoutingRule_Action) MergeAlertRoutingDoNothingAction(v AlertRoutingDoNothingAction) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t AlertRoutingRule_Action) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *AlertRoutingRule_Action) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsAlertRoutingEscalateAction returns the union data inside the AlertRoutingRuleInput_Action as a AlertRoutingEscalateAction
+func (t AlertRoutingRuleInput_Action) AsAlertRoutingEscalateAction() (AlertRoutingEscalateAction, error) {
+	var body AlertRoutingEscalateAction
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAlertRoutingEscalateAction overwrites any union data inside the AlertRoutingRuleInput_Action as the provided AlertRoutingEscalateAction
+func (t *AlertRoutingRuleInput_Action) FromAlertRoutingEscalateAction(v AlertRoutingEscalateAction) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAlertRoutingEscalateAction performs a merge with any union data inside the AlertRoutingRuleInput_Action, using the provided AlertRoutingEscalateAction
+func (t *AlertRoutingRuleInput_Action) MergeAlertRoutingEscalateAction(v AlertRoutingEscalateAction) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAlertRoutingDoNothingAction returns the union data inside the AlertRoutingRuleInput_Action as a AlertRoutingDoNothingAction
+func (t AlertRoutingRuleInput_Action) AsAlertRoutingDoNothingAction() (AlertRoutingDoNothingAction, error) {
+	var body AlertRoutingDoNothingAction
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAlertRoutingDoNothingAction overwrites any union data inside the AlertRoutingRuleInput_Action as the provided AlertRoutingDoNothingAction
+func (t *AlertRoutingRuleInput_Action) FromAlertRoutingDoNothingAction(v AlertRoutingDoNothingAction) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAlertRoutingDoNothingAction performs a merge with any union data inside the AlertRoutingRuleInput_Action, using the provided AlertRoutingDoNothingAction
+func (t *AlertRoutingRuleInput_Action) MergeAlertRoutingDoNothingAction(v AlertRoutingDoNothingAction) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t AlertRoutingRuleInput_Action) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *AlertRoutingRuleInput_Action) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsAlertRoutingTimeConditionRuleTimeInterval0 returns the union data inside the AlertRoutingTimeCondition_Rule_TimeInterval as a AlertRoutingTimeConditionRuleTimeInterval0
+func (t AlertRoutingTimeCondition_Rule_TimeInterval) AsAlertRoutingTimeConditionRuleTimeInterval0() (AlertRoutingTimeConditionRuleTimeInterval0, error) {
+	var body AlertRoutingTimeConditionRuleTimeInterval0
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAlertRoutingTimeConditionRuleTimeInterval0 overwrites any union data inside the AlertRoutingTimeCondition_Rule_TimeInterval as the provided AlertRoutingTimeConditionRuleTimeInterval0
+func (t *AlertRoutingTimeCondition_Rule_TimeInterval) FromAlertRoutingTimeConditionRuleTimeInterval0(v AlertRoutingTimeConditionRuleTimeInterval0) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAlertRoutingTimeConditionRuleTimeInterval0 performs a merge with any union data inside the AlertRoutingTimeCondition_Rule_TimeInterval, using the provided AlertRoutingTimeConditionRuleTimeInterval0
+func (t *AlertRoutingTimeCondition_Rule_TimeInterval) MergeAlertRoutingTimeConditionRuleTimeInterval0(v AlertRoutingTimeConditionRuleTimeInterval0) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAlertRoutingTimeConditionRuleTimeInterval1 returns the union data inside the AlertRoutingTimeCondition_Rule_TimeInterval as a AlertRoutingTimeConditionRuleTimeInterval1
+func (t AlertRoutingTimeCondition_Rule_TimeInterval) AsAlertRoutingTimeConditionRuleTimeInterval1() (AlertRoutingTimeConditionRuleTimeInterval1, error) {
+	var body AlertRoutingTimeConditionRuleTimeInterval1
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAlertRoutingTimeConditionRuleTimeInterval1 overwrites any union data inside the AlertRoutingTimeCondition_Rule_TimeInterval as the provided AlertRoutingTimeConditionRuleTimeInterval1
+func (t *AlertRoutingTimeCondition_Rule_TimeInterval) FromAlertRoutingTimeConditionRuleTimeInterval1(v AlertRoutingTimeConditionRuleTimeInterval1) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAlertRoutingTimeConditionRuleTimeInterval1 performs a merge with any union data inside the AlertRoutingTimeCondition_Rule_TimeInterval, using the provided AlertRoutingTimeConditionRuleTimeInterval1
+func (t *AlertRoutingTimeCondition_Rule_TimeInterval) MergeAlertRoutingTimeConditionRuleTimeInterval1(v AlertRoutingTimeConditionRuleTimeInterval1) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t AlertRoutingTimeCondition_Rule_TimeInterval) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *AlertRoutingTimeCondition_Rule_TimeInterval) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
 
 // AsAlertSummarySeverity0 returns the union data inside the AlertSummary_Severity as a AlertSummarySeverity0
 func (t AlertSummary_Severity) AsAlertSummarySeverity0() (AlertSummarySeverity0, error) {
@@ -3898,6 +5707,316 @@ func (t ServiceResponder) MarshalJSON() ([]byte, error) {
 }
 
 func (t *ServiceResponder) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsValidationErrorResponse returns the union data inside the ListAlertRoutings400JSONResponseBody as a ValidationErrorResponse
+func (t ListAlertRoutings400JSONResponseBody) AsValidationErrorResponse() (ValidationErrorResponse, error) {
+	var body ValidationErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromValidationErrorResponse overwrites any union data inside the ListAlertRoutings400JSONResponseBody as the provided ValidationErrorResponse
+func (t *ListAlertRoutings400JSONResponseBody) FromValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeValidationErrorResponse performs a merge with any union data inside the ListAlertRoutings400JSONResponseBody, using the provided ValidationErrorResponse
+func (t *ListAlertRoutings400JSONResponseBody) MergeValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsErrorResponse returns the union data inside the ListAlertRoutings400JSONResponseBody as a ErrorResponse
+func (t ListAlertRoutings400JSONResponseBody) AsErrorResponse() (ErrorResponse, error) {
+	var body ErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorResponse overwrites any union data inside the ListAlertRoutings400JSONResponseBody as the provided ErrorResponse
+func (t *ListAlertRoutings400JSONResponseBody) FromErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorResponse performs a merge with any union data inside the ListAlertRoutings400JSONResponseBody, using the provided ErrorResponse
+func (t *ListAlertRoutings400JSONResponseBody) MergeErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t ListAlertRoutings400JSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *ListAlertRoutings400JSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsValidationErrorResponse returns the union data inside the CreateAlertRouting400JSONResponseBody as a ValidationErrorResponse
+func (t CreateAlertRouting400JSONResponseBody) AsValidationErrorResponse() (ValidationErrorResponse, error) {
+	var body ValidationErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromValidationErrorResponse overwrites any union data inside the CreateAlertRouting400JSONResponseBody as the provided ValidationErrorResponse
+func (t *CreateAlertRouting400JSONResponseBody) FromValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeValidationErrorResponse performs a merge with any union data inside the CreateAlertRouting400JSONResponseBody, using the provided ValidationErrorResponse
+func (t *CreateAlertRouting400JSONResponseBody) MergeValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsErrorResponse returns the union data inside the CreateAlertRouting400JSONResponseBody as a ErrorResponse
+func (t CreateAlertRouting400JSONResponseBody) AsErrorResponse() (ErrorResponse, error) {
+	var body ErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorResponse overwrites any union data inside the CreateAlertRouting400JSONResponseBody as the provided ErrorResponse
+func (t *CreateAlertRouting400JSONResponseBody) FromErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorResponse performs a merge with any union data inside the CreateAlertRouting400JSONResponseBody, using the provided ErrorResponse
+func (t *CreateAlertRouting400JSONResponseBody) MergeErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t CreateAlertRouting400JSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *CreateAlertRouting400JSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsValidationErrorResponse returns the union data inside the DeleteAlertRouting400JSONResponseBody as a ValidationErrorResponse
+func (t DeleteAlertRouting400JSONResponseBody) AsValidationErrorResponse() (ValidationErrorResponse, error) {
+	var body ValidationErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromValidationErrorResponse overwrites any union data inside the DeleteAlertRouting400JSONResponseBody as the provided ValidationErrorResponse
+func (t *DeleteAlertRouting400JSONResponseBody) FromValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeValidationErrorResponse performs a merge with any union data inside the DeleteAlertRouting400JSONResponseBody, using the provided ValidationErrorResponse
+func (t *DeleteAlertRouting400JSONResponseBody) MergeValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsErrorResponse returns the union data inside the DeleteAlertRouting400JSONResponseBody as a ErrorResponse
+func (t DeleteAlertRouting400JSONResponseBody) AsErrorResponse() (ErrorResponse, error) {
+	var body ErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorResponse overwrites any union data inside the DeleteAlertRouting400JSONResponseBody as the provided ErrorResponse
+func (t *DeleteAlertRouting400JSONResponseBody) FromErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorResponse performs a merge with any union data inside the DeleteAlertRouting400JSONResponseBody, using the provided ErrorResponse
+func (t *DeleteAlertRouting400JSONResponseBody) MergeErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t DeleteAlertRouting400JSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *DeleteAlertRouting400JSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsValidationErrorResponse returns the union data inside the GetAlertRouting400JSONResponseBody as a ValidationErrorResponse
+func (t GetAlertRouting400JSONResponseBody) AsValidationErrorResponse() (ValidationErrorResponse, error) {
+	var body ValidationErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromValidationErrorResponse overwrites any union data inside the GetAlertRouting400JSONResponseBody as the provided ValidationErrorResponse
+func (t *GetAlertRouting400JSONResponseBody) FromValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeValidationErrorResponse performs a merge with any union data inside the GetAlertRouting400JSONResponseBody, using the provided ValidationErrorResponse
+func (t *GetAlertRouting400JSONResponseBody) MergeValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsErrorResponse returns the union data inside the GetAlertRouting400JSONResponseBody as a ErrorResponse
+func (t GetAlertRouting400JSONResponseBody) AsErrorResponse() (ErrorResponse, error) {
+	var body ErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorResponse overwrites any union data inside the GetAlertRouting400JSONResponseBody as the provided ErrorResponse
+func (t *GetAlertRouting400JSONResponseBody) FromErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorResponse performs a merge with any union data inside the GetAlertRouting400JSONResponseBody, using the provided ErrorResponse
+func (t *GetAlertRouting400JSONResponseBody) MergeErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t GetAlertRouting400JSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *GetAlertRouting400JSONResponseBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsValidationErrorResponse returns the union data inside the UpdateAlertRouting400JSONResponseBody as a ValidationErrorResponse
+func (t UpdateAlertRouting400JSONResponseBody) AsValidationErrorResponse() (ValidationErrorResponse, error) {
+	var body ValidationErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromValidationErrorResponse overwrites any union data inside the UpdateAlertRouting400JSONResponseBody as the provided ValidationErrorResponse
+func (t *UpdateAlertRouting400JSONResponseBody) FromValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeValidationErrorResponse performs a merge with any union data inside the UpdateAlertRouting400JSONResponseBody, using the provided ValidationErrorResponse
+func (t *UpdateAlertRouting400JSONResponseBody) MergeValidationErrorResponse(v ValidationErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsErrorResponse returns the union data inside the UpdateAlertRouting400JSONResponseBody as a ErrorResponse
+func (t UpdateAlertRouting400JSONResponseBody) AsErrorResponse() (ErrorResponse, error) {
+	var body ErrorResponse
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromErrorResponse overwrites any union data inside the UpdateAlertRouting400JSONResponseBody as the provided ErrorResponse
+func (t *UpdateAlertRouting400JSONResponseBody) FromErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeErrorResponse performs a merge with any union data inside the UpdateAlertRouting400JSONResponseBody, using the provided ErrorResponse
+func (t *UpdateAlertRouting400JSONResponseBody) MergeErrorResponse(v ErrorResponse) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t UpdateAlertRouting400JSONResponseBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *UpdateAlertRouting400JSONResponseBody) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
@@ -5588,6 +7707,59 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 // The interface specification for the client above.
 type ClientInterface interface {
 
+	// ListAlertRoutings List alert routings
+	//
+	// Corresponds with GET /alert-routings (the `ListAlertRoutings` operationId).
+	ListAlertRoutings(ctx context.Context, params *ListAlertRoutingsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateAlertRoutingWithBody Create an alert routing
+	//
+	// Creates a routing with its rules. Point alert sources at it with the alert source alertRoutingId.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /alert-routings (the `CreateAlertRouting` operationId).
+	CreateAlertRoutingWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateAlertRouting Create an alert routing
+	//
+	// Creates a routing with its rules. Point alert sources at it with the alert source alertRoutingId.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /alert-routings (the `CreateAlertRouting` operationId).
+	CreateAlertRouting(ctx context.Context, body CreateAlertRoutingJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteAlertRouting Delete an alert routing
+	//
+	// Deletes the routing and every rule on it, including enrichment rules set up in the product. Refused while an alert source or heartbeat still uses it; delete or repoint those first.
+	//
+	// Corresponds with DELETE /alert-routings/{id} (the `DeleteAlertRouting` operationId).
+	DeleteAlertRouting(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetAlertRouting Get an alert routing
+	//
+	// Corresponds with GET /alert-routings/{id} (the `GetAlertRouting` operationId).
+	GetAlertRouting(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateAlertRoutingWithBody Update an alert routing
+	//
+	// Omitted fields are unchanged. A supplied rules list replaces every rule; an empty list removes them all.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PATCH /alert-routings/{id} (the `UpdateAlertRouting` operationId).
+	UpdateAlertRoutingWithBody(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateAlertRouting Update an alert routing
+	//
+	// Omitted fields are unchanged. A supplied rules list replaces every rule; an empty list removes them all.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PATCH /alert-routings/{id} (the `UpdateAlertRouting` operationId).
+	UpdateAlertRouting(ctx context.Context, id int32, body UpdateAlertRoutingJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// ListAlertSources List alert sources
 	//
 	// Responses carry the webhook token, so every alert source path requires alertSource.manage.
@@ -6192,6 +8364,129 @@ type ClientInterface interface {
 	//
 	// Corresponds with GET /teams/{teamShortId}/on-call (the `GetTeamCurrentOnCall` operationId).
 	GetTeamCurrentOnCall(ctx context.Context, teamShortId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+}
+
+// ListAlertRoutings List alert routings
+//
+// Corresponds with GET /alert-routings (the `ListAlertRoutings` operationId).
+func (c *Client) ListAlertRoutings(ctx context.Context, params *ListAlertRoutingsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListAlertRoutingsRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateAlertRoutingWithBody Create an alert routing
+//
+// Creates a routing with its rules. Point alert sources at it with the alert source alertRoutingId.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /alert-routings (the `CreateAlertRouting` operationId).
+func (c *Client) CreateAlertRoutingWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateAlertRoutingRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateAlertRouting Create an alert routing
+//
+// Creates a routing with its rules. Point alert sources at it with the alert source alertRoutingId.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /alert-routings (the `CreateAlertRouting` operationId).
+func (c *Client) CreateAlertRouting(ctx context.Context, body CreateAlertRoutingJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateAlertRoutingRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DeleteAlertRouting Delete an alert routing
+//
+// Deletes the routing and every rule on it, including enrichment rules set up in the product. Refused while an alert source or heartbeat still uses it; delete or repoint those first.
+//
+// Corresponds with DELETE /alert-routings/{id} (the `DeleteAlertRouting` operationId).
+func (c *Client) DeleteAlertRouting(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteAlertRoutingRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetAlertRouting Get an alert routing
+//
+// Corresponds with GET /alert-routings/{id} (the `GetAlertRouting` operationId).
+func (c *Client) GetAlertRouting(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetAlertRoutingRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateAlertRoutingWithBody Update an alert routing
+//
+// Omitted fields are unchanged. A supplied rules list replaces every rule; an empty list removes them all.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PATCH /alert-routings/{id} (the `UpdateAlertRouting` operationId).
+func (c *Client) UpdateAlertRoutingWithBody(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateAlertRoutingRequestWithBody(c.Server, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateAlertRouting Update an alert routing
+//
+// Omitted fields are unchanged. A supplied rules list replaces every rule; an empty list removes them all.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PATCH /alert-routings/{id} (the `UpdateAlertRouting` operationId).
+func (c *Client) UpdateAlertRouting(ctx context.Context, id int32, body UpdateAlertRoutingJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateAlertRoutingRequest(c.Server, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
 }
 
 // ListAlertSources List alert sources
@@ -7567,6 +9862,215 @@ func (c *Client) GetTeamCurrentOnCall(ctx context.Context, teamShortId string, r
 		return nil, err
 	}
 	return c.Client.Do(req)
+}
+
+// NewListAlertRoutingsRequest constructs an http.Request for the ListAlertRoutings method
+func NewListAlertRoutingsRequest(server string, params *ListAlertRoutingsParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/alert-routings")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.TeamId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "teamId", *params.TeamId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCreateAlertRoutingRequest calls the generic CreateAlertRouting builder with application/json body
+func NewCreateAlertRoutingRequest(server string, body CreateAlertRoutingJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateAlertRoutingRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewCreateAlertRoutingRequestWithBody constructs an http.Request for the CreateAlertRouting method, with any body, and a specified content type
+func NewCreateAlertRoutingRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/alert-routings")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteAlertRoutingRequest constructs an http.Request for the DeleteAlertRouting method
+func NewDeleteAlertRoutingRequest(server string, id int32) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/alert-routings/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetAlertRoutingRequest constructs an http.Request for the GetAlertRouting method
+func NewGetAlertRoutingRequest(server string, id int32) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/alert-routings/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateAlertRoutingRequest calls the generic UpdateAlertRouting builder with application/json body
+func NewUpdateAlertRoutingRequest(server string, id int32, body UpdateAlertRoutingJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateAlertRoutingRequestWithBody(server, id, "application/json", bodyReader)
+}
+
+// NewUpdateAlertRoutingRequestWithBody constructs an http.Request for the UpdateAlertRouting method, with any body, and a specified content type
+func NewUpdateAlertRoutingRequestWithBody(server string, id int32, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/alert-routings/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPatch, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
 }
 
 // NewListAlertSourcesRequest constructs an http.Request for the ListAlertSources method
@@ -10472,6 +12976,65 @@ func WithBaseURL(baseURL string) ClientOption {
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
 
+	// ListAlertRoutingsWithResponse List alert routings
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /alert-routings (the `ListAlertRoutings` operationId).
+	ListAlertRoutingsWithResponse(ctx context.Context, params *ListAlertRoutingsParams, reqEditors ...RequestEditorFn) (*ListAlertRoutingsResponse, error)
+
+	// CreateAlertRoutingWithBodyWithResponse Create an alert routing
+	//
+	// Creates a routing with its rules. Point alert sources at it with the alert source alertRoutingId.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /alert-routings (the `CreateAlertRouting` operationId).
+	CreateAlertRoutingWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateAlertRoutingResponse, error)
+
+	// CreateAlertRoutingWithResponse Create an alert routing
+	//
+	// Creates a routing with its rules. Point alert sources at it with the alert source alertRoutingId.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /alert-routings (the `CreateAlertRouting` operationId).
+	CreateAlertRoutingWithResponse(ctx context.Context, body CreateAlertRoutingJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateAlertRoutingResponse, error)
+
+	// DeleteAlertRoutingWithResponse Delete an alert routing
+	//
+	// Deletes the routing and every rule on it, including enrichment rules set up in the product. Refused while an alert source or heartbeat still uses it; delete or repoint those first.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /alert-routings/{id} (the `DeleteAlertRouting` operationId).
+	DeleteAlertRoutingWithResponse(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*DeleteAlertRoutingResponse, error)
+
+	// GetAlertRoutingWithResponse Get an alert routing
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /alert-routings/{id} (the `GetAlertRouting` operationId).
+	GetAlertRoutingWithResponse(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*GetAlertRoutingResponse, error)
+
+	// UpdateAlertRoutingWithBodyWithResponse Update an alert routing
+	//
+	// Omitted fields are unchanged. A supplied rules list replaces every rule; an empty list removes them all.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PATCH /alert-routings/{id} (the `UpdateAlertRouting` operationId).
+	UpdateAlertRoutingWithBodyWithResponse(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateAlertRoutingResponse, error)
+
+	// UpdateAlertRoutingWithResponse Update an alert routing
+	//
+	// Omitted fields are unchanged. A supplied rules list replaces every rule; an empty list removes them all.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PATCH /alert-routings/{id} (the `UpdateAlertRouting` operationId).
+	UpdateAlertRoutingWithResponse(ctx context.Context, id int32, body UpdateAlertRoutingJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateAlertRoutingResponse, error)
+
 	// ListAlertSourcesWithResponse List alert sources
 	//
 	// Responses carry the webhook token, so every alert source path requires alertSource.manage.
@@ -11142,6 +13705,379 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with GET /teams/{teamShortId}/on-call (the `GetTeamCurrentOnCall` operationId).
 	GetTeamCurrentOnCallWithResponse(ctx context.Context, teamShortId string, reqEditors ...RequestEditorFn) (*GetTeamCurrentOnCallResponse, error)
+}
+
+type ListAlertRoutingsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *AlertRoutingListResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ListAlertRoutings400JSONResponseBody
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r ListAlertRoutingsResponse) GetJSON200() *AlertRoutingListResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r ListAlertRoutingsResponse) GetJSON400() *ListAlertRoutings400JSONResponseBody {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r ListAlertRoutingsResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r ListAlertRoutingsResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r ListAlertRoutingsResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r ListAlertRoutingsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListAlertRoutingsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r ListAlertRoutingsResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type CreateAlertRoutingResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON201 the response for an HTTP 201 `application/json` response
+	JSON201 *AlertRouting
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *CreateAlertRouting400JSONResponseBody
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ApiKeyDenialResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON201 returns the response for an HTTP 201 `application/json` response
+func (r CreateAlertRoutingResponse) GetJSON201() *AlertRouting {
+	return r.JSON201
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r CreateAlertRoutingResponse) GetJSON400() *CreateAlertRouting400JSONResponseBody {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r CreateAlertRoutingResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r CreateAlertRoutingResponse) GetJSON403() *ApiKeyDenialResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r CreateAlertRoutingResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r CreateAlertRoutingResponse) GetJSON409() *ErrorResponse {
+	return r.JSON409
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r CreateAlertRoutingResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r CreateAlertRoutingResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateAlertRoutingResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateAlertRoutingResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r CreateAlertRoutingResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type DeleteAlertRoutingResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *DeleteAlertRouting400JSONResponseBody
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ApiKeyDenialResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r DeleteAlertRoutingResponse) GetJSON400() *DeleteAlertRouting400JSONResponseBody {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r DeleteAlertRoutingResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r DeleteAlertRoutingResponse) GetJSON403() *ApiKeyDenialResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r DeleteAlertRoutingResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r DeleteAlertRoutingResponse) GetJSON409() *ErrorResponse {
+	return r.JSON409
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r DeleteAlertRoutingResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r DeleteAlertRoutingResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteAlertRoutingResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteAlertRoutingResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r DeleteAlertRoutingResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetAlertRoutingResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *AlertRouting
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *GetAlertRouting400JSONResponseBody
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetAlertRoutingResponse) GetJSON200() *AlertRouting {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r GetAlertRoutingResponse) GetJSON400() *GetAlertRouting400JSONResponseBody {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r GetAlertRoutingResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r GetAlertRoutingResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r GetAlertRoutingResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r GetAlertRoutingResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetAlertRoutingResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetAlertRoutingResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetAlertRoutingResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type UpdateAlertRoutingResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *AlertRouting
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *UpdateAlertRouting400JSONResponseBody
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ApiKeyDenialResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r UpdateAlertRoutingResponse) GetJSON200() *AlertRouting {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r UpdateAlertRoutingResponse) GetJSON400() *UpdateAlertRouting400JSONResponseBody {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r UpdateAlertRoutingResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r UpdateAlertRoutingResponse) GetJSON403() *ApiKeyDenialResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r UpdateAlertRoutingResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r UpdateAlertRoutingResponse) GetJSON409() *ErrorResponse {
+	return r.JSON409
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r UpdateAlertRoutingResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r UpdateAlertRoutingResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateAlertRoutingResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateAlertRoutingResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r UpdateAlertRoutingResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
 }
 
 type ListAlertSourcesResponse struct {
@@ -15198,6 +18134,107 @@ func (r GetTeamCurrentOnCallResponse) ContentType() string {
 	return ""
 }
 
+// ListAlertRoutingsWithResponse List alert routings
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /alert-routings (the `ListAlertRoutings` operationId).
+func (c *ClientWithResponses) ListAlertRoutingsWithResponse(ctx context.Context, params *ListAlertRoutingsParams, reqEditors ...RequestEditorFn) (*ListAlertRoutingsResponse, error) {
+	rsp, err := c.ListAlertRoutings(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListAlertRoutingsResponse(rsp)
+}
+
+// CreateAlertRoutingWithBodyWithResponse Create an alert routing
+//
+// Creates a routing with its rules. Point alert sources at it with the alert source alertRoutingId.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /alert-routings (the `CreateAlertRouting` operationId).
+func (c *ClientWithResponses) CreateAlertRoutingWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateAlertRoutingResponse, error) {
+	rsp, err := c.CreateAlertRoutingWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateAlertRoutingResponse(rsp)
+}
+
+// CreateAlertRoutingWithResponse Create an alert routing
+//
+// Creates a routing with its rules. Point alert sources at it with the alert source alertRoutingId.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /alert-routings (the `CreateAlertRouting` operationId).
+func (c *ClientWithResponses) CreateAlertRoutingWithResponse(ctx context.Context, body CreateAlertRoutingJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateAlertRoutingResponse, error) {
+	rsp, err := c.CreateAlertRouting(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateAlertRoutingResponse(rsp)
+}
+
+// DeleteAlertRoutingWithResponse Delete an alert routing
+//
+// Deletes the routing and every rule on it, including enrichment rules set up in the product. Refused while an alert source or heartbeat still uses it; delete or repoint those first.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /alert-routings/{id} (the `DeleteAlertRouting` operationId).
+func (c *ClientWithResponses) DeleteAlertRoutingWithResponse(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*DeleteAlertRoutingResponse, error) {
+	rsp, err := c.DeleteAlertRouting(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteAlertRoutingResponse(rsp)
+}
+
+// GetAlertRoutingWithResponse Get an alert routing
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /alert-routings/{id} (the `GetAlertRouting` operationId).
+func (c *ClientWithResponses) GetAlertRoutingWithResponse(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*GetAlertRoutingResponse, error) {
+	rsp, err := c.GetAlertRouting(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetAlertRoutingResponse(rsp)
+}
+
+// UpdateAlertRoutingWithBodyWithResponse Update an alert routing
+//
+// Omitted fields are unchanged. A supplied rules list replaces every rule; an empty list removes them all.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PATCH /alert-routings/{id} (the `UpdateAlertRouting` operationId).
+func (c *ClientWithResponses) UpdateAlertRoutingWithBodyWithResponse(ctx context.Context, id int32, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateAlertRoutingResponse, error) {
+	rsp, err := c.UpdateAlertRoutingWithBody(ctx, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateAlertRoutingResponse(rsp)
+}
+
+// UpdateAlertRoutingWithResponse Update an alert routing
+//
+// Omitted fields are unchanged. A supplied rules list replaces every rule; an empty list removes them all.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PATCH /alert-routings/{id} (the `UpdateAlertRouting` operationId).
+func (c *ClientWithResponses) UpdateAlertRoutingWithResponse(ctx context.Context, id int32, body UpdateAlertRoutingJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateAlertRoutingResponse, error) {
+	rsp, err := c.UpdateAlertRouting(ctx, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateAlertRoutingResponse(rsp)
+}
+
 // ListAlertSourcesWithResponse List alert sources
 //
 // Responses carry the webhook token, so every alert source path requires alertSource.manage.
@@ -16329,6 +19366,307 @@ func (c *ClientWithResponses) GetTeamCurrentOnCallWithResponse(ctx context.Conte
 		return nil, err
 	}
 	return ParseGetTeamCurrentOnCallResponse(rsp)
+}
+
+// ParseListAlertRoutingsResponse parses an HTTP response from a ListAlertRoutingsWithResponse call
+func ParseListAlertRoutingsResponse(rsp *http.Response) (*ListAlertRoutingsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListAlertRoutingsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest AlertRoutingListResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ListAlertRoutings400JSONResponseBody
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateAlertRoutingResponse parses an HTTP response from a CreateAlertRoutingWithResponse call
+func ParseCreateAlertRoutingResponse(rsp *http.Response) (*CreateAlertRoutingResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateAlertRoutingResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest AlertRouting
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest CreateAlertRouting400JSONResponseBody
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ApiKeyDenialResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteAlertRoutingResponse parses an HTTP response from a DeleteAlertRoutingWithResponse call
+func ParseDeleteAlertRoutingResponse(rsp *http.Response) (*DeleteAlertRoutingResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteAlertRoutingResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 204:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest DeleteAlertRouting400JSONResponseBody
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ApiKeyDenialResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetAlertRoutingResponse parses an HTTP response from a GetAlertRoutingWithResponse call
+func ParseGetAlertRoutingResponse(rsp *http.Response) (*GetAlertRoutingResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetAlertRoutingResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest AlertRouting
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest GetAlertRouting400JSONResponseBody
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateAlertRoutingResponse parses an HTTP response from a UpdateAlertRoutingWithResponse call
+func ParseUpdateAlertRoutingResponse(rsp *http.Response) (*UpdateAlertRoutingResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateAlertRoutingResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest AlertRouting
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest UpdateAlertRouting400JSONResponseBody
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ApiKeyDenialResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
 }
 
 // ParseListAlertSourcesResponse parses an HTTP response from a ListAlertSourcesWithResponse call

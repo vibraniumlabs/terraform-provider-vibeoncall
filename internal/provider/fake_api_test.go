@@ -98,7 +98,8 @@ type fakeAPI struct {
 	windowPatch   map[string]json.RawMessage
 	nextSourceID  int
 	sources       map[int]*fakeSource
-	routings      map[int]*int
+	nextRoutingID int
+	routings      map[int]*fakeRouting
 }
 
 func strPtr(s string) *string { return &s }
@@ -110,7 +111,7 @@ func newFakeAPI(t *testing.T, users ...fakeUser) (*fakeAPI, *httptest.Server) {
 		nextSchedID: 1, nextRotID: 1, schedules: map[int]*fakeSchedule{},
 		nextServiceID: 1, services: map[int]*fakeService{},
 		nextWindowID: 1, windows: map[int]*fakeWindow{},
-		nextSourceID: 1, sources: map[int]*fakeSource{}, routings: map[int]*int{},
+		nextSourceID: 1, sources: map[int]*fakeSource{}, nextRoutingID: 1, routings: map[int]*fakeRouting{},
 	}
 	srv := httptest.NewServer(api)
 	t.Cleanup(srv.Close)
@@ -216,6 +217,8 @@ func (a *fakeAPI) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		a.serveMaintenanceWindows(w, r, parts[1:], body)
 	case parts[0] == "alert-sources":
 		a.serveAlertSources(w, r, parts[1:], body)
+	case parts[0] == "alert-routings":
+		a.serveAlertRoutings(w, r, parts[1:], body)
 	case len(parts) >= 2 && parts[0] == "teams":
 		team := a.findTeam(parts[1])
 		if team == nil {
@@ -241,8 +244,8 @@ func (a *fakeAPI) serveTeam(w http.ResponseWriter, r *http.Request, team *fakeTe
 		applyTeamBody(team, body)
 		writeJSON(w, http.StatusOK, team)
 	case http.MethodDelete:
-		if a.teamOwnsSources(team.ID) {
-			writeJSON(w, http.StatusConflict, map[string]string{"message": "The team still owns alert sources"})
+		if a.teamOwnsSources(team.ID) || a.teamOwnsRoutings(team.ID) {
+			writeJSON(w, http.StatusConflict, map[string]string{"message": "The team still owns alert sources or routings"})
 			return
 		}
 		delete(a.teams, team.ID)
@@ -384,6 +387,11 @@ func (a *fakeAPI) checkNothingLeft(*terraform.State) error {
 	}
 	if len(a.sources) > 0 {
 		return fmt.Errorf("%d alert sources left after destroy", len(a.sources))
+	}
+	for _, rt := range a.routings {
+		if !rt.seeded {
+			return fmt.Errorf("alert routing %d left after destroy", rt.ID)
+		}
 	}
 	for teamID, members := range a.memberships {
 		if len(members) > 0 {

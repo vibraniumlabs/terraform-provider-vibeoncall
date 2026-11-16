@@ -99,6 +99,7 @@ func (p *VibeOnCallProvider) Resources(ctx context.Context) []func() resource.Re
 		NewServiceResource,
 		NewMaintenanceWindowResource,
 		NewAlertSourceResource,
+		NewAlertRouteResource,
 	}
 }
 

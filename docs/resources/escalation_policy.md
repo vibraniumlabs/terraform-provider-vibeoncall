@@ -34,17 +34,17 @@ resource "vibeoncall_escalation_policy" "sre" {
 
   tiers = [
     {
-      acknowledgement_timeout_minutes = 5
+      acknowledgement_timeout_seconds = 300
       schedule_targets                = [{ schedule_id = "12" }]
     },
     {
       # Ada is on the SRE team, so reference her membership.
-      acknowledgement_timeout_minutes = 10
+      acknowledgement_timeout_seconds = 600
       user_ids                        = [vibeoncall_team_membership.ada.user_id]
     },
     {
       # Grace is not on the SRE team, so reference the data source.
-      acknowledgement_timeout_minutes = 15
+      acknowledgement_timeout_seconds = 900
       user_ids                        = [data.vibeoncall_member.grace.id]
     },
   ]
@@ -73,7 +73,7 @@ resource "vibeoncall_escalation_policy" "sre" {
 
 Required:
 
-- `acknowledgement_timeout_minutes` (Number) Minutes to wait for an acknowledgement before escalating to the next tier. A timeout set outside the app that is not a whole number of minutes reads back rounded to the nearest minute, and the next change to `tiers` saves the rounded value.
+- `acknowledgement_timeout_seconds` (Number) Seconds to wait for an acknowledgement before escalating to the next tier.
 
 Optional:
 

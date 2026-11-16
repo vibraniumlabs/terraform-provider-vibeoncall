@@ -21,8 +21,6 @@ import (
 	"github.com/vibraniumlabs/terraform-provider-vibeoncall/internal/client"
 )
 
-const millisecondsPerMinute = 60_000
-
 var (
 	_ resource.Resource                = &EscalationPolicyResource{}
 	_ resource.ResourceWithImportState = &EscalationPolicyResource{}
@@ -45,7 +43,7 @@ type EscalationPolicyResourceModel struct {
 }
 
 type escalationTierModel struct {
-	AcknowledgementTimeoutMinutes types.Int64           `tfsdk:"acknowledgement_timeout_minutes"`
+	AcknowledgementTimeoutSeconds types.Int64           `tfsdk:"acknowledgement_timeout_seconds"`
 	ScheduleTargets               []scheduleTargetModel `tfsdk:"schedule_targets"`
 	RotationTargets               []rotationTargetModel `tfsdk:"rotation_targets"`
 	UserIDs                       []types.String        `tfsdk:"user_ids"`
@@ -111,8 +109,8 @@ func (r *EscalationPolicyResource) Schema(ctx context.Context, req resource.Sche
 				Validators:          []validator.List{listvalidator.SizeAtLeast(1)},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
-						"acknowledgement_timeout_minutes": schema.Int64Attribute{
-							MarkdownDescription: "Minutes to wait for an acknowledgement before escalating to the next tier. A timeout set outside the app that is not a whole number of minutes reads back rounded to the nearest minute, and the next change to `tiers` saves the rounded value.",
+						"acknowledgement_timeout_seconds": schema.Int64Attribute{
+							MarkdownDescription: "Seconds to wait for an acknowledgement before escalating to the next tier.",
 							Required:            true,
 							Validators:          []validator.Int64{int64validator.AtLeast(1)},
 						},
@@ -300,7 +298,7 @@ func tiersToAPI(tiers []escalationTierModel) []client.PublicEscalationPolicyTier
 	out := make([]client.PublicEscalationPolicyTierInput, 0, len(tiers))
 	for _, t := range tiers {
 		in := client.PublicEscalationPolicyTierInput{
-			AcknowledgementTimeThreshold: int(t.AcknowledgementTimeoutMinutes.ValueInt64()) * millisecondsPerMinute,
+			AcknowledgementTimeThreshold: int(t.AcknowledgementTimeoutSeconds.ValueInt64()) * millisecondsPerSecond,
 		}
 		if t.ScheduleTargets != nil {
 			targets := make([]client.PublicEscalationPolicyScheduleTargetInput, 0, len(t.ScheduleTargets))
@@ -349,7 +347,7 @@ func setEscalationPolicyState(m *EscalationPolicyResourceModel, p *client.Public
 	m.Tiers = make([]escalationTierModel, 0, len(p.Tiers))
 	for _, t := range p.Tiers {
 		tier := escalationTierModel{
-			AcknowledgementTimeoutMinutes: types.Int64Value(int64((t.AcknowledgementTimeThreshold + millisecondsPerMinute/2) / millisecondsPerMinute)),
+			AcknowledgementTimeoutSeconds: types.Int64Value(secondsFromMs(t.AcknowledgementTimeThreshold)),
 		}
 		for _, st := range t.ScheduleTargets {
 			tier.ScheduleTargets = append(tier.ScheduleTargets, scheduleTargetModel{

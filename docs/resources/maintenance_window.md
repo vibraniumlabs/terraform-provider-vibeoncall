@@ -94,7 +94,7 @@ resource "vibeoncall_maintenance_window" "staging_nights" {
 
 Required:
 
-- `conditions` (Attributes List) Conditions in the group. Each sets exactly one of `severity`, `field`, `provider` or `time`. (see [below for nested schema](#nestedatt--condition_groups--conditions))
+- `conditions` (Attributes List) Conditions in the group. Each sets exactly one of `field`, `provider`, `severity` or `time`. (see [below for nested schema](#nestedatt--condition_groups--conditions))
 - `operator` (String) `AND` to require every condition in the group, `OR` to require any.
 
 <a id="nestedatt--condition_groups--conditions"></a>

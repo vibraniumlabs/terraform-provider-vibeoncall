@@ -140,3 +140,9 @@ func stringFromNullable(v nullable.Nullable[string]) types.String {
 func apiError(status int, body []byte) string {
 	return fmt.Sprintf("HTTP %d: %s", status, string(body))
 }
+
+const millisecondsPerSecond = 1_000
+
+func secondsFromMs[T int | int64](ms T) int64 {
+	return int64((ms + millisecondsPerSecond/2) / millisecondsPerSecond)
+}

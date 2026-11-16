@@ -10,6 +10,7 @@ FEATURES:
 * **New Resource:** `vibeoncall_service`
 * **New Resource:** `vibeoncall_maintenance_window`
 * **New Resource:** `vibeoncall_alert_source`
+* **New Resource:** `vibeoncall_alert_route`
 * **New Data Source:** `vibeoncall_member`
 * **New Data Source:** `vibeoncall_team`
 * **New Data Source:** `vibeoncall_label`
