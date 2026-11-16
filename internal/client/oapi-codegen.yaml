@@ -15,3 +15,4 @@ output-options:
     - Services
     - Maintenance Windows
     - Alert Sources
+    - Alert Routings

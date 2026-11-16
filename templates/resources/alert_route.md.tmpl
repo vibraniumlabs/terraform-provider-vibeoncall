@@ -1,0 +1,117 @@
+---
+page_title: "{{.Name}} {{.Type}} - {{.ProviderName}}"
+subcategory: ""
+description: |-
+{{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
+---
+
+# {{.Name}} ({{.Type}})
+
+{{ .Description | trimspace }}
+
+Point an alert source at the routing with its `alert_routing_id`. A routing and the sources that use it must be in the same scope: the same team, or both organization level.
+
+`rules` is the whole rule list. An apply replaces every rule of the routing with the list in the configuration, so rules added in the app are removed, and rules turned off in the app are turned back on.
+
+~> **Note** Destroying a routing also deletes the enrichment rules set up on it in the app. The API refuses to delete a routing while an alert source or heartbeat still uses it. Terraform deletes sources that reference the routing first, but a source or heartbeat created in the app has to be repointed or deleted there.
+
+## Example Usage
+
+{{ tffile .ExampleFile }}
+
+## Moving from Opsgenie
+
+Opsgenie spreads what a routing holds across several resources. Each translates as follows:
+
+| Opsgenie | Vibe OnCall |
+|----------|-------------|
+| `opsgenie_api_integration` and its `responders` | `vibeoncall_alert_source`, with `alert_routing_id` naming the routing |
+| `opsgenie_team_routing_rule`, ordered by `order` | One entry of `rules`, in the same order |
+| Its `criteria` | The rule's `condition_groups`: `match-all-conditions` is one group with `operator = "AND"`, `match-any-condition` is one group with `operator = "OR"` |
+| Its `time_restriction` | A `time` condition in the same group |
+| Its `notify` | The rule's `escalate`: `escalation_policy_ids`, `schedule_ids` or `user_ids` |
+| The team's default routing rule | The last rule, without `condition_groups` |
+| `opsgenie_integration_action` with `ignore` | A rule with `do_nothing = true`, placed before the rules that page |
+| `priority` P1 to P5 | `severity` `SEV1` to `SEV5` |
+| `extra-properties` with a `key` | A `field` condition with `field_path = "details.<key>"` |
+
+For example, this Opsgenie setup:
+
+```terraform
+resource "opsgenie_integration_action" "datadog" {
+  integration_id = opsgenie_api_integration.datadog.id
+
+  ignore {
+    name = "Ignore staging"
+    filter {
+      type = "match-all-conditions"
+      conditions {
+        field          = "extra-properties"
+        key            = "env"
+        operation      = "equals"
+        expected_value = "staging"
+      }
+    }
+  }
+}
+
+resource "opsgenie_team_routing_rule" "critical" {
+  name    = "P1 pages the escalation"
+  team_id = opsgenie_team.payments.id
+  order   = 0
+
+  criteria {
+    type = "match-all-conditions"
+    conditions {
+      field          = "priority"
+      operation      = "equals"
+      expected_value = "P1"
+    }
+  }
+
+  notify {
+    type = "escalation"
+    id   = opsgenie_escalation.payments.id
+  }
+}
+```
+
+becomes:
+
+```terraform
+resource "vibeoncall_alert_route" "payments" {
+  name    = "Payments"
+  team_id = vibeoncall_team.payments.id
+
+  rules = [
+    {
+      name = "Ignore staging"
+      condition_groups = [{
+        operator   = "AND"
+        conditions = [{ field = { field_path = "details.env", operator = "exact_match", value = "staging" } }]
+      }]
+      do_nothing = true
+    },
+    {
+      name = "P1 pages the escalation"
+      condition_groups = [{
+        operator   = "AND"
+        conditions = [{ severity = { operator = "equal_to", severity = "SEV1" } }]
+      }]
+      escalate = { escalation_policy_ids = [vibeoncall_escalation_policy.payments.id] }
+    },
+  ]
+}
+```
+
+Opsgenie integration actions that create, close or acknowledge alerts, or rewrite alert fields, have no counterpart here.
+
+{{ .SchemaMarkdown | trimspace }}
+
+## Import
+
+Import is supported using the following syntax:
+
+The [`terraform import` command](https://developer.hashicorp.com/terraform/cli/commands/import) can be used, for example:
+
+{{ codefile "shell" .ImportFile }}

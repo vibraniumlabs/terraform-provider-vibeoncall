@@ -94,12 +94,12 @@ func (a *fakeAPI) applySourceBody(w http.ResponseWriter, s *fakeSource, body map
 		_ = json.Unmarshal(raw, &next.AlertRoutingID)
 	}
 	if next.AlertRoutingID != nil {
-		routingTeam, ok := a.routings[*next.AlertRoutingID]
-		if !ok {
+		routing := a.routings[*next.AlertRoutingID]
+		if routing == nil {
 			notFound(w)
 			return false
 		}
-		if !sameTeam(routingTeam, next.TeamID) {
+		if !sameTeam(routing.TeamID, next.TeamID) {
 			writeJSON(w, http.StatusBadRequest, map[string]string{"message": "Alert routing is outside the source scope"})
 			return false
 		}
@@ -121,12 +121,6 @@ func (a *fakeAPI) teamOwnsSources(teamID int) bool {
 	return false
 }
 
-func (a *fakeAPI) seedRouting(id int, teamID *int) {
-	a.mu.Lock()
-	defer a.mu.Unlock()
-	a.routings[id] = teamID
-}
-
 func (a *fakeAPI) removeSource(id int) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
@@ -137,4 +131,13 @@ func (a *fakeAPI) setSourceEnabled(id int, enabled bool) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 	a.sources[id].IsEnabled = enabled
+}
+
+func (a *fakeAPI) addSourceUsing(routingID int) int {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	id := a.nextSourceID
+	a.nextSourceID++
+	a.sources[id] = &fakeSource{ID: id, Name: "Made in the app", Provider: "datadog", TeamID: a.routings[routingID].TeamID, AlertRoutingID: &routingID, IsEnabled: true}
+	return id
 }
