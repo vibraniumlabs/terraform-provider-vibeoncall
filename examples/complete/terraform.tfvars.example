@@ -1,0 +1,3 @@
+lead_email          = "lead@example.com"
+on_call_emails      = ["alice@example.com", "bob@example.com", "carol@example.com"]
+rotation_start_date = "2026-11-23"
