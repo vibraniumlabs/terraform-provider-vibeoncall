@@ -2,15 +2,13 @@ package provider
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"reflect"
 	"time"
 
-	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
-	"github.com/hashicorp/terraform-plugin-framework-validators/objectvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
-	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -39,124 +37,14 @@ type MaintenanceWindowResource struct {
 }
 
 type MaintenanceWindowResourceModel struct {
-	ID                   types.String          `tfsdk:"id"`
-	Name                 types.String          `tfsdk:"name"`
-	Description          types.String          `tfsdk:"description"`
-	TeamID               types.String          `tfsdk:"team_id"`
-	StartAt              types.String          `tfsdk:"start_at"`
-	EndAt                types.String          `tfsdk:"end_at"`
-	AnnouncementChannels []types.String        `tfsdk:"announcement_channels"`
-	ConditionGroups      []conditionGroupModel `tfsdk:"condition_groups"`
-}
-
-func conditionAttributes() map[string]schema.Attribute {
-	return map[string]schema.Attribute{
-		"severity": schema.SingleNestedAttribute{
-			MarkdownDescription: "Matches the alert severity. `SEV0` is the most severe and `SIGNAL` the least.",
-			Optional:            true,
-			Validators: []validator.Object{objectvalidator.ExactlyOneOf(
-				path.MatchRelative().AtParent().AtName("field"),
-				path.MatchRelative().AtParent().AtName("provider"),
-				path.MatchRelative().AtParent().AtName("time"),
-			)},
-			Attributes: map[string]schema.Attribute{
-				"operator": schema.StringAttribute{
-					MarkdownDescription: "One of `equal_to`, `less_than`, `greater_than`, `less_than_or_equal`, `greater_than_or_equal`. `greater_than` means more severe, so `less_than_or_equal` with `SEV3` matches SEV3, SEV4, SEV5 and SIGNAL.",
-					Required:            true,
-					Validators: []validator.String{stringvalidator.OneOf(
-						string(client.EqualTo), string(client.LessThan), string(client.GreaterThan),
-						string(client.LessThanOrEqual), string(client.GreaterThanOrEqual),
-					)},
-				},
-				"severity": schema.StringAttribute{
-					MarkdownDescription: "One of `SEV0` to `SEV5`, or `SIGNAL`.",
-					Required:            true,
-					Validators:          []validator.String{stringvalidator.OneOf("SEV0", "SEV1", "SEV2", "SEV3", "SEV4", "SEV5", "SIGNAL")},
-				},
-			},
-		},
-		"field": schema.SingleNestedAttribute{
-			MarkdownDescription: "Matches a field of the incoming alert payload.",
-			Optional:            true,
-			Attributes: map[string]schema.Attribute{
-				"field_path": schema.StringAttribute{
-					MarkdownDescription: "Dot-path into the incoming payload. The alert source's own fields are under `details`, for example `details.env`. A path that matches nothing never matches.",
-					Required:            true,
-					Validators:          []validator.String{stringvalidator.LengthAtLeast(1)},
-				},
-				"operator": schema.StringAttribute{
-					MarkdownDescription: "One of `contains`, `exact_match`, `not_contains`, `matches_regex`.",
-					Required:            true,
-					Validators: []validator.String{stringvalidator.OneOf(
-						string(client.Contains), string(client.ExactMatch), string(client.NotContains), string(client.MatchesRegex),
-					)},
-				},
-				"value": schema.StringAttribute{
-					MarkdownDescription: "Value to compare against, or the regular expression for `matches_regex`.",
-					Required:            true,
-				},
-				"case_sensitive": schema.BoolAttribute{
-					MarkdownDescription: "Whether the comparison is case-sensitive.",
-					Optional:            true,
-				},
-			},
-		},
-		"provider": schema.SingleNestedAttribute{
-			MarkdownDescription: "Matches alerts from any of the given alert sources.",
-			Optional:            true,
-			Attributes: map[string]schema.Attribute{
-				"providers": schema.SetAttribute{
-					MarkdownDescription: "Alert source types, such as `datadog`, `grafana` or `opsgenie`.",
-					ElementType:         types.StringType,
-					Required:            true,
-					Validators: []validator.Set{
-						setvalidator.SizeAtLeast(1),
-						setvalidator.ValueStringsAre(stringvalidator.OneOf(
-							string(client.MaintenanceWindowProviderConditionRuleProvidersOpsgenie), string(client.MaintenanceWindowProviderConditionRuleProvidersGrafana), string(client.MaintenanceWindowProviderConditionRuleProvidersDatadog), string(client.MaintenanceWindowProviderConditionRuleProvidersCoralogix),
-							string(client.MaintenanceWindowProviderConditionRuleProvidersNewrelic), string(client.MaintenanceWindowProviderConditionRuleProvidersPrometheus), string(client.MaintenanceWindowProviderConditionRuleProvidersCloudwatch), string(client.MaintenanceWindowProviderConditionRuleProvidersSns),
-							string(client.MaintenanceWindowProviderConditionRuleProvidersHeartbeat), string(client.MaintenanceWindowProviderConditionRuleProvidersEmail), string(client.MaintenanceWindowProviderConditionRuleProvidersSentry), string(client.MaintenanceWindowProviderConditionRuleProvidersEmbraceio),
-							string(client.MaintenanceWindowProviderConditionRuleProvidersHttp), string(client.MaintenanceWindowProviderConditionRuleProvidersAzuremonitor), string(client.MaintenanceWindowProviderConditionRuleProvidersCloudamqp),
-						)),
-					},
-				},
-			},
-		},
-		"time": schema.SingleNestedAttribute{
-			MarkdownDescription: "Matches alerts that arrive within a recurring daily or weekly interval.",
-			Optional:            true,
-			Attributes: map[string]schema.Attribute{
-				"timezone": schema.StringAttribute{
-					MarkdownDescription: "IANA time zone the interval is in, such as `Asia/Taipei`.",
-					Required:            true,
-					Validators:          []validator.String{stringvalidator.LengthAtLeast(1)},
-				},
-				"daily": schema.SingleNestedAttribute{
-					MarkdownDescription: "Every day between two times. An interval whose end is before its start crosses midnight.",
-					Optional:            true,
-					Validators: []validator.Object{objectvalidator.ExactlyOneOf(
-						path.MatchRelative().AtParent().AtName("weekly"),
-					)},
-					Attributes: map[string]schema.Attribute{
-						"start_time": timeAttribute("Start time.", true),
-						"end_time":   timeAttribute("End time.", true),
-					},
-				},
-				"weekly": schema.ListNestedAttribute{
-					MarkdownDescription: "Weekly ranges. The condition matches inside any of them.",
-					Optional:            true,
-					Validators:          []validator.List{listvalidator.SizeAtLeast(1)},
-					NestedObject: schema.NestedAttributeObject{
-						Attributes: map[string]schema.Attribute{
-							"start_day":  weekdayAttribute("Day the range starts.", true),
-							"end_day":    weekdayAttribute("Day the range ends.", true),
-							"start_time": timeAttribute("Start time on `start_day`.", true),
-							"end_time":   timeAttribute("End time on `end_day`.", true),
-						},
-					},
-				},
-			},
-		},
-	}
+	ID                   types.String                          `tfsdk:"id"`
+	Name                 types.String                          `tfsdk:"name"`
+	Description          types.String                          `tfsdk:"description"`
+	TeamID               types.String                          `tfsdk:"team_id"`
+	StartAt              types.String                          `tfsdk:"start_at"`
+	EndAt                types.String                          `tfsdk:"end_at"`
+	AnnouncementChannels []types.String                        `tfsdk:"announcement_channels"`
+	ConditionGroups      []conditionGroupModel[conditionModel] `tfsdk:"condition_groups"`
 }
 
 func (r *MaintenanceWindowResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -204,26 +92,7 @@ func (r *MaintenanceWindowResource) Schema(ctx context.Context, req resource.Sch
 				Optional:            true,
 				Validators:          []validator.Set{setvalidator.SizeAtLeast(1)},
 			},
-			"condition_groups": schema.ListNestedAttribute{
-				MarkdownDescription: "Limits which alerts the window covers. An alert is covered when it matches any group. Omit to cover every alert of the team, or of the organization for a global window.",
-				Optional:            true,
-				Validators:          []validator.List{listvalidator.SizeAtLeast(1)},
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"operator": schema.StringAttribute{
-							MarkdownDescription: "`AND` to require every condition in the group, `OR` to require any.",
-							Required:            true,
-							Validators:          []validator.String{stringvalidator.OneOf(logicalAND, logicalOR)},
-						},
-						"conditions": schema.ListNestedAttribute{
-							MarkdownDescription: "Conditions in the group. Each sets exactly one of `severity`, `field`, `provider` or `time`.",
-							Required:            true,
-							Validators:          []validator.List{listvalidator.SizeAtLeast(1)},
-							NestedObject:        schema.NestedAttributeObject{Attributes: conditionAttributes()},
-						},
-					},
-				},
-			},
+			"condition_groups": conditionGroupsAttribute("Limits which alerts the window covers. An alert is covered when it matches any group. Omit to cover every alert of the team, or of the organization for a global window.", conditionAttributes()),
 		},
 	}
 }
@@ -467,6 +336,23 @@ func announcementChannelsToAPI(ids []types.String) nullable.Nullable[[]string] {
 	return nullable.NewNullableWithValue(out)
 }
 
+func conditionGroupsToAPI(groups []conditionGroupModel[conditionModel]) ([]client.MaintenanceWindowCondition, string, error) {
+	items, operator, err := conditionGroupsToJSON(groups)
+	if err != nil {
+		return nil, "", err
+	}
+	conditions, err := decodeJSON[[]client.MaintenanceWindowCondition](items)
+	return conditions, operator, err
+}
+
+func conditionGroupsFromAPI(conditions []client.MaintenanceWindowCondition, operator string) ([]conditionGroupModel[conditionModel], error) {
+	items, err := decodeJSON[[]json.RawMessage](conditions)
+	if err != nil {
+		return nil, err
+	}
+	return conditionGroupsFromJSON(items, operator, conditionFromJSON)
+}
+
 func nullableConditions(conditions []client.MaintenanceWindowCondition) nullable.Nullable[[]client.MaintenanceWindowCondition] {
 	if conditions == nil {
 		return nullable.NewNullNullable[[]client.MaintenanceWindowCondition]()
@@ -508,7 +394,7 @@ func setMaintenanceWindowState(m *MaintenanceWindowResourceModel, w *client.Main
 	if err != nil {
 		diags.AddWarning("Maintenance window conditions changed outside Terraform",
 			fmt.Sprintf("Maintenance window %d: %s. The next apply replaces them with condition_groups from the configuration.", w.Id, err))
-		groups = []conditionGroupModel{}
+		groups = []conditionGroupModel[conditionModel]{}
 	}
 	m.ConditionGroups = groups
 	return diags

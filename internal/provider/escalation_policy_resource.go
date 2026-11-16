@@ -23,6 +23,10 @@ import (
 
 const millisecondsPerMinute = 60_000
 
+func minutesFromMs[T int | int64](ms T) int64 {
+	return int64((ms + millisecondsPerMinute/2) / millisecondsPerMinute)
+}
+
 var (
 	_ resource.Resource                = &EscalationPolicyResource{}
 	_ resource.ResourceWithImportState = &EscalationPolicyResource{}
@@ -349,7 +353,7 @@ func setEscalationPolicyState(m *EscalationPolicyResourceModel, p *client.Public
 	m.Tiers = make([]escalationTierModel, 0, len(p.Tiers))
 	for _, t := range p.Tiers {
 		tier := escalationTierModel{
-			AcknowledgementTimeoutMinutes: types.Int64Value(int64((t.AcknowledgementTimeThreshold + millisecondsPerMinute/2) / millisecondsPerMinute)),
+			AcknowledgementTimeoutMinutes: types.Int64Value(minutesFromMs(t.AcknowledgementTimeThreshold)),
 		}
 		for _, st := range t.ScheduleTargets {
 			tier.ScheduleTargets = append(tier.ScheduleTargets, scheduleTargetModel{
