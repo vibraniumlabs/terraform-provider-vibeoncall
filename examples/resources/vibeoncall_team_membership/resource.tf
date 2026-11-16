@@ -6,4 +6,8 @@ resource "vibeoncall_team_membership" "ada" {
   team_id = vibeoncall_team.sre.id
   user_id = data.vibeoncall_member.ada.id
   role    = "admin"
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }

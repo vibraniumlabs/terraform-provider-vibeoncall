@@ -1,3 +1,29 @@
+data "vibeoncall_member" "ada" {
+  email = "ada@example.com"
+}
+
+resource "vibeoncall_team_membership" "ada" {
+  team_id = vibeoncall_team.sre.id
+  user_id = data.vibeoncall_member.ada.id
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+data "vibeoncall_member" "alan" {
+  email = "alan@example.com"
+}
+
+resource "vibeoncall_team_membership" "alan" {
+  team_id = vibeoncall_team.sre.id
+  user_id = data.vibeoncall_member.alan.id
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
 resource "vibeoncall_schedule" "sre" {
   name      = "SRE primary"
   time_zone = "America/New_York"

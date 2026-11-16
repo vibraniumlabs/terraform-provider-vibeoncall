@@ -175,7 +175,7 @@ func (r *EscalationPolicyResource) Schema(ctx context.Context, req resource.Sche
 							},
 						},
 						"user_ids": schema.ListAttribute{
-							MarkdownDescription: "Numeric IDs of users to page. For a member of the policy's team, use `vibeoncall_team_membership.<name>.user_id`, so Terraform removes the user from this policy before it removes them from the team. For anyone else, use `data.vibeoncall_member.<name>.id`.",
+							MarkdownDescription: "Numeric IDs of users to page. For a member of the policy's team, use `vibeoncall_team_membership.<name>.user_id` and set `create_before_destroy` on that membership, so Terraform removes the user from this policy before it removes them from the team. For anyone else, use `data.vibeoncall_member.<name>.id`.",
 							ElementType:         types.StringType,
 							Optional:            true,
 							Validators: []validator.List{

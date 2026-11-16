@@ -21,6 +21,10 @@ data "vibeoncall_member" "ada" {
 resource "vibeoncall_team_membership" "ada" {
   team_id = vibeoncall_team.sre.id
   user_id = data.vibeoncall_member.ada.id
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 data "vibeoncall_member" "grace" {
@@ -93,7 +97,7 @@ Optional:
 - `channel_targets` (Attributes List) Slack or Microsoft Teams channels the tier posts the alert or incident card to, alone or alongside the people it pages. Acknowledging the alert from the card stops the escalation. (see [below for nested schema](#nestedatt--tiers--channel_targets))
 - `rotation_targets` (Attributes List) Schedule rotations whose on-call is paged. (see [below for nested schema](#nestedatt--tiers--rotation_targets))
 - `schedule_targets` (Attributes List) Schedules whose on-call is paged. (see [below for nested schema](#nestedatt--tiers--schedule_targets))
-- `user_ids` (List of String) Numeric IDs of users to page. For a member of the policy's team, use `vibeoncall_team_membership.<name>.user_id`, so Terraform removes the user from this policy before it removes them from the team. For anyone else, use `data.vibeoncall_member.<name>.id`.
+- `user_ids` (List of String) Numeric IDs of users to page. For a member of the policy's team, use `vibeoncall_team_membership.<name>.user_id` and set `create_before_destroy` on that membership, so Terraform removes the user from this policy before it removes them from the team. For anyone else, use `data.vibeoncall_member.<name>.id`.
 
 <a id="nestedatt--tiers--channel_targets"></a>
 ### Nested Schema for `tiers.channel_targets`

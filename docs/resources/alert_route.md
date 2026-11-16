@@ -295,7 +295,7 @@ Optional:
 - `escalation_policy_ids` (Set of String) Numeric IDs of escalation policies to page.
 - `schedule_ids` (Set of String) Numeric IDs of schedules whose on-call members to page.
 - `urgency` (String) `HIGH`, `MEDIUM` or `LOW`. Overrides the urgency the targets are paged with.
-- `user_ids` (Set of String) Numeric IDs of members to page.
+- `user_ids` (Set of String) Numeric IDs of members to page. For a member of the routing's team, use `vibeoncall_team_membership.<name>.user_id` and set `create_before_destroy` on that membership, so Terraform removes the user from this rule before it removes them from the team.
 
 ## Import
 
