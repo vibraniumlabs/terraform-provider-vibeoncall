@@ -47,7 +47,7 @@ resource "vibeoncall_team" "sre" {
 ### Optional
 
 - `description` (String) Team description. Remove the argument to clear it.
-- `members` (Attributes Set) Every member of the team. When set, Terraform removes members added elsewhere and adds back members removed elsewhere. When omitted, it shows the team's current members and Terraform leaves them alone, for example to manage them with `vibeoncall_team_membership`. (see [below for nested schema](#nestedatt--members))
+- `members` (Attributes Set) Every member of the team. When set, Terraform removes members added elsewhere and adds back members removed elsewhere; `members = []` removes everyone. When omitted, it shows the team's current members and Terraform leaves them alone, for example to manage them with `vibeoncall_team_membership`. (see [below for nested schema](#nestedatt--members))
 
 ### Read-Only
 
