@@ -1458,18 +1458,6 @@ components:
       example:
         incidentId: 123
         escalationPolicyId: 456
-    IncidentArchiveResponse:
-      type: object
-      properties:
-        id:
-          type: integer
-        archivedAt:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp when the incident was archived. Repeated requests return the original timestamp.
-      required:
-        - id
-        - archivedAt
     IncidentTimelineEvent:
       type: object
       properties:
@@ -1494,6 +1482,25 @@ components:
         - content
         - eventType
         - timestamp
+    IncidentTimelineEntryResponse:
+      type: object
+      properties:
+        timelineEvent:
+          $ref: "#/components/schemas/IncidentTimelineEvent"
+      required:
+        - timelineEvent
+    IncidentArchiveResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        archivedAt:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when the incident was archived. Repeated requests return the original timestamp.
+      required:
+        - id
+        - archivedAt
     IncidentSummary:
       type: object
       properties:
@@ -6054,6 +6061,83 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+  /incidents/{id}/timeline:
+    post:
+      tags:
+        - Incidents
+      summary: Add a manual incident timeline entry
+      description: Creates a manual timeline entry with optional past event time. Requires incident.update. The API key is recorded as the submitting actor; metadata.isManual is true. Entries appear in event-time order and are preserved during AI timeline regeneration. General-content entries do not trigger dedicated responder notifications, but configured timeline-update automations and existing Vibe reactions still apply at submission time. There is no notify parameter. Adding an entry does not update the incident record updatedAt.
+      operationId: addIncidentTimelineEntry
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - schema:
+            type: integer
+            exclusiveMinimum: 0
+            description: ID of the incident.
+            format: int32
+          required: true
+          name: id
+          in: path
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                  minLength: 1
+                  description: Free-text timeline entry content.
+                  example: Rolled back the payments deployment.
+                timestamp:
+                  type: string
+                  format: date-time
+                  description: ISO 8601 event time with a timezone. Must be at or before server time; times before the incident began are allowed. Omit to use the current time.
+                  example: 2026-10-20T09:30:00+07:00
+              required:
+                - content
+              additionalProperties: false
+      responses:
+        "201":
+          description: Created timeline entry. The timestamp is returned in UTC.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IncidentTimelineEntryResponse"
+        "400":
+          description: Invalid content, invalid timestamp, future timestamp, or unsupported request fields.
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: "#/components/schemas/ValidationErrorResponse"
+                  - $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Missing or invalid API key.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: "Permission denied: the API key is read-only, or its access does not include an action this request needs."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiKeyDenialResponse"
+        "404":
+          description: Incident not found in the API key organization.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /incidents/{id}/archive:
     post:
       tags:
@@ -6214,6 +6298,16 @@ paths:
                 pageResponders:
                   type: boolean
                   default: true
+                customFields:
+                  type: object
+                  additionalProperties:
+                    type:
+                      - string
+                      - "null"
+                  description: Initial top-level incident custom fields. Values may be strings or null.
+                  example:
+                    region: us-east-1
+                    owner: null
               required:
                 - title
                 - description
