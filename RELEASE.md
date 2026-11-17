@@ -4,16 +4,15 @@ Pushing a `v*` tag runs the `Release` workflow. It waits for a second maintainer
 
 ## Before you tag
 
-1. **The API is in production.** Every endpoint the provider calls must already be on ai-server `main`. Copy the spec from `main` and regenerate the client:
+1. **The API is in production.** `main` follows ai-server `dev`, so it can call endpoints production doesn't serve yet. Build it against the production spec, then discard the regenerated client:
 
    ```shell
-   gh api 'repos/vibraniumlabs/ai-server/contents/openapi/openapi.yaml?ref=main' \
-     -H 'Accept: application/vnd.github.raw' > internal/client/openapi.yaml
-   go generate ./internal/client
+   make update-client-main
    go build ./... && go test ./...
+   git checkout -- internal/client
    ```
 
-   If the build or tests fail, the provider depends on something production doesn't serve yet; wait for the next ai-server promotion. If anything changed, merge it in a PR before tagging.
+   If the build or tests fail, the provider depends on something production doesn't serve yet; wait for the next ai-server promotion.
 
 2. **The complete example works against production.** In `examples/complete`, `terraform apply` and then `terraform plan` shows no changes. Destroy it afterwards.
 
@@ -44,6 +43,17 @@ The `Release` workflow stops at the `release` environment. Another maintainer op
 
 3. The new version appears on the [Registry](https://registry.terraform.io/providers/vibraniumlabs/vibeoncall/latest). For the first release only, publish the provider from HCP Terraform: **Registry** → **Public namespaces** → `vibraniumlabs` → **Publish** → **Provider**.
 4. A clean `terraform init` installs the new version, and so does `tofu init` once the provider is in the OpenTofu registry.
+
+## Patch release while `main` waits on the API
+
+When a released version needs a fix before ai-server's next promotion, and `main` already calls endpoints production doesn't serve, release the fix from a branch off the last tag:
+
+```shell
+git switch -c release/v0.1.x v0.1.0
+git cherry-pick <fix>
+```
+
+Check it against production as in [Before you tag](#before-you-tag), step 1. Add the patch version to `CHANGELOG.md` on that branch, push it, and tag the branch's head as in [Tag](#tag). Then add the same `CHANGELOG.md` entry to `main`.
 
 ## When a release is wrong
 
