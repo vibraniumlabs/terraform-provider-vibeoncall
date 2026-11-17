@@ -10,7 +10,8 @@ lint:
 	golangci-lint run
 
 generate:
-	cd tools; go generate ./...
+	terraform fmt -recursive examples/
+	cd tools; go tool tfplugindocs generate --provider-dir .. -provider-name vibeoncall
 
 fmt:
 	gofmt -s -w -e .
