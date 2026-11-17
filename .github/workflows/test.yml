@@ -54,7 +54,7 @@ jobs:
             (echo; echo "Unexpected difference in directories after code generation. Run 'make generate' command and commit."; exit 1)
       - name: Validate docs
         working-directory: tools
-        run: go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs validate --provider-dir .. --provider-name vibeoncall
+        run: go tool tfplugindocs validate --provider-dir .. --provider-name vibeoncall
       - name: Validate the complete example
         run: |
           go build -o "$RUNNER_TEMP/bin/terraform-provider-vibeoncall" .
