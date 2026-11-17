@@ -1,3 +1,8 @@
-lead_email          = "lead@example.com"
-on_call_emails      = ["alice@example.com", "bob@example.com", "carol@example.com"]
-rotation_start_date = "2026-11-23"
+team_name                   = "Terraform Example"
+team_description            = "Created by the Vibe OnCall Terraform provider's complete example."
+service_name                = "Terraform Example"
+service_description         = "Created by the Vibe OnCall Terraform provider's complete example."
+team_admin_emails           = ["lead@example.com"]
+team_member_emails          = ["alice@example.com", "bob@example.com", "carol@example.com"]
+rotation_participant_emails = ["alice@example.com", "bob@example.com"]
+rotation_start_date         = "2026-11-23"
