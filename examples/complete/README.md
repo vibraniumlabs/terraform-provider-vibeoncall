@@ -2,14 +2,14 @@
 
 A team's on-call setup, end to end:
 
-- A team, with a lead as admin and the on-call engineers as members.
-- A schedule with a weekly rotation that hands off on Mondays at 09:00.
-- A two-tier escalation policy: the on-call engineer first, then the lead. It is the team's default policy.
+- A team with admins and members.
+- A schedule where the rotation participants, admins or members, take turns weekly, handing off on Mondays at 09:00.
+- A two-tier escalation policy: whoever is on call first, then every admin. It is the team's default policy.
 - A service owned by the team.
-- An alert route that pages the escalation policy for SEV0 and SEV1 alerts, and the on-call engineer for everything else.
+- An alert route that pages the escalation policy for SEV0 and SEV1 alerts, and whoever is on call for everything else.
 - An alert source that a monitoring tool sends alerts to, feeding that route.
 
-Every user must already exist in Vibe OnCall; the example looks them up by email.
+Every user must already exist in Vibe OnCall, usually provisioned through SCIM from your identity provider; the example looks them up by email.
 
 ## Run it
 
@@ -19,7 +19,7 @@ Every user must already exist in Vibe OnCall; the example looks them up by email
    export VIBEONCALL_API_KEY=...
    ```
 
-2. Copy `terraform.tfvars.example` to `terraform.tfvars` and fill in your users and a start date.
+2. Copy `terraform.tfvars.example` to `terraform.tfvars` and fill in your team, service, users and a start date.
 
 3. Apply, then plan again. The second plan shows no changes.
 

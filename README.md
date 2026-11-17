@@ -53,8 +53,10 @@ terraform plan
 
 ### Regenerating code
 
-- API client: `go generate ./internal/client` regenerates `internal/client/client.gen.go` from `internal/client/openapi.yaml`.
-- Docs: `make generate` regenerates `docs/` from the provider schema and `examples/`.
+- `make generate` regenerates the API client from the committed `internal/client/openapi.yaml`, then `docs/` from the provider schema and `examples/`. It never fetches the spec, and CI fails when it leaves a diff.
+- `make update-client` copies `openapi/openapi.yaml` from ai-server `dev` and regenerates the client. The provider follows `dev`, so this is the one to use when a change needs a new API. It needs the GitHub CLI signed in to an account that can read ai-server.
+- `make update-client-local` does the same from a local ai-server checkout, for an API change that isn't pushed yet. It reads `../ai-server`; set `AI_SERVER_DIR` when the checkout is elsewhere. Run `make update-client` again before merging, so `main` only holds a spec that ai-server has.
+- `make update-client-main` copies the spec from ai-server `main`, which is what production serves. Use it before a release; see [RELEASE.md](RELEASE.md).
 
 ## Releasing
 

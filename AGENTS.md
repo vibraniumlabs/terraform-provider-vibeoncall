@@ -11,7 +11,7 @@ Everything in it is published: code, docs, examples, commit messages, PR titles 
 
 ## Layout
 
-- `internal/client/` is the generated API client. `openapi.yaml` there is a verbatim copy of ai-server's `openapi/openapi.yaml`; never edit it by hand. To resync, copy it from ai-server `main` (production) and run `go generate ./internal/client`. A copy from `dev` belongs only on a branch that waits for that change to reach production.
+- `internal/client/` is the generated API client. `openapi.yaml` there is a verbatim copy of ai-server's `openapi/openapi.yaml`; never edit it by hand. It follows ai-server `dev`, so `main` can be ahead of production. Before a release, confirm that everything the provider offers works against production (see `RELEASE.md`).
 - `internal/provider/` holds the resources and data sources, written by hand on top of the client.
 - `examples/resources/<type>/` and `examples/data-sources/<type>/` are rendered into the docs. `examples/complete/` is an end-to-end example that CI validates.
 - `templates/` holds doc templates for the resources that need notes.
@@ -21,7 +21,8 @@ Everything in it is published: code, docs, examples, commit messages, PR titles 
 
 - `go build ./...`
 - `go test ./...` runs every test against the fake API in `internal/provider/fake_api_test.go`, so it needs no API key or network.
-- `make generate` formats `examples/` and regenerates `docs/`. It doesn't regenerate the client. CI fails when it leaves a diff.
+- `make generate` regenerates the client from the committed `openapi.yaml`, formats `examples/` and regenerates `docs/`. CI fails when it leaves a diff.
+- `make update-client` copies the spec from ai-server `dev` and regenerates the client. `make update-client-local` copies it from `../ai-server` instead (override with `AI_SERVER_DIR`), and `make update-client-main` from ai-server `main`, to check the provider against production before a release.
 - `golangci-lint run`
 
 ## Conventions
