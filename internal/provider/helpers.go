@@ -121,8 +121,8 @@ func idFromNullable[T int | int32](v nullable.Nullable[T]) types.String {
 }
 
 func mustAtoi(v types.String) int {
-	n, _ := strconv.Atoi(v.ValueString())
-	return n
+	n, _ := strconv.ParseInt(v.ValueString(), 10, 32)
+	return int(n)
 }
 
 func itoa(n int) types.String {
