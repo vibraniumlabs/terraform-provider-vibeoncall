@@ -4507,7 +4507,7 @@ paths:
       tags:
         - Teams
       summary: Unassign a member from a team
-      description: Removes a user from a team.
+      description: Removes a user from a team. A user still on one of the team's schedule rotations, upcoming overrides, escalation policy tiers or routing rules is not removed; replace or remove them there first, or remove them in the app, which lets you choose a replacement for each.
       operationId: unassignTeamMember
       security:
         - ApiKeyAuth: []
@@ -4554,6 +4554,12 @@ paths:
                 $ref: "#/components/schemas/ApiKeyDenialResponse"
         "404":
           description: Team, user, or membership not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: The user is still on a schedule rotation, upcoming override, escalation policy tier or routing rule of the team; the message lists each one.
           content:
             application/json:
               schema:

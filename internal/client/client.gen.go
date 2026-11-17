@@ -8411,7 +8411,7 @@ type ClientInterface interface {
 
 	// UnassignTeamMember Unassign a member from a team
 	//
-	// Removes a user from a team.
+	// Removes a user from a team. A user still on one of the team's schedule rotations, upcoming overrides, escalation policy tiers or routing rules is not removed; replace or remove them there first, or remove them in the app, which lets you choose a replacement for each.
 	//
 	// Corresponds with DELETE /teams/{teamShortId}/members/{userId} (the `UnassignTeamMember` operationId).
 	UnassignTeamMember(ctx context.Context, teamShortId string, userId int32, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -9890,7 +9890,7 @@ func (c *Client) AssignTeamMember(ctx context.Context, teamShortId string, body 
 
 // UnassignTeamMember Unassign a member from a team
 //
-// Removes a user from a team.
+// Removes a user from a team. A user still on one of the team's schedule rotations, upcoming overrides, escalation policy tiers or routing rules is not removed; replace or remove them there first, or remove them in the app, which lets you choose a replacement for each.
 //
 // Corresponds with DELETE /teams/{teamShortId}/members/{userId} (the `UnassignTeamMember` operationId).
 func (c *Client) UnassignTeamMember(ctx context.Context, teamShortId string, userId int32, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -13748,7 +13748,7 @@ type ClientWithResponsesInterface interface {
 
 	// UnassignTeamMemberWithResponse Unassign a member from a team
 	//
-	// Removes a user from a team.
+	// Removes a user from a team. A user still on one of the team's schedule rotations, upcoming overrides, escalation policy tiers or routing rules is not removed; replace or remove them there first, or remove them in the app, which lets you choose a replacement for each.
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
@@ -18060,6 +18060,8 @@ type UnassignTeamMemberResponse struct {
 	JSON403 *ApiKeyDenialResponse
 	// JSON404 the response for an HTTP 404 `application/json` response
 	JSON404 *ErrorResponse
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponse
 	// JSON500 the response for an HTTP 500 `application/json` response
 	JSON500 *ErrorResponse
 }
@@ -18087,6 +18089,11 @@ func (r UnassignTeamMemberResponse) GetJSON403() *ApiKeyDenialResponse {
 // GetJSON404 returns the response for an HTTP 404 `application/json` response
 func (r UnassignTeamMemberResponse) GetJSON404() *ErrorResponse {
 	return r.JSON404
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r UnassignTeamMemberResponse) GetJSON409() *ErrorResponse {
+	return r.JSON409
 }
 
 // GetJSON500 returns the response for an HTTP 500 `application/json` response
@@ -19398,7 +19405,7 @@ func (c *ClientWithResponses) AssignTeamMemberWithResponse(ctx context.Context, 
 
 // UnassignTeamMemberWithResponse Unassign a member from a team
 //
-// Removes a user from a team.
+// Removes a user from a team. A user still on one of the team's schedule rotations, upcoming overrides, escalation policy tiers or routing rules is not removed; replace or remove them there first, or remove them in the app, which lets you choose a replacement for each.
 //
 // Returns a wrapper object for the known response body format(s).
 //
@@ -22910,6 +22917,13 @@ func ParseUnassignTeamMemberResponse(rsp *http.Response) (*UnassignTeamMemberRes
 			return nil, err
 		}
 		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest ErrorResponse
