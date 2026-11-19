@@ -1548,6 +1548,20 @@ components:
             - "null"
           format: date-time
           description: ISO 8601 incident resolution time, null when unknown or reopened.
+        impactStartedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+          description: UTC ISO 8601 timestamp when impact began. Set through the API or the dashboard, never derived, and independent of reportedAt. Null when not set.
+          example: 2026-11-17T16:12:00.000Z
+        impactEndedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+          description: UTC ISO 8601 timestamp when impact ended. Independent of resolvedAt and of status, so it can be set on an incident that is still open. Null when not set.
+          example: 2026-11-17T17:40:00.000Z
         acknowledgedAt:
           type:
             - string
@@ -1570,7 +1584,7 @@ components:
             - string
             - "null"
           format: date-time
-          description: UTC ISO 8601 timestamp when the incident row was last updated; the same value used by updatedSince. Null when unavailable.
+          description: UTC ISO 8601 timestamp when the incident record was last updated; the same value used by updatedSince. Includes changes to responder and label assignments, and manual timeline entry submissions. Unchanged assignments do not advance it. Automatic and AI-generated timeline entries alone do not advance it. Null when unavailable.
         externalLinks:
           description: External links associated with the incident (Slack, PagerDuty, Jira, etc.).
         customFields:
@@ -1727,6 +1741,8 @@ components:
         - title
         - externalId
         - resolvedAt
+        - impactStartedAt
+        - impactEndedAt
         - lastActivity
         - updatedAt
         - customFields
@@ -3045,6 +3061,7 @@ components:
               items:
                 type: string
                 enum: &a6
+                  - jira
                   - opsgenie
                   - grafana
                   - datadog
@@ -3486,6 +3503,7 @@ components:
         provider:
           type: string
           enum: &a3
+            - jira
             - opsgenie
             - grafana
             - datadog
@@ -6072,7 +6090,7 @@ paths:
       tags:
         - Incidents
       summary: Add a manual incident timeline entry
-      description: Creates a manual timeline entry with optional past event time. Requires incident.update. The API key is recorded as the submitting actor; metadata.isManual is true. Entries appear in event-time order and are preserved during AI timeline regeneration. General-content entries do not trigger dedicated responder notifications, but configured timeline-update automations and existing Vibe reactions still apply at submission time. There is no notify parameter. Adding an entry does not update the incident record updatedAt.
+      description: Creates a manual timeline entry with optional past event time. Requires incident.update. The API key is recorded as the submitting actor; metadata.isManual is true. Optionally supply author as an email, name, or description, using the same attribution rules as incident comments. Authorship is returned in metadata.author; the API key remains metadata.actor. Entries appear in event-time order and are preserved during AI timeline regeneration. General-content entries do not trigger dedicated responder notifications, but configured timeline-update automations and existing Vibe reactions still apply at submission time. There is no notify parameter. Adding an entry does not update the incident record updatedAt.
       operationId: addIncidentTimelineEntry
       security:
         - ApiKeyAuth: []
@@ -6102,6 +6120,12 @@ paths:
                   format: date-time
                   description: ISO 8601 event time with a timezone. Must be at or before server time; times before the incident began are allowed. Omit to use the current time.
                   example: 2026-10-20T09:30:00+07:00
+                author:
+                  type: string
+                  minLength: 1
+                  maxLength: 255
+                  description: Author email, name, or description. Leading and trailing whitespace is trimmed; the result must be 1–255 characters or the request is rejected with 400. An email matching an active user in the API key's organization links that user; unmatched values and emails of pending or revoked users are stored as plain text. Omit to attribute the entry to the API key. The API key remains the submitting actor in all cases.
+                  example: alice@example.com
               required:
                 - content
               additionalProperties: false
@@ -6113,7 +6137,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/IncidentTimelineEntryResponse"
         "400":
-          description: Invalid content, invalid timestamp, future timestamp, or unsupported request fields.
+          description: Invalid content, author, timestamp, future timestamp, or unsupported request fields.
           content:
             application/json:
               schema:
@@ -6215,7 +6239,7 @@ paths:
       security:
         - ApiKeyAuth: []
       summary: Create an incident
-      description: Creates an incident and initiates paging by default. Delivery continues asynchronously and is visible in the dashboard. Service assignment does not select service responders. Requires incident.create, plus incident.page when paging with responders. An optional Idempotency-Key replays the original response, including execution failures, for 24 hours. Keys are scoped to the organization and operation, including across API key rotation. Interrupted execution is never resumed. After expiry a key can create a new incident. This protects retries, not incident correlation or exactly-once notification delivery.
+      description: Creates an incident and initiates paging by default. Delivery continues asynchronously and is visible in the dashboard. Service assignment does not select service responders. Requires incident.create, plus incident.page when paging with responders. An optional Idempotency-Key replays the original response, including execution failures, for 24 hours. Keys are scoped to the organization and operation, including across API key rotation. Interrupted execution is never resumed. After expiry a key can create a new incident. This protects retries, not incident correlation or exactly-once notification delivery. Optional impactStartedAt and impactEndedAt record the impact window; they are stored separately from reportedAt and resolvedAt and do not affect status.
       parameters:
         - schema:
             type: string
@@ -6314,6 +6338,20 @@ paths:
                   example:
                     region: us-east-1
                     owner: null
+                impactStartedAt:
+                  type:
+                    - string
+                    - "null"
+                  format: date-time
+                  description: When impact began, as an ISO 8601 timestamp with a timezone. Stored separately from reportedAt, which is still set to the creation time. Null or omitted leaves it unset.
+                  example: 2026-11-18T01:12:00+09:00
+                impactEndedAt:
+                  type:
+                    - string
+                    - "null"
+                  format: date-time
+                  description: When impact ended, as an ISO 8601 timestamp with a timezone. Stored separately from resolvedAt and does not resolve the incident. Must be at or after impactStartedAt when both are set. Null or omitted leaves it unset.
+                  example: 2026-11-18T02:40:00+09:00
               required:
                 - title
                 - description
@@ -6424,9 +6462,29 @@ paths:
         - schema:
             type: string
             format: date-time
-            description: ISO 8601 timestamp — only return incidents whose record was updated at or after this time. Uses the incident record update time, independently of creation time and last activity.
+            description: ISO 8601 timestamp — only return incidents whose record was updated at or after this time. Covers incident field edits (title, description, severity, status, reportedAt, resolvedAt, impactStartedAt, impactEndedAt, customFields), service assignment, archiving, responder and label assignment changes, and manual timeline entries from the portal or API. Backdated manual entries use their submission time. Responder and label requests that leave assignments unchanged do not advance it. AI-generated and automatic timeline entries alone do not advance it. Uses the incident record update time, independently of creation time and last activity.
           required: false
           name: updatedSince
+          in: query
+        - schema:
+            type: string
+            enum:
+              - createdAt
+              - updatedAt
+            description: Sort incidents by creation time or record update time. Defaults to createdAt (newest first). Explicit sorting takes precedence over search relevance. Equal timestamps are ordered by incident ID ascending.
+          required: false
+          name: sortBy
+          in: query
+        - schema:
+            type: string
+            enum:
+              - ASC
+              - DESC
+              - asc
+              - desc
+            description: Sort direction, accepting uppercase or lowercase values. Defaults to DESC. When sortBy is omitted, an explicit sortOrder applies to createdAt.
+          required: false
+          name: sortOrder
           in: query
         - schema:
             type: array
@@ -6599,7 +6657,7 @@ paths:
       tags:
         - Incidents
       summary: Update incident fields
-      description: Updates scalar incident fields for the organization associated with the API key. Supports title, description, severity, normalized status, reportedAt, and resolvedAt. Timestamps cannot be cleared; resolvedAt requires resolved status (existing or in this request). Timestamp edits must leave resolvedAt at or after reportedAt. Accepted timestamps are returned in UTC. Returns the complete incident detail without optional expansions. For compatibility, status is canonical (open, acknowledged, resolved, blocked, observation), matching normalizedStatus, even when status is not edited. GET and create responses retain legacy status alongside normalizedStatus.
+      description: "Updates scalar incident fields for the organization associated with the API key. Supports title, description, severity, normalized status, reportedAt, resolvedAt, impactStartedAt, and impactEndedAt. reportedAt and resolvedAt cannot be cleared; resolvedAt requires resolved status (existing or in this request). Timestamp edits must leave resolvedAt at or after reportedAt. Accepted timestamps are returned in UTC. impactStartedAt and impactEndedAt are stored separately: setting them never changes reportedAt, resolvedAt or status, impactEndedAt can be set while the incident is open, and null clears either one. Edits must leave impactEndedAt at or after impactStartedAt. Returns the complete incident detail without optional expansions. For compatibility, status is canonical (open, acknowledged, resolved, blocked, observation), matching normalizedStatus, even when status is not edited. GET and create responses retain legacy status alongside normalizedStatus."
       operationId: updateIncident
       security:
         - ApiKeyAuth: []
@@ -6652,6 +6710,20 @@ paths:
                   type: string
                   format: date-time
                   description: "Incident resolution time as an ISO 8601 timestamp with a timezone. Requires resolved status, or status: resolved in the same request. Must be at or after reportedAt. Cannot be cleared."
+                impactStartedAt:
+                  type:
+                    - string
+                    - "null"
+                  format: date-time
+                  description: "When impact began, as an ISO 8601 timestamp with a timezone. Stored separately from reportedAt: setting it does not change reportedAt, resolvedAt or status. Send null to clear it."
+                  example: 2026-11-18T01:12:00+09:00
+                impactEndedAt:
+                  type:
+                    - string
+                    - "null"
+                  format: date-time
+                  description: "When impact ended, as an ISO 8601 timestamp with a timezone. Stored separately from resolvedAt and can be set while the incident is still open: setting it does not change resolvedAt, reportedAt or status. Must be at or after impactStartedAt when both are set. Send null to clear it."
+                  example: 2026-11-18T02:40:00+09:00
               additionalProperties: false
       responses:
         "200":
@@ -7202,7 +7274,8 @@ paths:
                 author:
                   type: string
                   minLength: 1
-                  description: Author email, name, or description. An email matching an active user in the API key's organization links that user; unmatched values and emails of pending or revoked users are stored as plain text. Omit to attribute the comment to the API key. The API key remains the submitting actor in all cases.
+                  maxLength: 255
+                  description: Author email, name, or description. Leading and trailing whitespace is trimmed; the result must be 1–255 characters or the request is rejected with 400. An email matching an active user in the API key's organization links that user; unmatched values and emails of pending or revoked users are stored as plain text. Omit to attribute the comment to the API key. The API key remains the submitting actor in all cases.
                   example: alice@example.com
               required:
                 - comment

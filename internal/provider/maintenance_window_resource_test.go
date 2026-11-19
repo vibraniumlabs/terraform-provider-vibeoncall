@@ -227,6 +227,44 @@ func TestMaintenanceWindowResourceLifecycle(t *testing.T) {
 	})
 }
 
+func TestMaintenanceWindowResourceJiraCondition(t *testing.T) {
+	api, srv := newFakeAPI(t)
+	const window = "vibeoncall_maintenance_window.deploy"
+	start := time.Now().Add(24 * time.Hour).Truncate(time.Second).UTC()
+	config := func(providers string) string {
+		return maintenanceWindowConfig(srv.URL, "payments", start.Format(time.RFC3339), start.Add(time.Hour).Format(time.RFC3339), fmt.Sprintf(`
+  condition_groups = [{
+    operator   = "AND"
+    conditions = [{ provider = { providers = [%s] } }]
+  }]
+`, providers))
+	}
+	updated := config(`"datadog", "jira"`)
+
+	resource.UnitTest(t, resource.TestCase{
+		ProtoV6ProviderFactories: protoV6ProviderFactories(),
+		CheckDestroy:             api.checkNothingLeft,
+		Steps: []resource.TestStep{
+			{
+				Config: config(`"jira"`),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(window, "condition_groups.0.conditions.0.provider.providers.0", "jira"),
+					api.checkWindowConditions("AND", `[{"type":"provider","rule":{"operator":"one_of","providers":["jira"]}}]`),
+				),
+			},
+			{
+				Config: updated,
+				ConfigPlanChecks: resource.ConfigPlanChecks{
+					PreApply: []plancheck.PlanCheck{plancheck.ExpectResourceAction(window, plancheck.ResourceActionUpdate)},
+				},
+				Check: api.checkWindowConditions("AND", `[{"type":"provider","rule":{"operator":"one_of","providers":["datadog","jira"]}}]`),
+			},
+			{ResourceName: window, ImportState: true, ImportStateVerify: true},
+			{Config: updated, PlanOnly: true},
+		},
+	})
+}
+
 func TestMaintenanceWindowResourceRejectsMovingStartedWindow(t *testing.T) {
 	api, srv := newFakeAPI(t)
 	start := time.Now().Add(-time.Hour).UTC().Format(time.RFC3339)
