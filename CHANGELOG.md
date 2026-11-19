@@ -1,5 +1,10 @@
 ## 0.1.1 (Unreleased)
 
+ENHANCEMENTS:
+
+* resource/vibeoncall_alert_source: Accept `type = "jira"` for Jira Cloud webhook sources. Upgrade the provider to this version or later to configure Jira sources.
+* resource/vibeoncall_alert_route, resource/vibeoncall_maintenance_window: Accept `jira` in provider conditions.
+
 NOTES:
 
 * resource/vibeoncall_team_membership, resource/vibeoncall_team: Removing a member who is still in one of the team's schedule rotations, upcoming overrides, escalation policy tiers or alert routes now fails with an error that lists each of them, instead of leaving the member paged there.

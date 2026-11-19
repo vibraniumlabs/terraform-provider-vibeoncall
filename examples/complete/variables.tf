@@ -83,7 +83,7 @@ variable "rotation_start_date" {
 }
 
 variable "alert_source_type" {
-  description = "Monitoring tool that sends alerts to the team, such as `datadog`, `grafana` or `http`."
+  description = "Tool that sends alerts to the team, such as `datadog`, `grafana`, `jira` (Jira Cloud) or `http`."
   type        = string
   default     = "datadog"
 
