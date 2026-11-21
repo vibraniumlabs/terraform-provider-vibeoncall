@@ -1,5 +1,9 @@
 ## 0.1.1 (Unreleased)
 
+ENHANCEMENTS:
+
+* resource/vibeoncall_alert_source: Configure email deduplication with a string template using subject, sender, and body variables. Omit or use null for the provider default; an empty string disables matching. Removing a template restores the default.
+
 NOTES:
 
 * resource/vibeoncall_team_membership, resource/vibeoncall_team: Removing a member who is still in one of the team's schedule rotations, upcoming overrides, escalation policy tiers or alert routes now fails with an error that lists each of them, instead of leaving the member paged there.
