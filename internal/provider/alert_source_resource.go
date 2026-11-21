@@ -19,8 +19,9 @@ import (
 )
 
 var (
-	_ resource.Resource                = &AlertSourceResource{}
-	_ resource.ResourceWithImportState = &AlertSourceResource{}
+	_ resource.Resource                   = &AlertSourceResource{}
+	_ resource.ResourceWithImportState    = &AlertSourceResource{}
+	_ resource.ResourceWithValidateConfig = &AlertSourceResource{}
 )
 
 func NewAlertSourceResource() resource.Resource {
@@ -37,6 +38,7 @@ type AlertSourceResourceModel struct {
 	Type           types.String `tfsdk:"type"`
 	TeamID         types.String `tfsdk:"team_id"`
 	AlertRoutingID types.String `tfsdk:"alert_routing_id"`
+	Deduplication  types.String `tfsdk:"deduplication"`
 	Enabled        types.Bool   `tfsdk:"enabled"`
 	WebhookURL     types.String `tfsdk:"webhook_url"`
 	WebhookToken   types.String `tfsdk:"webhook_token"`
@@ -96,6 +98,11 @@ func (r *AlertSourceResource) Schema(ctx context.Context, req resource.SchemaReq
 				Optional:            true,
 				Validators:          []validator.String{int32NumericID},
 			},
+			"deduplication": schema.StringAttribute{
+				MarkdownDescription: "Email sources only. Omit or set null for the provider default (`{{subject}}`); an empty string disables matching. Custom templates allow literal text and `{{subject}}`, `{{sender}}`, `{{body}}` variables. Templates and populated keys are limited to 500 characters. Matching stays within this source. Missing values become empty text; an empty result creates a separate alert. Removing a configured value restores the default. Identical first 500 characters or different templates that populate to the same text can match.",
+				Optional:            true,
+				Validators:          []validator.String{utf16LengthAtMost(500)},
+			},
 			"enabled": schema.BoolAttribute{
 				MarkdownDescription: "Whether the source accepts alerts. A disabled source rejects what arrives on it. Defaults to `true`.",
 				Optional:            true,
@@ -125,6 +132,7 @@ func (r *AlertSourceResource) Create(ctx context.Context, req resource.CreateReq
 	}
 
 	res, err := r.client.CreateAlertSourceWithResponse(ctx, client.CreateAlertSourceJSONRequestBody{
+		Deduplication:  nullableString(plan.Deduplication),
 		Name:           plan.Name.ValueString(),
 		Provider:       client.CreateAlertSourceRequestProvider(plan.Type.ValueString()),
 		TeamId:         nullableID[int](plan.TeamID),
@@ -183,6 +191,7 @@ func (r *AlertSourceResource) Update(ctx context.Context, req resource.UpdateReq
 	}
 
 	res, err := r.client.UpdateAlertSourceWithResponse(ctx, id, client.UpdateAlertSourceJSONRequestBody{
+		Deduplication:  nullableString(plan.Deduplication),
 		Name:           plan.Name.ValueStringPointer(),
 		AlertRoutingId: nullableID[int](plan.AlertRoutingID),
 		IsEnabled:      plan.Enabled.ValueBoolPointer(),
@@ -238,4 +247,17 @@ func setAlertSourceState(m *AlertSourceResourceModel, s *client.AlertSource) {
 	m.WebhookURL = stringFromNullable(s.WebhookUrl)
 	m.WebhookToken = stringFromNullable(s.WebhookToken)
 	m.EmailAddress = stringFromNullable(s.EmailAddress)
+	m.Deduplication = stringFromNullable(s.Deduplication)
+}
+
+func (r *AlertSourceResource) ValidateConfig(ctx context.Context, req resource.ValidateConfigRequest, resp *resource.ValidateConfigResponse) {
+	var configuration AlertSourceResourceModel
+	resp.Diagnostics.Append(req.Config.Get(ctx, &configuration)...)
+	if resp.Diagnostics.HasError() || configuration.Deduplication.IsNull() || configuration.Deduplication.IsUnknown() {
+		return
+	}
+	if !configuration.Type.IsUnknown() && configuration.Type.ValueString() != "email" {
+		resp.Diagnostics.AddAttributeError(path.Root("deduplication"), "Unsupported deduplication", "Configurable deduplication is available for email sources only.")
+		return
+	}
 }

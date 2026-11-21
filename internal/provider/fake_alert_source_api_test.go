@@ -13,6 +13,7 @@ type fakeSource struct {
 	Provider       string
 	TeamID         *int
 	AlertRoutingID *int
+	Deduplication  *string
 	IsEnabled      bool
 }
 
@@ -26,7 +27,7 @@ func (s *fakeSource) json() map[string]any {
 	}
 	return map[string]any{
 		"id": s.ID, "name": s.Name, "provider": s.Provider, "teamId": s.TeamID,
-		"alertRoutingId": s.AlertRoutingID, "isEnabled": s.IsEnabled,
+		"alertRoutingId": s.AlertRoutingID, "isEnabled": s.IsEnabled, "deduplication": s.Deduplication,
 		"webhookUrl": webhookURL, "webhookToken": webhookToken, "emailAddress": emailAddress,
 		"createdAt": "2026-01-01T00:00:00Z", "updatedAt": "2026-01-01T00:00:00Z",
 	}
@@ -65,7 +66,7 @@ func (a *fakeAPI) serveAlertSources(w http.ResponseWriter, r *http.Request, rest
 		writeJSON(w, http.StatusOK, s.json())
 	case http.MethodPatch:
 		for key := range body {
-			if key != "name" && key != "alertRoutingId" && key != "isEnabled" {
+			if key != "name" && key != "alertRoutingId" && key != "isEnabled" && key != "deduplication" {
 				writeJSON(w, http.StatusBadRequest, map[string]string{"error": "Unrecognized key: " + key})
 				return
 			}
@@ -83,6 +84,13 @@ func (a *fakeAPI) serveAlertSources(w http.ResponseWriter, r *http.Request, rest
 
 func (a *fakeAPI) applySourceBody(w http.ResponseWriter, s *fakeSource, body map[string]json.RawMessage) bool {
 	next := *s
+	if raw, ok := body["deduplication"]; ok {
+		next.Deduplication = nil
+		if err := json.Unmarshal(raw, &next.Deduplication); err != nil {
+			writeJSON(w, http.StatusBadRequest, map[string]string{"message": "Deduplication must be a nullable string"})
+			return false
+		}
+	}
 	if raw, ok := body["name"]; ok {
 		_ = json.Unmarshal(raw, &next.Name)
 	}
