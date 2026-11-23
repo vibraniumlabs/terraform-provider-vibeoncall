@@ -195,6 +195,10 @@ components:
       required:
         - id
         - name
+    AlertSourceDeduplication:
+      type: string
+      maxLength: 500
+      description: Email sources only. Null uses the provider default ({{subject}}); an empty string disables matching. Templates support {{subject}}, {{sender}} and {{body}}. Template and populated key are limited to 500 characters. Matching is scoped to this source. Omit on create for the default; omit on update to preserve the setting.
     TeamSummary:
       type: object
       properties:
@@ -2993,7 +2997,7 @@ components:
           properties:
             operator:
               type: string
-              enum: &a4
+              enum: &a5
                 - equal_to
                 - less_than
                 - greater_than
@@ -3024,7 +3028,7 @@ components:
               description: Dot-path into the payload this rule is evaluated against. Alert routing, enrichment and maintenance-window rules evaluate the incoming payload, where the source's own fields are under `details`; automation rules evaluate the stored alert, where the same fields are under `metadata`. A path that matches nothing makes the rule silently never fire.
             operator:
               type: string
-              enum: &a5
+              enum: &a6
                 - contains
                 - exact_match
                 - not_contains
@@ -3060,7 +3064,7 @@ components:
               type: array
               items:
                 type: string
-                enum: &a6
+                enum: &a7
                   - jira
                   - opsgenie
                   - grafana
@@ -3099,7 +3103,7 @@ components:
               minLength: 1
             operator:
               type: string
-              enum: &a7
+              enum: &a8
                 - day_in_between
                 - week_in_between
             timeInterval:
@@ -3528,6 +3532,11 @@ components:
             - integer
             - "null"
           exclusiveMinimum: 0
+        deduplication:
+          description: Null uses the provider default; an empty string disables matching. Omission preserves the setting on update.
+          anyOf: &a4
+            - $ref: "#/components/schemas/AlertSourceDeduplication"
+            - type: "null"
         isEnabled:
           type: boolean
         webhookUrl:
@@ -3557,6 +3566,7 @@ components:
         - provider
         - teamId
         - alertRoutingId
+        - deduplication
         - isEnabled
         - webhookUrl
         - webhookToken
@@ -3590,6 +3600,9 @@ components:
             - "null"
           exclusiveMinimum: 0
           description: Omit or send null for an organization-level source. Cannot be changed later.
+        deduplication:
+          description: Null uses the provider default; an empty string disables matching. Omission preserves the setting on update.
+          anyOf: *a4
         alertRoutingId:
           type:
             - integer
@@ -3610,6 +3623,9 @@ components:
           type: string
           minLength: 1
           maxLength: 255
+        deduplication:
+          description: Null uses the provider default; an empty string disables matching. Omission preserves the setting on update.
+          anyOf: *a4
         alertRoutingId:
           type:
             - integer
@@ -3632,7 +3648,7 @@ components:
           properties:
             operator:
               type: string
-              enum: *a4
+              enum: *a5
             severity:
               type: string
           required:
@@ -3658,7 +3674,7 @@ components:
               description: Dot-path into the payload this rule is evaluated against. Alert routing, enrichment and maintenance-window rules evaluate the incoming payload, where the source's own fields are under `details`; automation rules evaluate the stored alert, where the same fields are under `metadata`. A path that matches nothing makes the rule silently never fire.
             operator:
               type: string
-              enum: *a5
+              enum: *a6
             conditionValue:
               type: string
             isCaseSensitive:
@@ -3690,7 +3706,7 @@ components:
               type: array
               items:
                 type: string
-                enum: *a6
+                enum: *a7
               minItems: 1
           required:
             - operator
@@ -3739,7 +3755,7 @@ components:
               minLength: 1
             operator:
               type: string
-              enum: *a7
+              enum: *a8
             timeInterval:
               anyOf:
                 - type: object
@@ -3972,7 +3988,7 @@ components:
             - "null"
         logicalOperator:
           type: string
-          enum: &a8
+          enum: &a9
             - AND
             - OR
           description: How the top-level conditions combine.
@@ -4049,7 +4065,7 @@ components:
           maxLength: 255
         logicalOperator:
           type: string
-          enum: *a8
+          enum: *a9
           description: How the top-level conditions combine.
         conditions:
           type: array
@@ -6944,7 +6960,7 @@ paths:
                           - userId
                   minItems: 1
                   description: Responders to add to or remove from the incident.
-                  example: &a9
+                  example: &a10
                     - type: user
                       userId: 123
                     - type: team
@@ -7046,7 +7062,7 @@ paths:
                           - userId
                   minItems: 1
                   description: Responders to add to or remove from the incident.
-                  example: *a9
+                  example: *a10
               required:
                 - responders
               additionalProperties: false
@@ -7120,7 +7136,7 @@ paths:
                   minItems: 1
                   maxItems: 5
                   description: Label names to add or remove (1-5 items, 30 characters max per label).
-                  example: &a10
+                  example: &a11
                     - customer-impacting
                     - checkout
               required:
@@ -7196,7 +7212,7 @@ paths:
                   minItems: 1
                   maxItems: 5
                   description: Label names to add or remove (1-5 items, 30 characters max per label).
-                  example: *a10
+                  example: *a11
               required:
                 - labels
               additionalProperties: false
@@ -8360,7 +8376,7 @@ paths:
                   minItems: 1
                   maxItems: 5
                   description: Label names to add or remove (1-5 items, 30 characters max per label).
-                  example: &a11
+                  example: &a12
                     - OverwriteQuietHours
                     - Critical
               required:
@@ -8435,7 +8451,7 @@ paths:
                   minItems: 1
                   maxItems: 5
                   description: Label names to add or remove (1-5 items, 30 characters max per label).
-                  example: *a11
+                  example: *a12
               required:
                 - labels
       responses:
