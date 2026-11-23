@@ -124,6 +124,61 @@ func TestAlertSourceResourceTypeChangeReplaces(t *testing.T) {
 	})
 }
 
+func TestAlertSourceResourceJira(t *testing.T) {
+	api, srv := newFakeAPI(t)
+	seedTeamRoutings(api)
+	const source = "vibeoncall_alert_source.jira"
+	config := func(name, routing string, enabled bool) string {
+		return providerConfig(srv.URL) + fmt.Sprintf(`
+resource "vibeoncall_team" "payments" {
+  name = "Payments"
+}
+resource "vibeoncall_alert_source" "jira" {
+  name             = %q
+  type             = "jira"
+  team_id          = vibeoncall_team.payments.id
+  alert_routing_id = %q
+  enabled          = %t
+}
+`, name, routing, enabled)
+	}
+	updated := config("Jira issues renamed", "11", false)
+
+	resource.UnitTest(t, resource.TestCase{
+		ProtoV6ProviderFactories: protoV6ProviderFactories(),
+		CheckDestroy:             api.checkNothingLeft,
+		Steps: []resource.TestStep{
+			{
+				Config: config("Jira issues", "10", true),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(source, "type", "jira"),
+					resource.TestCheckResourceAttr(source, "alert_routing_id", "10"),
+					resource.TestCheckResourceAttr(source, "webhook_url", "https://api.example.com/webhooks/jira/token-1"),
+					resource.TestCheckResourceAttr(source, "webhook_token", "token-1"),
+					resource.TestCheckNoResourceAttr(source, "email_address"),
+				),
+			},
+			{
+				Config: updated,
+				ConfigPlanChecks: resource.ConfigPlanChecks{
+					PreApply: []plancheck.PlanCheck{plancheck.ExpectResourceAction(source, plancheck.ResourceActionUpdate)},
+				},
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(source, "id", "1"),
+					resource.TestCheckResourceAttr(source, "type", "jira"),
+					resource.TestCheckResourceAttr(source, "name", "Jira issues renamed"),
+					resource.TestCheckResourceAttr(source, "alert_routing_id", "11"),
+					resource.TestCheckResourceAttr(source, "enabled", "false"),
+					resource.TestCheckResourceAttr(source, "webhook_url", "https://api.example.com/webhooks/jira/token-1"),
+					resource.TestCheckResourceAttr(source, "webhook_token", "token-1"),
+				),
+			},
+			{ResourceName: source, ImportState: true, ImportStateVerify: true},
+			{Config: updated, PlanOnly: true},
+		},
+	})
+}
+
 func TestAlertSourceResourcePagerDuty(t *testing.T) {
 	api, srv := newFakeAPI(t)
 

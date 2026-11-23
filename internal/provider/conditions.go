@@ -71,7 +71,7 @@ const (
 
 var alertProviders = []string{
 	"opsgenie", "grafana", "datadog", "coralogix", "newrelic", "prometheus", "cloudwatch", "sns",
-	"heartbeat", "email", "sentry", "embraceio", "http", "azuremonitor", "cloudamqp", "pagerduty",
+	"heartbeat", "email", "sentry", "embraceio", "http", "azuremonitor", "cloudamqp", "jira", "pagerduty",
 }
 
 func conditionGroupsAttribute(description string, conditionKinds map[string]schema.SingleNestedAttribute) schema.ListNestedAttribute {
@@ -155,7 +155,7 @@ func conditionAttributes() map[string]schema.SingleNestedAttribute {
 			Optional:            true,
 			Attributes: map[string]schema.Attribute{
 				"providers": schema.SetAttribute{
-					MarkdownDescription: "Alert source types, such as `datadog`, `grafana` or `opsgenie`.",
+					MarkdownDescription: "Alert source types, such as `datadog`, `grafana`, `jira` (Jira Cloud) or `opsgenie`.",
 					ElementType:         types.StringType,
 					Required:            true,
 					Validators: []validator.Set{

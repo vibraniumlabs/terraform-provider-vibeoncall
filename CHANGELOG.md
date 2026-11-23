@@ -1,15 +1,17 @@
 ## 0.1.1 (Unreleased)
 
+ENHANCEMENTS:
+
+* resource/vibeoncall_alert_source: Accept `type = "jira"` for Jira Cloud webhook sources. Upgrade the provider to this version or later to configure Jira sources.
+* resource/vibeoncall_alert_route, resource/vibeoncall_maintenance_window: Accept `jira` in provider conditions.
+* resource/vibeoncall_alert_source: Accept `type = "pagerduty"` for PagerDuty incident webhook sources (Generic Webhooks v3). Upgrade the provider to this version or later to configure PagerDuty sources.
+* resource/vibeoncall_alert_route, resource/vibeoncall_maintenance_window: Accept `pagerduty` in provider conditions.
+
 NOTES:
 
 * resource/vibeoncall_team_membership, resource/vibeoncall_team: Removing a member who is still in one of the team's schedule rotations, upcoming overrides, escalation policy tiers or alert routes now fails with an error that lists each of them, instead of leaving the member paged there.
   * With `vibeoncall_team_membership`, reference the member as `vibeoncall_team_membership.<name>.user_id` with `create_before_destroy`, as `participant_ids` on `vibeoncall_schedule` and `user_ids` on `vibeoncall_escalation_policy` and `vibeoncall_alert_route` describe, so Terraform takes them out of those first.
   * With `members` on `vibeoncall_team`, Terraform updates the team before what references it, so `create_before_destroy` doesn't help: take the member out of the schedule, policy or route in an earlier apply, or manage members with `vibeoncall_team_membership`.
-
-ENHANCEMENTS:
-
-* resource/vibeoncall_alert_source: `type` accepts `pagerduty`, for a source that receives PagerDuty's incident webhooks (Generic Webhooks v3).
-* resource/vibeoncall_alert_route, resource/vibeoncall_maintenance_window: `provider` conditions accept `pagerduty`.
 
 ## 0.1.0 (November 17, 2026)
 

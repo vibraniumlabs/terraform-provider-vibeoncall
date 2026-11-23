@@ -48,10 +48,10 @@ var alertSourceProviders = []string{
 	string(client.CreateAlertSourceRequestProviderCloudwatch), string(client.CreateAlertSourceRequestProviderCoralogix),
 	string(client.CreateAlertSourceRequestProviderDatadog), string(client.CreateAlertSourceRequestProviderEmail),
 	string(client.CreateAlertSourceRequestProviderEmbraceio), string(client.CreateAlertSourceRequestProviderGrafana),
-	string(client.CreateAlertSourceRequestProviderHttp), string(client.CreateAlertSourceRequestProviderNewrelic),
-	string(client.CreateAlertSourceRequestProviderOpsgenie), string(client.CreateAlertSourceRequestProviderPagerduty),
-	string(client.CreateAlertSourceRequestProviderPrometheus), string(client.CreateAlertSourceRequestProviderSentry),
-	string(client.CreateAlertSourceRequestProviderSns),
+	string(client.CreateAlertSourceRequestProviderHttp), string(client.CreateAlertSourceRequestProviderJira),
+	string(client.CreateAlertSourceRequestProviderNewrelic), string(client.CreateAlertSourceRequestProviderOpsgenie),
+	string(client.CreateAlertSourceRequestProviderPagerduty), string(client.CreateAlertSourceRequestProviderPrometheus),
+	string(client.CreateAlertSourceRequestProviderSentry), string(client.CreateAlertSourceRequestProviderSns),
 }
 
 func (r *AlertSourceResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -68,7 +68,7 @@ func (r *AlertSourceResource) Schema(ctx context.Context, req resource.SchemaReq
 		}
 	}
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "An alert source: the webhook URL, or inbound email address, a monitoring tool sends alerts to. Each alert that arrives is handed to the source's alert routing.",
+		MarkdownDescription: "An alert source: the webhook URL, or inbound email address, a tool sends alerts to. Each alert that arrives is handed to the source's alert routing.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				MarkdownDescription: "Numeric alert source ID.",
@@ -81,7 +81,7 @@ func (r *AlertSourceResource) Schema(ctx context.Context, req resource.SchemaReq
 				Validators:          []validator.String{utf16LengthAtMost(255), noSurroundingWhitespace},
 			},
 			"type": schema.StringAttribute{
-				MarkdownDescription: "The monitoring tool that sends to this source, such as `datadog`, `grafana`, `http` or `email`. Changing it replaces the source, which gives it a new webhook URL.",
+				MarkdownDescription: "The tool that sends to this source, such as `datadog`, `grafana`, `jira` (Jira Cloud), `http` or `email`. Changing it replaces the source, which gives it a new webhook URL.",
 				Required:            true,
 				Validators:          []validator.String{stringvalidator.OneOf(alertSourceProviders...)},
 				PlanModifiers:       []planmodifier.String{stringplanmodifier.RequiresReplace()},
