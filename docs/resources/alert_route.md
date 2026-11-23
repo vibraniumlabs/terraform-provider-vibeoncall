@@ -59,6 +59,17 @@ resource "vibeoncall_alert_route" "payments" {
       }
     },
     {
+      name = "Jira issues page the on-call"
+      condition_groups = [{
+        operator   = "AND"
+        conditions = [{ provider = { providers = ["jira"] } }]
+      }]
+      escalate = {
+        schedule_ids = [vibeoncall_schedule.payments.id]
+        urgency      = "LOW"
+      }
+    },
+    {
       # Without condition_groups, the last rule matches every alert no earlier rule matched.
       name = "Everything else"
       escalate = {
@@ -72,6 +83,13 @@ resource "vibeoncall_alert_route" "payments" {
 resource "vibeoncall_alert_source" "datadog" {
   name             = "Datadog production"
   type             = "datadog"
+  team_id          = vibeoncall_team.payments.id
+  alert_routing_id = vibeoncall_alert_route.payments.id
+}
+
+resource "vibeoncall_alert_source" "jira" {
+  name             = "Jira issues"
+  type             = "jira"
   team_id          = vibeoncall_team.payments.id
   alert_routing_id = vibeoncall_alert_route.payments.id
 }
@@ -239,7 +257,7 @@ Optional:
 
 Required:
 
-- `providers` (Set of String) Alert source types, such as `datadog`, `grafana` or `opsgenie`.
+- `providers` (Set of String) Alert source types, such as `datadog`, `grafana`, `jira` (Jira Cloud) or `opsgenie`.
 
 
 <a id="nestedatt--rules--condition_groups--conditions--severity"></a>

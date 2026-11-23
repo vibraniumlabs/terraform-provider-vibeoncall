@@ -305,6 +305,7 @@ const (
 	AlertRoutingProviderConditionRuleProvidersGrafana      AlertRoutingProviderConditionRuleProviders = "grafana"
 	AlertRoutingProviderConditionRuleProvidersHeartbeat    AlertRoutingProviderConditionRuleProviders = "heartbeat"
 	AlertRoutingProviderConditionRuleProvidersHttp         AlertRoutingProviderConditionRuleProviders = "http"
+	AlertRoutingProviderConditionRuleProvidersJira         AlertRoutingProviderConditionRuleProviders = "jira"
 	AlertRoutingProviderConditionRuleProvidersNewrelic     AlertRoutingProviderConditionRuleProviders = "newrelic"
 	AlertRoutingProviderConditionRuleProvidersOpsgenie     AlertRoutingProviderConditionRuleProviders = "opsgenie"
 	AlertRoutingProviderConditionRuleProvidersPrometheus   AlertRoutingProviderConditionRuleProviders = "prometheus"
@@ -334,6 +335,8 @@ func (e AlertRoutingProviderConditionRuleProviders) Valid() bool {
 	case AlertRoutingProviderConditionRuleProvidersHeartbeat:
 		return true
 	case AlertRoutingProviderConditionRuleProvidersHttp:
+		return true
+	case AlertRoutingProviderConditionRuleProvidersJira:
 		return true
 	case AlertRoutingProviderConditionRuleProvidersNewrelic:
 		return true
@@ -487,6 +490,7 @@ const (
 	AlertSourceProviderEmbraceio    AlertSourceProvider = "embraceio"
 	AlertSourceProviderGrafana      AlertSourceProvider = "grafana"
 	AlertSourceProviderHttp         AlertSourceProvider = "http"
+	AlertSourceProviderJira         AlertSourceProvider = "jira"
 	AlertSourceProviderNewrelic     AlertSourceProvider = "newrelic"
 	AlertSourceProviderOpsgenie     AlertSourceProvider = "opsgenie"
 	AlertSourceProviderPrometheus   AlertSourceProvider = "prometheus"
@@ -514,6 +518,8 @@ func (e AlertSourceProvider) Valid() bool {
 	case AlertSourceProviderGrafana:
 		return true
 	case AlertSourceProviderHttp:
+		return true
+	case AlertSourceProviderJira:
 		return true
 	case AlertSourceProviderNewrelic:
 		return true
@@ -670,6 +676,7 @@ const (
 	CreateAlertSourceRequestProviderEmbraceio    CreateAlertSourceRequestProvider = "embraceio"
 	CreateAlertSourceRequestProviderGrafana      CreateAlertSourceRequestProvider = "grafana"
 	CreateAlertSourceRequestProviderHttp         CreateAlertSourceRequestProvider = "http"
+	CreateAlertSourceRequestProviderJira         CreateAlertSourceRequestProvider = "jira"
 	CreateAlertSourceRequestProviderNewrelic     CreateAlertSourceRequestProvider = "newrelic"
 	CreateAlertSourceRequestProviderOpsgenie     CreateAlertSourceRequestProvider = "opsgenie"
 	CreateAlertSourceRequestProviderPrometheus   CreateAlertSourceRequestProvider = "prometheus"
@@ -697,6 +704,8 @@ func (e CreateAlertSourceRequestProvider) Valid() bool {
 	case CreateAlertSourceRequestProviderGrafana:
 		return true
 	case CreateAlertSourceRequestProviderHttp:
+		return true
+	case CreateAlertSourceRequestProviderJira:
 		return true
 	case CreateAlertSourceRequestProviderNewrelic:
 		return true
@@ -947,6 +956,7 @@ const (
 	MaintenanceWindowProviderConditionRuleProvidersGrafana      MaintenanceWindowProviderConditionRuleProviders = "grafana"
 	MaintenanceWindowProviderConditionRuleProvidersHeartbeat    MaintenanceWindowProviderConditionRuleProviders = "heartbeat"
 	MaintenanceWindowProviderConditionRuleProvidersHttp         MaintenanceWindowProviderConditionRuleProviders = "http"
+	MaintenanceWindowProviderConditionRuleProvidersJira         MaintenanceWindowProviderConditionRuleProviders = "jira"
 	MaintenanceWindowProviderConditionRuleProvidersNewrelic     MaintenanceWindowProviderConditionRuleProviders = "newrelic"
 	MaintenanceWindowProviderConditionRuleProvidersOpsgenie     MaintenanceWindowProviderConditionRuleProviders = "opsgenie"
 	MaintenanceWindowProviderConditionRuleProvidersPrometheus   MaintenanceWindowProviderConditionRuleProviders = "prometheus"
@@ -976,6 +986,8 @@ func (e MaintenanceWindowProviderConditionRuleProviders) Valid() bool {
 	case MaintenanceWindowProviderConditionRuleProvidersHeartbeat:
 		return true
 	case MaintenanceWindowProviderConditionRuleProvidersHttp:
+		return true
+	case MaintenanceWindowProviderConditionRuleProvidersJira:
 		return true
 	case MaintenanceWindowProviderConditionRuleProvidersNewrelic:
 		return true

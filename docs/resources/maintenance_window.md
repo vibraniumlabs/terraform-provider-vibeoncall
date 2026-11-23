@@ -35,11 +35,11 @@ resource "vibeoncall_maintenance_window" "db_upgrade" {
 
   announcement_channels = [data.vibeoncall_chat_channel.incidents.id]
 
-  # Covers Datadog or Grafana alerts at SEV3 or less severe: SEV3, SEV4, SEV5 and SIGNAL.
+  # Covers Datadog, Grafana or Jira alerts at SEV3 or less severe: SEV3, SEV4, SEV5 and SIGNAL.
   condition_groups = [{
     operator = "AND"
     conditions = [
-      { provider = { providers = ["datadog", "grafana"] } },
+      { provider = { providers = ["datadog", "grafana", "jira"] } },
       { severity = { operator = "less_than_or_equal", severity = "SEV3" } },
     ]
   }]
@@ -126,7 +126,7 @@ Optional:
 
 Required:
 
-- `providers` (Set of String) Alert source types, such as `datadog`, `grafana` or `opsgenie`.
+- `providers` (Set of String) Alert source types, such as `datadog`, `grafana`, `jira` (Jira Cloud) or `opsgenie`.
 
 
 <a id="nestedatt--condition_groups--conditions--severity"></a>

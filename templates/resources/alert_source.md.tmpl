@@ -15,6 +15,8 @@ Changing `type` or `team_id` replaces the source, and the new source has a new `
 
 ## Example Usage
 
+For Jira Cloud, set `type = "jira"` and configure the source's `webhook_url` in Jira's webhook settings. No connected Jira account or Jira API credentials are required. You can match these alerts in alert routing rules and maintenance windows with `provider = { providers = ["jira"] }`.
+
 {{ tffile .ExampleFile }}
 
 {{ .SchemaMarkdown | trimspace }}
