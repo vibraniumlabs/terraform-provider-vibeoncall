@@ -390,7 +390,7 @@ func TestMaintenanceWindowResourceRejectsInvalidConditions(t *testing.T) {
 		"no condition kind":      {`{}`, `No attribute specified`},
 		"two condition kinds":    {`{ severity = { operator = "equal_to", severity = "SEV1" }, provider = { providers = ["sentry"] } }`, `2 attributes specified`},
 		"severity alias":         {`{ severity = { operator = "equal_to", severity = "P1" } }`, `must be\s+one of`},
-		"unknown provider":       {`{ provider = { providers = ["pagerduty"] } }`, `must be\s+one of`},
+		"unknown provider":       {`{ provider = { providers = ["zabbix"] } }`, `must be\s+one of`},
 		"daily and weekly":       {`{ time = { timezone = "UTC", daily = { start_time = "09:00", end_time = "17:00" }, weekly = [{ start_day = "monday", end_day = "friday", start_time = "09:00", end_time = "17:00" }] } }`, `2 attributes specified`},
 		"neither daily nor week": {`{ time = { timezone = "UTC" } }`, `No attribute specified`},
 		"malformed clock time":   {`{ time = { timezone = "UTC", daily = { start_time = "9:00", end_time = "17:00" } } }`, `24-hour time in HH:MM`},

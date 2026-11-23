@@ -305,8 +305,10 @@ const (
 	AlertRoutingProviderConditionRuleProvidersGrafana      AlertRoutingProviderConditionRuleProviders = "grafana"
 	AlertRoutingProviderConditionRuleProvidersHeartbeat    AlertRoutingProviderConditionRuleProviders = "heartbeat"
 	AlertRoutingProviderConditionRuleProvidersHttp         AlertRoutingProviderConditionRuleProviders = "http"
+	AlertRoutingProviderConditionRuleProvidersJira         AlertRoutingProviderConditionRuleProviders = "jira"
 	AlertRoutingProviderConditionRuleProvidersNewrelic     AlertRoutingProviderConditionRuleProviders = "newrelic"
 	AlertRoutingProviderConditionRuleProvidersOpsgenie     AlertRoutingProviderConditionRuleProviders = "opsgenie"
+	AlertRoutingProviderConditionRuleProvidersPagerduty    AlertRoutingProviderConditionRuleProviders = "pagerduty"
 	AlertRoutingProviderConditionRuleProvidersPrometheus   AlertRoutingProviderConditionRuleProviders = "prometheus"
 	AlertRoutingProviderConditionRuleProvidersSentry       AlertRoutingProviderConditionRuleProviders = "sentry"
 	AlertRoutingProviderConditionRuleProvidersSns          AlertRoutingProviderConditionRuleProviders = "sns"
@@ -335,9 +337,13 @@ func (e AlertRoutingProviderConditionRuleProviders) Valid() bool {
 		return true
 	case AlertRoutingProviderConditionRuleProvidersHttp:
 		return true
+	case AlertRoutingProviderConditionRuleProvidersJira:
+		return true
 	case AlertRoutingProviderConditionRuleProvidersNewrelic:
 		return true
 	case AlertRoutingProviderConditionRuleProvidersOpsgenie:
+		return true
+	case AlertRoutingProviderConditionRuleProvidersPagerduty:
 		return true
 	case AlertRoutingProviderConditionRuleProvidersPrometheus:
 		return true
@@ -487,8 +493,10 @@ const (
 	AlertSourceProviderEmbraceio    AlertSourceProvider = "embraceio"
 	AlertSourceProviderGrafana      AlertSourceProvider = "grafana"
 	AlertSourceProviderHttp         AlertSourceProvider = "http"
+	AlertSourceProviderJira         AlertSourceProvider = "jira"
 	AlertSourceProviderNewrelic     AlertSourceProvider = "newrelic"
 	AlertSourceProviderOpsgenie     AlertSourceProvider = "opsgenie"
+	AlertSourceProviderPagerduty    AlertSourceProvider = "pagerduty"
 	AlertSourceProviderPrometheus   AlertSourceProvider = "prometheus"
 	AlertSourceProviderSentry       AlertSourceProvider = "sentry"
 	AlertSourceProviderSns          AlertSourceProvider = "sns"
@@ -515,9 +523,13 @@ func (e AlertSourceProvider) Valid() bool {
 		return true
 	case AlertSourceProviderHttp:
 		return true
+	case AlertSourceProviderJira:
+		return true
 	case AlertSourceProviderNewrelic:
 		return true
 	case AlertSourceProviderOpsgenie:
+		return true
+	case AlertSourceProviderPagerduty:
 		return true
 	case AlertSourceProviderPrometheus:
 		return true
@@ -670,8 +682,10 @@ const (
 	CreateAlertSourceRequestProviderEmbraceio    CreateAlertSourceRequestProvider = "embraceio"
 	CreateAlertSourceRequestProviderGrafana      CreateAlertSourceRequestProvider = "grafana"
 	CreateAlertSourceRequestProviderHttp         CreateAlertSourceRequestProvider = "http"
+	CreateAlertSourceRequestProviderJira         CreateAlertSourceRequestProvider = "jira"
 	CreateAlertSourceRequestProviderNewrelic     CreateAlertSourceRequestProvider = "newrelic"
 	CreateAlertSourceRequestProviderOpsgenie     CreateAlertSourceRequestProvider = "opsgenie"
+	CreateAlertSourceRequestProviderPagerduty    CreateAlertSourceRequestProvider = "pagerduty"
 	CreateAlertSourceRequestProviderPrometheus   CreateAlertSourceRequestProvider = "prometheus"
 	CreateAlertSourceRequestProviderSentry       CreateAlertSourceRequestProvider = "sentry"
 	CreateAlertSourceRequestProviderSns          CreateAlertSourceRequestProvider = "sns"
@@ -698,9 +712,13 @@ func (e CreateAlertSourceRequestProvider) Valid() bool {
 		return true
 	case CreateAlertSourceRequestProviderHttp:
 		return true
+	case CreateAlertSourceRequestProviderJira:
+		return true
 	case CreateAlertSourceRequestProviderNewrelic:
 		return true
 	case CreateAlertSourceRequestProviderOpsgenie:
+		return true
+	case CreateAlertSourceRequestProviderPagerduty:
 		return true
 	case CreateAlertSourceRequestProviderPrometheus:
 		return true
@@ -947,8 +965,10 @@ const (
 	MaintenanceWindowProviderConditionRuleProvidersGrafana      MaintenanceWindowProviderConditionRuleProviders = "grafana"
 	MaintenanceWindowProviderConditionRuleProvidersHeartbeat    MaintenanceWindowProviderConditionRuleProviders = "heartbeat"
 	MaintenanceWindowProviderConditionRuleProvidersHttp         MaintenanceWindowProviderConditionRuleProviders = "http"
+	MaintenanceWindowProviderConditionRuleProvidersJira         MaintenanceWindowProviderConditionRuleProviders = "jira"
 	MaintenanceWindowProviderConditionRuleProvidersNewrelic     MaintenanceWindowProviderConditionRuleProviders = "newrelic"
 	MaintenanceWindowProviderConditionRuleProvidersOpsgenie     MaintenanceWindowProviderConditionRuleProviders = "opsgenie"
+	MaintenanceWindowProviderConditionRuleProvidersPagerduty    MaintenanceWindowProviderConditionRuleProviders = "pagerduty"
 	MaintenanceWindowProviderConditionRuleProvidersPrometheus   MaintenanceWindowProviderConditionRuleProviders = "prometheus"
 	MaintenanceWindowProviderConditionRuleProvidersSentry       MaintenanceWindowProviderConditionRuleProviders = "sentry"
 	MaintenanceWindowProviderConditionRuleProvidersSns          MaintenanceWindowProviderConditionRuleProviders = "sns"
@@ -977,9 +997,13 @@ func (e MaintenanceWindowProviderConditionRuleProviders) Valid() bool {
 		return true
 	case MaintenanceWindowProviderConditionRuleProvidersHttp:
 		return true
+	case MaintenanceWindowProviderConditionRuleProvidersJira:
+		return true
 	case MaintenanceWindowProviderConditionRuleProvidersNewrelic:
 		return true
 	case MaintenanceWindowProviderConditionRuleProvidersOpsgenie:
+		return true
+	case MaintenanceWindowProviderConditionRuleProvidersPagerduty:
 		return true
 	case MaintenanceWindowProviderConditionRuleProvidersPrometheus:
 		return true
@@ -3130,6 +3154,7 @@ type ValidationErrorResponse struct {
 
 // ListAlertRoutingsParams defines parameters for ListAlertRoutings.
 type ListAlertRoutingsParams struct {
+	// TeamId Only this team's records. Send the literal `null` for organization-level records only; omit to list every scope.
 	TeamId *struct {
 		union json.RawMessage
 	} `form:"teamId,omitempty" json:"teamId,omitempty"`
@@ -3168,6 +3193,7 @@ type UpdateAlertRouting400JSONResponseBody struct {
 
 // ListAlertSourcesParams defines parameters for ListAlertSources.
 type ListAlertSourcesParams struct {
+	// TeamId Only this team's records. Send the literal `null` for organization-level records only; omit to list every scope.
 	TeamId *struct {
 		union json.RawMessage
 	} `form:"teamId,omitempty" json:"teamId,omitempty"`
@@ -3206,8 +3232,13 @@ type UpdateAlertSource400JSONResponseBody struct {
 
 // ListEscalationPoliciesParams defines parameters for ListEscalationPolicies.
 type ListEscalationPoliciesParams struct {
-	Limit  *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+	// Limit Maximum number of items to return (default 20, max 100).
+	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Offset Number of items to skip before starting to collect the result set.
 	Offset *int32 `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// TeamId Return only policies belonging to this team ID. Omit for all policies.
 	TeamId *int32 `form:"teamId,omitempty" json:"teamId,omitempty"`
 }
 
@@ -3238,9 +3269,16 @@ type UpdateEscalationPolicy400JSONResponseBody struct {
 
 // ListChatChannelsParams defines parameters for ListChatChannels.
 type ListChatChannelsParams struct {
-	Limit                *int32  `form:"limit,omitempty" json:"limit,omitempty"`
-	Offset               *int32  `form:"offset,omitempty" json:"offset,omitempty"`
-	Search               *string `form:"search,omitempty" json:"search,omitempty"`
+	// Limit Maximum number of items to return (default 20, max 100).
+	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Offset Number of items to skip before starting to collect the result set.
+	Offset *int32 `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// Search Filter by channel name: on Slack, names containing this text (case-insensitive); on Microsoft Teams, names starting with it.
+	Search *string `form:"search,omitempty" json:"search,omitempty"`
+
+	// MicrosoftTeamsTeamId Microsoft Teams team whose channels to list, from GET /integrations/chat/microsoft-teams/teams. Required for organizations connected to Microsoft Teams; rejected for organizations connected to Slack.
 	MicrosoftTeamsTeamId *string `form:"microsoftTeamsTeamId,omitempty" json:"microsoftTeamsTeamId,omitempty"`
 }
 
@@ -3251,8 +3289,13 @@ type ListChatChannels400JSONResponseBody struct {
 
 // ListMicrosoftTeamsTeamsParams defines parameters for ListMicrosoftTeamsTeams.
 type ListMicrosoftTeamsTeamsParams struct {
-	Limit  *int32  `form:"limit,omitempty" json:"limit,omitempty"`
-	Offset *int32  `form:"offset,omitempty" json:"offset,omitempty"`
+	// Limit Maximum number of items to return (default 20, max 100).
+	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Offset Number of items to skip before starting to collect the result set.
+	Offset *int32 `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// Search Only teams whose name contains this text, case-insensitively.
 	Search *string `form:"search,omitempty" json:"search,omitempty"`
 }
 
@@ -3263,10 +3306,17 @@ type ListMicrosoftTeamsTeams400JSONResponseBody struct {
 
 // ListMaintenanceWindowsParams defines parameters for ListMaintenanceWindows.
 type ListMaintenanceWindowsParams struct {
-	Limit    *int32     `form:"limit,omitempty" json:"limit,omitempty"`
-	Offset   *int32     `form:"offset,omitempty" json:"offset,omitempty"`
+	// Limit Maximum number of items to return (default 20, max 100).
+	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Offset Number of items to skip before starting to collect the result set.
+	Offset *int32 `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// ActiveAt Only windows covering this ISO 8601 instant. A window covers its start instant and has ended by its end instant.
 	ActiveAt *time.Time `form:"activeAt,omitempty" json:"activeAt,omitempty"`
-	TeamId   *struct {
+
+	// TeamId Only windows scoped to this team. Send the literal `null` for global windows only; omit to list windows of every scope.
+	TeamId *struct {
 		union json.RawMessage
 	} `form:"teamId,omitempty" json:"teamId,omitempty"`
 }
@@ -3289,18 +3339,32 @@ type UpdateMaintenanceWindow400JSONResponseBody struct {
 
 // ListMaintenanceWindowSuppressedAlertsParams defines parameters for ListMaintenanceWindowSuppressedAlerts.
 type ListMaintenanceWindowSuppressedAlertsParams struct {
-	Limit  *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+	// Limit Maximum number of items to return (default 20, max 100).
+	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Offset Number of items to skip before starting to collect the result set.
 	Offset *int32 `form:"offset,omitempty" json:"offset,omitempty"`
 }
 
 // ListMembersParams defines parameters for ListMembers.
 type ListMembersParams struct {
-	Limit    *int32                     `form:"limit,omitempty" json:"limit,omitempty"`
-	Offset   *int32                     `form:"offset,omitempty" json:"offset,omitempty"`
-	Search   *string                    `form:"search,omitempty" json:"search,omitempty"`
-	Status   *[]ListMembersParamsStatus `form:"status,omitempty" json:"status,omitempty"`
-	RoleIds  *[]int                     `form:"roleIds,omitempty" json:"roleIds,omitempty"`
-	LabelIds *[]int                     `form:"labelIds,omitempty" json:"labelIds,omitempty"`
+	// Limit Maximum number of items to return (default 20, max 100).
+	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Offset Number of items to skip before starting to collect the result set.
+	Offset *int32 `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// Search Case-insensitive substring match against full name or email.
+	Search *string `form:"search,omitempty" json:"search,omitempty"`
+
+	// Status Account statuses to include (active, pending, revoked). Repeatable or comma-separated; a member matches when its status is any of the given values.
+	Status *[]ListMembersParamsStatus `form:"status,omitempty" json:"status,omitempty"`
+
+	// RoleIds Organization role IDs to include. Repeatable or comma-separated; a member matches when its organization role is any of the given roles.
+	RoleIds *[]int `form:"roleIds,omitempty" json:"roleIds,omitempty"`
+
+	// LabelIds Label IDs to include. Repeatable or comma-separated; a member matches when it carries any of the given labels. Use the labels endpoint to look up IDs.
+	LabelIds *[]int `form:"labelIds,omitempty" json:"labelIds,omitempty"`
 }
 
 // ListMembersParamsStatus defines parameters for ListMembers.
@@ -3308,8 +3372,13 @@ type ListMembersParamsStatus string
 
 // ListSchedulesParams defines parameters for ListSchedules.
 type ListSchedulesParams struct {
-	Limit  *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+	// Limit Maximum number of items to return (default 20, max 100).
+	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Offset Number of items to skip before starting to collect the result set.
 	Offset *int32 `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// TeamId Return only schedules this team owns, including those it shares with other teams. Omit for every schedule, global ones included.
 	TeamId *int32 `form:"teamId,omitempty" json:"teamId,omitempty"`
 }
 
@@ -3320,17 +3389,29 @@ type CreateSchedule400JSONResponseBody struct {
 
 // ListSchedulesCurrentOnCallParams defines parameters for ListSchedulesCurrentOnCall.
 type ListSchedulesCurrentOnCallParams struct {
-	Limit  *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+	// Limit Maximum number of items to return (default 20, max 100).
+	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Offset Number of items to skip before starting to collect the result set.
 	Offset *int32 `form:"offset,omitempty" json:"offset,omitempty"`
 }
 
 // GetOnCallHoursReportParams defines parameters for GetOnCallHoursReport.
 type GetOnCallHoursReportParams struct {
-	StartDate    string    `form:"startDate" json:"startDate"`
-	EndDate      string    `form:"endDate" json:"endDate"`
+	// StartDate Inclusive start date for the reporting range in YYYY-MM-DD format.
+	StartDate string `form:"startDate" json:"startDate"`
+
+	// EndDate Inclusive end date for the reporting range in YYYY-MM-DD format.
+	EndDate string `form:"endDate" json:"endDate"`
+
+	// TeamShortIds Optional team short IDs to filter by.
 	TeamShortIds *[]string `form:"teamShortIds,omitempty" json:"teamShortIds,omitempty"`
-	MemberIds    *[]int    `form:"memberIds,omitempty" json:"memberIds,omitempty"`
-	HoursPerDay  *float32  `form:"hoursPerDay,omitempty" json:"hoursPerDay,omitempty"`
+
+	// MemberIds Optional member user IDs to filter by.
+	MemberIds *[]int `form:"memberIds,omitempty" json:"memberIds,omitempty"`
+
+	// HoursPerDay Optional hours-per-day divisor. When set, the response includes derived day totals: 24 for calendar-day, 8 for business-day, etc. Must be positive and ≤ 24.
+	HoursPerDay *float32 `form:"hoursPerDay,omitempty" json:"hoursPerDay,omitempty"`
 }
 
 // DeleteSchedule400JSONResponseBody defines parameters for DeleteSchedule.
@@ -3365,10 +3446,14 @@ type UpdateScheduleRotation400JSONResponseBody struct {
 
 // ListScheduleRotationOverridesParams defines parameters for ListScheduleRotationOverrides.
 type ListScheduleRotationOverridesParams struct {
-	Limit  *int       `form:"limit,omitempty" json:"limit,omitempty"`
-	Offset *int       `form:"offset,omitempty" json:"offset,omitempty"`
-	From   *time.Time `form:"from,omitempty" json:"from,omitempty"`
-	To     *time.Time `form:"to,omitempty" json:"to,omitempty"`
+	Limit  *int `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// From ISO 8601 timestamp with an explicit offset. Include overrides ending at or after this instant, converted to the schedule clock before comparison.
+	From *time.Time `form:"from,omitempty" json:"from,omitempty"`
+
+	// To ISO 8601 timestamp with an explicit offset. Include overrides starting at or before this instant, converted to the schedule clock before comparison.
+	To *time.Time `form:"to,omitempty" json:"to,omitempty"`
 }
 
 // ListScheduleRotationOverrides400JSONResponseBody defines parameters for ListScheduleRotationOverrides.
@@ -3398,11 +3483,22 @@ type ReplaceScheduleTeams400JSONResponseBody struct {
 
 // ListServicesParams defines parameters for ListServices.
 type ListServicesParams struct {
-	Limit             *int32  `form:"limit,omitempty" json:"limit,omitempty"`
-	Offset            *int32  `form:"offset,omitempty" json:"offset,omitempty"`
-	Query             *string `form:"query,omitempty" json:"query,omitempty"`
-	TeamId            *int32  `form:"teamId,omitempty" json:"teamId,omitempty"`
-	ExternalProvider  *string `form:"externalProvider,omitempty" json:"externalProvider,omitempty"`
+	// Limit Maximum number of items to return (default 20, max 100).
+	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Offset Number of items to skip before starting to collect the result set.
+	Offset *int32 `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// Query Case-insensitive service name search.
+	Query *string `form:"query,omitempty" json:"query,omitempty"`
+
+	// TeamId Filter services by owning team ID.
+	TeamId *int32 `form:"teamId,omitempty" json:"teamId,omitempty"`
+
+	// ExternalProvider Filter services by external source provider.
+	ExternalProvider *string `form:"externalProvider,omitempty" json:"externalProvider,omitempty"`
+
+	// ExternalServiceId Filter services by external provider identifier.
 	ExternalServiceId *string `form:"externalServiceId,omitempty" json:"externalServiceId,omitempty"`
 }
 
@@ -3472,13 +3568,19 @@ type RemoveServiceStakeholdersJSONBody struct {
 
 // ListTeamsParams defines parameters for ListTeams.
 type ListTeamsParams struct {
-	Limit  *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+	// Limit Maximum number of items to return (default 20, max 100).
+	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Offset Number of items to skip before starting to collect the result set.
 	Offset *int32 `form:"offset,omitempty" json:"offset,omitempty"`
 }
 
 // ListTeamMembersParams defines parameters for ListTeamMembers.
 type ListTeamMembersParams struct {
-	Limit  *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+	// Limit Maximum number of members to return (max 100). Omitted, every member is returned.
+	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Offset Number of items to skip before starting to collect the result set.
 	Offset *int32 `form:"offset,omitempty" json:"offset,omitempty"`
 }
 

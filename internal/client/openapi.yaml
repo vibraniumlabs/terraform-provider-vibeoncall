@@ -195,6 +195,24 @@ components:
       required:
         - id
         - name
+    TeamsListResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Total number of teams for the organization.
+          format: int32
+        hasMore:
+          type: boolean
+          description: Whether there are more teams available beyond the current page.
+        teams:
+          type: array
+          items:
+            $ref: "#/components/schemas/TeamSummary"
+      required:
+        - total
+        - hasMore
+        - teams
     TeamSummary:
       type: object
       properties:
@@ -238,24 +256,6 @@ components:
         - inboundEmailAddress
         - externalProvider
         - externalTeamId
-    TeamsListResponse:
-      type: object
-      properties:
-        total:
-          type: integer
-          description: Total number of teams for the organization.
-          format: int32
-        hasMore:
-          type: boolean
-          description: Whether there are more teams available beyond the current page.
-        teams:
-          type: array
-          items:
-            $ref: "#/components/schemas/TeamSummary"
-      required:
-        - total
-        - hasMore
-        - teams
     ValidationErrorResponse:
       type: object
       properties:
@@ -396,6 +396,24 @@ components:
           description: Whether the mutation completed successfully.
       required:
         - success
+    TeamMembersResponse:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            $ref: "#/components/schemas/TeamMemberSummary"
+        total:
+          type: integer
+          description: Total number of members in the team.
+          format: int32
+        hasMore:
+          type: boolean
+          description: Whether there are more members available beyond the current page.
+      required:
+        - users
+        - total
+        - hasMore
     TeamMemberSummary:
       type: object
       properties:
@@ -432,24 +450,6 @@ components:
         - fullName
         - status
         - role
-    TeamMembersResponse:
-      type: object
-      properties:
-        users:
-          type: array
-          items:
-            $ref: "#/components/schemas/TeamMemberSummary"
-        total:
-          type: integer
-          description: Total number of members in the team.
-          format: int32
-        hasMore:
-          type: boolean
-          description: Whether there are more members available beyond the current page.
-      required:
-        - users
-        - total
-        - hasMore
     TeamMemberAssignmentResponse:
       type: object
       properties:
@@ -486,25 +486,6 @@ components:
           description: Team membership role. Defaults to member.
       required:
         - userId
-    TeamOnCallResponderSummary:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Unique identifier of the user.
-          format: int32
-        email:
-          type: string
-          description: Email address of the on-call responder.
-        fullName:
-          type:
-            - string
-            - "null"
-          description: Full name of the on-call responder.
-      required:
-        - id
-        - email
-        - fullName
     TeamOnCallResponse:
       type: object
       properties:
@@ -547,6 +528,119 @@ components:
         - escalationPolicy
         - responders
         - resolution
+    TeamOnCallResponderSummary:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the user.
+          format: int32
+        email:
+          type: string
+          description: Email address of the on-call responder.
+        fullName:
+          type:
+            - string
+            - "null"
+          description: Full name of the on-call responder.
+      required:
+        - id
+        - email
+        - fullName
+    PublicScheduleListResponse:
+      type: object
+      properties:
+        schedules:
+          type: array
+          items:
+            $ref: "#/components/schemas/PublicScheduleResponse"
+        total:
+          type: integer
+          minimum: 0
+          format: int32
+        hasMore:
+          type: boolean
+      required:
+        - schedules
+        - total
+        - hasMore
+    PublicScheduleResponse:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        timezone:
+          type: string
+          minLength: 1
+          description: IANA time zone for this schedule, such as America/New_York.
+        teamId:
+          type:
+            - integer
+            - "null"
+          exclusiveMinimum: 0
+          description: "Deprecated: use teamIds. The lowest owning team ID, or null for a global schedule."
+          format: int32
+          deprecated: true
+        teamIds:
+          type: array
+          items:
+            type: integer
+            exclusiveMinimum: 0
+            format: int32
+          maxItems: 100
+          description: Every owning team ID in ascending order. Empty for a global schedule.
+        rotations:
+          type: array
+          items:
+            $ref: "#/components/schemas/PublicScheduleRotationResponse"
+        id:
+          type: integer
+          exclusiveMinimum: 0
+          description: Schedule ID.
+          format: int32
+      required:
+        - name
+        - timezone
+        - teamId
+        - teamIds
+        - rotations
+        - id
+      additionalProperties: false
+    PublicScheduleRotationResponse:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        startAt:
+          type: string
+          format: date
+          description: First date this rotation takes effect, in YYYY-MM-DD format.
+          example: 2026-09-01
+        rotationConfig:
+          $ref: "#/components/schemas/PublicScheduleRotationConfig"
+        participants:
+          type: array
+          items:
+            type: integer
+            exclusiveMinimum: 0
+          minItems: 1
+          description: Ordered user IDs; each ID must appear only once.
+        id:
+          type: integer
+          exclusiveMinimum: 0
+          description: Rotation ID.
+          format: int32
+      required:
+        - name
+        - startAt
+        - rotationConfig
+        - participants
+        - id
+      additionalProperties: false
     PublicScheduleRotationConfig:
       oneOf:
         - type: object
@@ -658,127 +752,6 @@ components:
           additionalProperties: false
           title: Weekly rotation
       description: "Public daily and weekly types use the custom coverage-window payloads. Daily requires startTime and endTime; weekly accepts a day/time range or windows. Without handOffDay, a weekly rotation hands off to the next participant at the range start, or at the earliest window start in the Sunday-to-Saturday week. A range whose start and end share the same weekday and time covers a full seven days: startDay 3, startTime 12:00, endDay 3, endTime 12:00 gives continuous coverage with a Wednesday-noon handoff. With handOffDay, the handoff happens at 00:00 on that weekday instead, independent of coverage. Handoffs keep their local clock time in the schedule timezone across daylight-saving changes. Times are 24-hour HH:MM; weekdays are 0 (Sunday) through 6 (Saturday)."
-    PublicScheduleRotationResponse:
-      type: object
-      properties:
-        name:
-          type: string
-          minLength: 1
-          maxLength: 255
-        startAt:
-          type: string
-          format: date
-          description: First date this rotation takes effect, in YYYY-MM-DD format.
-          example: 2026-09-01
-        rotationConfig:
-          $ref: "#/components/schemas/PublicScheduleRotationConfig"
-        participants:
-          type: array
-          items:
-            type: integer
-            exclusiveMinimum: 0
-          minItems: 1
-          description: Ordered user IDs; each ID must appear only once.
-        id:
-          type: integer
-          exclusiveMinimum: 0
-          description: Rotation ID.
-          format: int32
-      required:
-        - name
-        - startAt
-        - rotationConfig
-        - participants
-        - id
-      additionalProperties: false
-    PublicScheduleResponse:
-      type: object
-      properties:
-        name:
-          type: string
-          minLength: 1
-          maxLength: 255
-        timezone:
-          type: string
-          minLength: 1
-          description: IANA time zone for this schedule, such as America/New_York.
-        teamId:
-          type:
-            - integer
-            - "null"
-          exclusiveMinimum: 0
-          description: "Deprecated: use teamIds. The lowest owning team ID, or null for a global schedule."
-          format: int32
-          deprecated: true
-        teamIds:
-          type: array
-          items:
-            type: integer
-            exclusiveMinimum: 0
-            format: int32
-          maxItems: 100
-          description: Every owning team ID in ascending order. Empty for a global schedule.
-        rotations:
-          type: array
-          items:
-            $ref: "#/components/schemas/PublicScheduleRotationResponse"
-        id:
-          type: integer
-          exclusiveMinimum: 0
-          description: Schedule ID.
-          format: int32
-      required:
-        - name
-        - timezone
-        - teamId
-        - teamIds
-        - rotations
-        - id
-      additionalProperties: false
-    PublicScheduleListResponse:
-      type: object
-      properties:
-        schedules:
-          type: array
-          items:
-            $ref: "#/components/schemas/PublicScheduleResponse"
-        total:
-          type: integer
-          minimum: 0
-          format: int32
-        hasMore:
-          type: boolean
-      required:
-        - schedules
-        - total
-        - hasMore
-    PublicScheduleRotationInput:
-      type: object
-      properties:
-        name:
-          type: string
-          minLength: 1
-          maxLength: 255
-        startAt:
-          type: string
-          format: date
-          description: First date this rotation takes effect, in YYYY-MM-DD format.
-          example: 2026-09-01
-        rotationConfig:
-          $ref: "#/components/schemas/PublicScheduleRotationConfig"
-        participants:
-          type: array
-          items:
-            type: integer
-            exclusiveMinimum: 0
-          minItems: 1
-          description: Ordered user IDs; each ID must appear only once.
-      required:
-        - name
-        - startAt
-        - rotationConfig
-        - participants
-      additionalProperties: false
     CreatePublicScheduleRequest:
       type: object
       properties:
@@ -815,6 +788,33 @@ components:
         - name
         - timezone
         - rotations
+      additionalProperties: false
+    PublicScheduleRotationInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        startAt:
+          type: string
+          format: date
+          description: First date this rotation takes effect, in YYYY-MM-DD format.
+          example: 2026-09-01
+        rotationConfig:
+          $ref: "#/components/schemas/PublicScheduleRotationConfig"
+        participants:
+          type: array
+          items:
+            type: integer
+            exclusiveMinimum: 0
+          minItems: 1
+          description: Ordered user IDs; each ID must appear only once.
+      required:
+        - name
+        - startAt
+        - rotationConfig
+        - participants
       additionalProperties: false
     UpdatePublicScheduleRequest:
       type: object
@@ -882,25 +882,6 @@ components:
         - rotationConfig
         - participants
       additionalProperties: false
-    PublicOnCallResponder:
-      type: object
-      properties:
-        id:
-          type: integer
-          exclusiveMinimum: 0
-          description: Responder user ID.
-          format: int32
-        name:
-          type: string
-          description: Responder name.
-        email:
-          type: string
-          format: email
-          description: Responder email address.
-      required:
-        - id
-        - name
-        - email
     ScheduleCurrentOnCallResponse:
       type: object
       properties:
@@ -936,6 +917,41 @@ components:
           - id: 11
             name: Alice
             email: alice@example.com
+    PublicOnCallResponder:
+      type: object
+      properties:
+        id:
+          type: integer
+          exclusiveMinimum: 0
+          description: Responder user ID.
+          format: int32
+        name:
+          type: string
+          description: Responder name.
+        email:
+          type: string
+          format: email
+          description: Responder email address.
+      required:
+        - id
+        - name
+        - email
+    PublicScheduleOverrideListResponse:
+      type: object
+      properties:
+        overrides:
+          type: array
+          items:
+            $ref: "#/components/schemas/PublicScheduleOverrideResponse"
+        total:
+          type: integer
+          minimum: 0
+        hasMore:
+          type: boolean
+      required:
+        - overrides
+        - total
+        - hasMore
     PublicScheduleOverrideResponse:
       type: object
       properties:
@@ -970,22 +986,6 @@ components:
         - userId
         - startAt
         - endAt
-    PublicScheduleOverrideListResponse:
-      type: object
-      properties:
-        overrides:
-          type: array
-          items:
-            $ref: "#/components/schemas/PublicScheduleOverrideResponse"
-        total:
-          type: integer
-          minimum: 0
-        hasMore:
-          type: boolean
-      required:
-        - overrides
-        - total
-        - hasMore
     PublicScheduleOverrideRequest:
       type: object
       properties:
@@ -1009,6 +1009,24 @@ components:
         - startAt
         - endAt
       additionalProperties: false
+    SchedulesOnCallResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Total number of schedules for the organization.
+          format: int32
+        hasMore:
+          type: boolean
+          description: Whether there are more schedules available beyond the current page.
+        schedules:
+          type: array
+          items:
+            $ref: "#/components/schemas/ScheduleOnCallSummary"
+      required:
+        - total
+        - hasMore
+        - schedules
     ScheduleOnCallSummary:
       type: object
       properties:
@@ -1034,24 +1052,19 @@ components:
         - id
         - name
         - onCallResponderEmails
-    SchedulesOnCallResponse:
+    OnCallHoursReportResponse:
       type: object
       properties:
-        total:
-          type: integer
-          description: Total number of schedules for the organization.
-          format: int32
-        hasMore:
-          type: boolean
-          description: Whether there are more schedules available beyond the current page.
-        schedules:
+        summary:
+          $ref: "#/components/schemas/OnCallHoursSummary"
+        entries:
           type: array
           items:
-            $ref: "#/components/schemas/ScheduleOnCallSummary"
+            $ref: "#/components/schemas/OnCallHoursEntry"
+          description: Aggregated on-call hours grouped by member and team.
       required:
-        - total
-        - hasMore
-        - schedules
+        - summary
+        - entries
     OnCallHoursSummary:
       type: object
       properties:
@@ -1075,37 +1088,6 @@ components:
         - totalHours
         - totalPeople
         - avgHoursPerPerson
-    OnCallHoursShift:
-      type: object
-      properties:
-        scheduleId:
-          type: integer
-          description: Unique identifier of the schedule.
-          format: int32
-        scheduleName:
-          type: string
-          description: Name of the schedule.
-        startAt:
-          type: string
-          format: date-time
-          description: Shift start timestamp in ISO 8601 format.
-        endAt:
-          type: string
-          format: date-time
-          description: Shift end timestamp in ISO 8601 format.
-        hours:
-          type: number
-          description: Number of on-call hours contributed by the shift within the report window.
-        isOverride:
-          type: boolean
-          description: Whether the shift came from an override.
-      required:
-        - scheduleId
-        - scheduleName
-        - startAt
-        - endAt
-        - hours
-        - isOverride
     OnCallHoursEntry:
       type: object
       properties:
@@ -1155,53 +1137,86 @@ components:
         - totalHours
         - shiftCount
         - shifts
-    OnCallHoursReportResponse:
-      type: object
-      properties:
-        summary:
-          $ref: "#/components/schemas/OnCallHoursSummary"
-        entries:
-          type: array
-          items:
-            $ref: "#/components/schemas/OnCallHoursEntry"
-          description: Aggregated on-call hours grouped by member and team.
-      required:
-        - summary
-        - entries
-    PublicEscalationPolicyRotationTargetResponse:
+    OnCallHoursShift:
       type: object
       properties:
         scheduleId:
           type: integer
-          exclusiveMinimum: 0
-        mode:
+          description: Unique identifier of the schedule.
+          format: int32
+        scheduleName:
           type: string
-          enum:
-            - current
-            - next
-            - previous
-        rotationId:
-          type: integer
-          exclusiveMinimum: 0
+          description: Name of the schedule.
+        startAt:
+          type: string
+          format: date-time
+          description: Shift start timestamp in ISO 8601 format.
+        endAt:
+          type: string
+          format: date-time
+          description: Shift end timestamp in ISO 8601 format.
+        hours:
+          type: number
+          description: Number of on-call hours contributed by the shift within the report window.
+        isOverride:
+          type: boolean
+          description: Whether the shift came from an override.
       required:
         - scheduleId
-        - mode
-        - rotationId
-    PublicEscalationPolicyChannelTarget:
+        - scheduleName
+        - startAt
+        - endAt
+        - hours
+        - isOverride
+    PublicEscalationPolicyListResponse:
+      type: object
+      properties:
+        policies:
+          type: array
+          items:
+            $ref: "#/components/schemas/PublicEscalationPolicyResponse"
+        total:
+          type: integer
+          minimum: 0
+        hasMore:
+          type: boolean
+      required:
+        - policies
+        - total
+        - hasMore
+    PublicEscalationPolicyResponse:
       type: object
       properties:
         id:
+          type: integer
+          exclusiveMinimum: 0
+        name:
           type: string
-          minLength: 1
-          description: The channel ID in the workspace chat platform, for example a Slack channel ID or a Teams conversation ID.
-        label:
+        description:
           type: string
-          minLength: 1
-          description: The channel name shown in the policy.
+        teamId:
+          type:
+            - integer
+            - "null"
+          exclusiveMinimum: 0
+        isDefault:
+          type: boolean
+        updatedAt:
+          type: string
+          format: date-time
+        tiers:
+          type: array
+          items:
+            $ref: "#/components/schemas/PublicEscalationPolicyTierResponse"
+          description: Tiers in escalation order, starting with the first item.
       required:
         - id
-        - label
-      additionalProperties: false
+        - name
+        - description
+        - teamId
+        - isDefault
+        - updatedAt
+        - tiers
     PublicEscalationPolicyTierResponse:
       type: object
       properties:
@@ -1248,16 +1263,50 @@ components:
         - rotationTargets
         - channelTargets
         - userIds
-    PublicEscalationPolicyResponse:
+    PublicEscalationPolicyRotationTargetResponse:
+      type: object
+      properties:
+        scheduleId:
+          type: integer
+          exclusiveMinimum: 0
+        mode:
+          type: string
+          enum:
+            - current
+            - next
+            - previous
+        rotationId:
+          type: integer
+          exclusiveMinimum: 0
+      required:
+        - scheduleId
+        - mode
+        - rotationId
+    PublicEscalationPolicyChannelTarget:
       type: object
       properties:
         id:
-          type: integer
-          exclusiveMinimum: 0
+          type: string
+          minLength: 1
+          description: The channel ID in the workspace chat platform, for example a Slack channel ID or a Teams conversation ID.
+        label:
+          type: string
+          minLength: 1
+          description: The channel name shown in the policy.
+      required:
+        - id
+        - label
+      additionalProperties: false
+    CreatePublicEscalationPolicyRequest:
+      type: object
+      properties:
         name:
           type: string
+          minLength: 1
+          maxLength: 255
         description:
           type: string
+          maxLength: 1000
         teamId:
           type:
             - integer
@@ -1265,70 +1314,16 @@ components:
           exclusiveMinimum: 0
         isDefault:
           type: boolean
-        updatedAt:
-          type: string
-          format: date-time
         tiers:
           type: array
           items:
-            $ref: "#/components/schemas/PublicEscalationPolicyTierResponse"
-          description: Tiers in escalation order, starting with the first item.
+            $ref: "#/components/schemas/PublicEscalationPolicyTierInput"
+          minItems: 1
+          description: At least one tier is required. Tiers escalate in array order, starting with the first item. The server assigns their positions.
       required:
-        - id
         - name
         - description
-        - teamId
-        - isDefault
-        - updatedAt
         - tiers
-    PublicEscalationPolicyListResponse:
-      type: object
-      properties:
-        policies:
-          type: array
-          items:
-            $ref: "#/components/schemas/PublicEscalationPolicyResponse"
-        total:
-          type: integer
-          minimum: 0
-        hasMore:
-          type: boolean
-      required:
-        - policies
-        - total
-        - hasMore
-    PublicEscalationPolicyScheduleTargetInput:
-      type: object
-      properties:
-        scheduleId:
-          type: integer
-          exclusiveMinimum: 0
-        mode:
-          type: string
-          enum: &a1
-            - current
-            - next
-            - previous
-          default: current
-      required:
-        - scheduleId
-      additionalProperties: false
-    PublicEscalationPolicyRotationTargetInput:
-      type: object
-      properties:
-        scheduleId:
-          type: integer
-          exclusiveMinimum: 0
-        mode:
-          type: string
-          enum: *a1
-          default: current
-        rotationId:
-          type: integer
-          exclusiveMinimum: 0
-      required:
-        - scheduleId
-        - rotationId
       additionalProperties: false
     PublicEscalationPolicyTierInput:
       type: object
@@ -1383,33 +1378,41 @@ components:
             userIds:
               type: array
               minItems: 1
-    CreatePublicEscalationPolicyRequest:
+    PublicEscalationPolicyScheduleTargetInput:
       type: object
       properties:
-        name:
-          type: string
-          minLength: 1
-          maxLength: 255
-        description:
-          type: string
-          maxLength: 1000
-        teamId:
-          type:
-            - integer
-            - "null"
+        scheduleId:
+          type: integer
           exclusiveMinimum: 0
-        isDefault:
-          type: boolean
-        tiers:
-          type: array
-          items:
-            $ref: "#/components/schemas/PublicEscalationPolicyTierInput"
-          minItems: 1
-          description: At least one tier is required. Tiers escalate in array order, starting with the first item. The server assigns their positions.
+        mode:
+          type: string
+          enum:
+            - current
+            - next
+            - previous
+          default: current
       required:
-        - name
-        - description
-        - tiers
+        - scheduleId
+      additionalProperties: false
+    PublicEscalationPolicyRotationTargetInput:
+      type: object
+      properties:
+        scheduleId:
+          type: integer
+          exclusiveMinimum: 0
+        mode:
+          type: string
+          enum:
+            - current
+            - next
+            - previous
+          default: current
+        rotationId:
+          type: integer
+          exclusiveMinimum: 0
+      required:
+        - scheduleId
+        - rotationId
       additionalProperties: false
     UpdatePublicEscalationPolicyRequest:
       type: object
@@ -1458,6 +1461,13 @@ components:
       example:
         incidentId: 123
         escalationPolicyId: 456
+    IncidentTimelineEntryResponse:
+      type: object
+      properties:
+        timelineEvent:
+          $ref: "#/components/schemas/IncidentTimelineEvent"
+      required:
+        - timelineEvent
     IncidentTimelineEvent:
       type: object
       properties:
@@ -1482,13 +1492,6 @@ components:
         - content
         - eventType
         - timestamp
-    IncidentTimelineEntryResponse:
-      type: object
-      properties:
-        timelineEvent:
-          $ref: "#/components/schemas/IncidentTimelineEvent"
-      required:
-        - timelineEvent
     IncidentArchiveResponse:
       type: object
       properties:
@@ -1501,6 +1504,39 @@ components:
       required:
         - id
         - archivedAt
+    IncidentDetail:
+      allOf:
+        - $ref: "#/components/schemas/IncidentSummary"
+        - type: object
+          properties:
+            analysis:
+              type:
+                - object
+                - "null"
+              properties:
+                facts:
+                  type: string
+                reasoning:
+                  type: object
+                  properties:
+                    midmortem:
+                      type: string
+                actions:
+                  type: string
+              description: AI-generated incident analysis including midmortem summary, facts, and recommended actions.
+            timeline:
+              type: array
+              items:
+                $ref: "#/components/schemas/IncidentTimelineEvent"
+              description: Ordered list of timeline events (included when ?include=timeline).
+            postmortems:
+              type: array
+              items: {}
+              description: Postmortem documents with latest content (included when ?include=postmortems).
+            conversations:
+              description: Incident messages grouped by source - slack/microsoftTeams/email (included when ?include=conversations).
+            meetingTranscripts:
+              description: Meeting transcripts (included when ?include=meetingTranscripts).
     IncidentSummary:
       type: object
       properties:
@@ -1548,6 +1584,20 @@ components:
             - "null"
           format: date-time
           description: ISO 8601 incident resolution time, null when unknown or reopened.
+        impactStartedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+          description: UTC ISO 8601 timestamp when impact began. Set through the API or the dashboard, never derived, and independent of reportedAt. Null when not set.
+          example: 2026-11-17T16:12:00.000Z
+        impactEndedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+          description: UTC ISO 8601 timestamp when impact ended. Independent of resolvedAt and of status, so it can be set on an incident that is still open. Null when not set.
+          example: 2026-11-17T17:40:00.000Z
         acknowledgedAt:
           type:
             - string
@@ -1570,7 +1620,7 @@ components:
             - string
             - "null"
           format: date-time
-          description: UTC ISO 8601 timestamp when the incident row was last updated; the same value used by updatedSince. Null when unavailable.
+          description: UTC ISO 8601 timestamp when the incident record was last updated; the same value used by updatedSince. Includes changes to responder and label assignments, and manual timeline entry submissions. Unchanged assignments do not advance it. Automatic and AI-generated timeline entries alone do not advance it. Null when unavailable.
         externalLinks:
           description: External links associated with the incident (Slack, PagerDuty, Jira, etc.).
         customFields:
@@ -1727,42 +1777,11 @@ components:
         - title
         - externalId
         - resolvedAt
+        - impactStartedAt
+        - impactEndedAt
         - lastActivity
         - updatedAt
         - customFields
-    IncidentDetail:
-      allOf:
-        - $ref: "#/components/schemas/IncidentSummary"
-        - type: object
-          properties:
-            analysis:
-              type:
-                - object
-                - "null"
-              properties:
-                facts:
-                  type: string
-                reasoning:
-                  type: object
-                  properties:
-                    midmortem:
-                      type: string
-                actions:
-                  type: string
-              description: AI-generated incident analysis including midmortem summary, facts, and recommended actions.
-            timeline:
-              type: array
-              items:
-                $ref: "#/components/schemas/IncidentTimelineEvent"
-              description: Ordered list of timeline events (included when ?include=timeline).
-            postmortems:
-              type: array
-              items: {}
-              description: Postmortem documents with latest content (included when ?include=postmortems).
-            conversations:
-              description: Incident messages grouped by source - slack/microsoftTeams/email (included when ?include=conversations).
-            meetingTranscripts:
-              description: Meeting transcripts (included when ?include=meetingTranscripts).
     IncidentsListResponse:
       type: object
       properties:
@@ -1826,6 +1845,15 @@ components:
               - color
       required:
         - labels
+    IncidentCommentsResponse:
+      type: object
+      properties:
+        comments:
+          type: array
+          items:
+            $ref: "#/components/schemas/IncidentComment"
+      required:
+        - comments
     IncidentComment:
       type: object
       properties:
@@ -1851,15 +1879,6 @@ components:
         - author
         - createdAt
         - updatedAt
-    IncidentCommentsResponse:
-      type: object
-      properties:
-        comments:
-          type: array
-          items:
-            $ref: "#/components/schemas/IncidentComment"
-      required:
-        - comments
     IncidentCustomFieldsResponse:
       type: object
       properties:
@@ -1871,6 +1890,24 @@ components:
               - "null"
       required:
         - customFields
+    AlertsListResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Total number of alerts matching the filters.
+          format: int32
+        hasMore:
+          type: boolean
+          description: Whether more alerts are available beyond the current page.
+        alerts:
+          type: array
+          items:
+            $ref: "#/components/schemas/AlertSummary"
+      required:
+        - total
+        - hasMore
+        - alerts
     AlertSummary:
       type: object
       properties:
@@ -1973,24 +2010,40 @@ components:
         - pagedUsers
         - createdAt
         - updatedAt
-    AlertsListResponse:
-      type: object
-      properties:
-        total:
-          type: integer
-          description: Total number of alerts matching the filters.
-          format: int32
-        hasMore:
-          type: boolean
-          description: Whether more alerts are available beyond the current page.
-        alerts:
-          type: array
-          items:
-            $ref: "#/components/schemas/AlertSummary"
-      required:
-        - total
-        - hasMore
-        - alerts
+    AlertDetail:
+      allOf:
+        - $ref: "#/components/schemas/AlertSummary"
+        - type: object
+          properties:
+            content:
+              description: Full alert content payload.
+            metadata:
+              description: Additional metadata associated with the alert.
+            timeline:
+              type: array
+              items:
+                $ref: "#/components/schemas/AlertTimelineEntry"
+              description: Ordered list of alert timeline events.
+            incidents:
+              type: array
+              items:
+                type: object
+                properties:
+                  instanceId:
+                    type: integer
+                required:
+                  - instanceId
+              description: Incidents this alert has been escalated to.
+            labels:
+              type: array
+              items:
+                $ref: "#/components/schemas/AlertLabel"
+              description: Labels assigned to this alert.
+            notes:
+              type: array
+              items:
+                $ref: "#/components/schemas/AlertNote"
+              description: Visible notes attached to this alert, newest first.
     AlertTimelineEntry:
       type: object
       properties:
@@ -2056,40 +2109,6 @@ components:
         - createdAt
         - updatedAt
         - isEdited
-    AlertDetail:
-      allOf:
-        - $ref: "#/components/schemas/AlertSummary"
-        - type: object
-          properties:
-            content:
-              description: Full alert content payload.
-            metadata:
-              description: Additional metadata associated with the alert.
-            timeline:
-              type: array
-              items:
-                $ref: "#/components/schemas/AlertTimelineEntry"
-              description: Ordered list of alert timeline events.
-            incidents:
-              type: array
-              items:
-                type: object
-                properties:
-                  instanceId:
-                    type: integer
-                required:
-                  - instanceId
-              description: Incidents this alert has been escalated to.
-            labels:
-              type: array
-              items:
-                $ref: "#/components/schemas/AlertLabel"
-              description: Labels assigned to this alert.
-            notes:
-              type: array
-              items:
-                $ref: "#/components/schemas/AlertNote"
-              description: Visible notes attached to this alert, newest first.
     AlertUpdateResponse:
       type: object
       properties:
@@ -2174,6 +2193,15 @@ components:
             $ref: "#/components/schemas/AlertLabel"
       required:
         - labels
+    LabelsListResponse:
+      type: object
+      properties:
+        labels:
+          type: array
+          items:
+            $ref: "#/components/schemas/Label"
+      required:
+        - labels
     Label:
       type: object
       properties:
@@ -2206,32 +2234,24 @@ components:
         - incidentUsageCount
         - alertUsageCount
         - usageCount
-    LabelsListResponse:
+    MembersListResponse:
       type: object
       properties:
-        labels:
+        total:
+          type: integer
+          description: Total number of members matching the filters.
+          format: int32
+        hasMore:
+          type: boolean
+          description: Whether there are more members available beyond the current page.
+        members:
           type: array
           items:
-            $ref: "#/components/schemas/Label"
+            $ref: "#/components/schemas/Member"
       required:
-        - labels
-    MemberLabel:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Unique identifier of the label.
-          format: int32
-        name:
-          type: string
-          description: Display name of the label.
-        color:
-          type: string
-          description: "Hex color code (e.g. #FF0000)."
-      required:
-        - id
-        - name
-        - color
+        - total
+        - hasMore
+        - members
     Member:
       type: object
       properties:
@@ -2283,52 +2303,41 @@ components:
         - labels
         - createdAt
         - updatedAt
-    MembersListResponse:
-      type: object
-      properties:
-        total:
-          type: integer
-          description: Total number of members matching the filters.
-          format: int32
-        hasMore:
-          type: boolean
-          description: Whether there are more members available beyond the current page.
-        members:
-          type: array
-          items:
-            $ref: "#/components/schemas/Member"
-      required:
-        - total
-        - hasMore
-        - members
-    AutomationActionStepSummary:
+    MemberLabel:
       type: object
       properties:
         id:
           type: integer
-          description: Unique identifier of the automation action step.
+          description: Unique identifier of the label.
           format: int32
-        index:
-          type: integer
-          description: Zero-based execution order of this step within the automation action.
-          format: int32
-        actionType:
+        name:
           type: string
-          enum:
-            - PUBLISH_TO_CHANNEL
-            - DECLARE_INCIDENT
-            - CREATE_TICKET
-            - INVITE_USERS_TO_CHANNEL
-            - SEND_DIRECT_MESSAGE
-            - INVOKE_REST_CONNECTION
-            - RUN_ASSISTANT_AGENT
-            - VARIABLES_INPUT
-            - SEND_EMAIL
-          description: Type of action this step executes.
+          description: Display name of the label.
+        color:
+          type: string
+          description: "Hex color code (e.g. #FF0000)."
       required:
         - id
-        - index
-        - actionType
+        - name
+        - color
+    AutomationActionsListResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Total number of automation actions for the organization.
+          format: int32
+        hasMore:
+          type: boolean
+          description: Whether more automation actions are available beyond the current page.
+        automationActions:
+          type: array
+          items:
+            $ref: "#/components/schemas/AutomationActionSummary"
+      required:
+        - total
+        - hasMore
+        - automationActions
     AutomationActionSummary:
       type: object
       properties:
@@ -2386,24 +2395,53 @@ components:
         - actions
         - createdAt
         - updatedAt
-    AutomationActionsListResponse:
+    AutomationActionStepSummary:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the automation action step.
+          format: int32
+        index:
+          type: integer
+          description: Zero-based execution order of this step within the automation action.
+          format: int32
+        actionType:
+          type: string
+          enum:
+            - PUBLISH_TO_CHANNEL
+            - DECLARE_INCIDENT
+            - CREATE_TICKET
+            - INVITE_USERS_TO_CHANNEL
+            - SEND_DIRECT_MESSAGE
+            - INVOKE_REST_CONNECTION
+            - RUN_ASSISTANT_AGENT
+            - VARIABLES_INPUT
+            - SEND_EMAIL
+            - SET_LINKED_INCIDENT_STATUS
+          description: Type of action this step executes.
+      required:
+        - id
+        - index
+        - actionType
+    AutomationActionExecutionsListResponse:
       type: object
       properties:
         total:
           type: integer
-          description: Total number of automation actions for the organization.
+          description: Total number of execution logs matching the filters.
           format: int32
         hasMore:
           type: boolean
-          description: Whether more automation actions are available beyond the current page.
-        automationActions:
+          description: Whether more execution logs are available beyond the current page.
+        executions:
           type: array
           items:
-            $ref: "#/components/schemas/AutomationActionSummary"
+            $ref: "#/components/schemas/AutomationActionExecutionSummary"
       required:
         - total
         - hasMore
-        - automationActions
+        - executions
     AutomationActionExecutionSummary:
       type: object
       properties:
@@ -2451,6 +2489,7 @@ components:
             - RUN_ASSISTANT_AGENT
             - VARIABLES_INPUT
             - SEND_EMAIL
+            - SET_LINKED_INCIDENT_STATUS
           description: Action type executed by this step.
         status:
           type: string
@@ -2511,20 +2550,20 @@ components:
         - summary
         - createdAt
         - updatedAt
-    AutomationActionExecutionsListResponse:
+    AutomationActionExecutionSummariesListResponse:
       type: object
       properties:
         total:
           type: integer
-          description: Total number of execution logs matching the filters.
+          description: Total number of execution runs matching the filters.
           format: int32
         hasMore:
           type: boolean
-          description: Whether more execution logs are available beyond the current page.
+          description: Whether more execution runs are available beyond the current page.
         executions:
           type: array
           items:
-            $ref: "#/components/schemas/AutomationActionExecutionSummary"
+            $ref: "#/components/schemas/AutomationActionExecutionRunSummary"
       required:
         - total
         - hasMore
@@ -2605,52 +2644,31 @@ components:
         - stepCount
         - createdAt
         - updatedAt
-    AutomationActionExecutionSummariesListResponse:
+    AutomationActionExecutionDetailResponse:
       type: object
       properties:
-        total:
-          type: integer
-          description: Total number of execution runs matching the filters.
-          format: int32
-        hasMore:
-          type: boolean
-          description: Whether more execution runs are available beyond the current page.
+        executionId:
+          type: string
+          format: uuid
+        automationAction:
+          type: object
+          properties:
+            id:
+              type: integer
+              format: int32
+            name:
+              type: string
+          required:
+            - id
+            - name
         executions:
           type: array
           items:
-            $ref: "#/components/schemas/AutomationActionExecutionRunSummary"
+            $ref: "#/components/schemas/AutomationActionExecutionDetail"
       required:
-        - total
-        - hasMore
+        - executionId
+        - automationAction
         - executions
-    AutomationActionExecutionParameters:
-      type: object
-      properties:
-        actionConfig:
-          anyOf:
-            - type: object
-              additionalProperties: {}
-            - type: array
-              items: {}
-            - type: string
-            - type: number
-            - type: boolean
-            - type: "null"
-          description: Redacted configuration snapshot for the executed action step.
-        submittedInput:
-          anyOf:
-            - type: object
-              additionalProperties: {}
-            - type: array
-              items: {}
-            - type: string
-            - type: number
-            - type: boolean
-            - type: "null"
-          description: Redacted user-submitted input for this action run, when available.
-      required:
-        - actionConfig
-        - submittedInput
     AutomationActionExecutionDetail:
       allOf:
         - $ref: "#/components/schemas/AutomationActionExecutionSummary"
@@ -2688,103 +2706,52 @@ components:
             - stepIndex
             - requester
             - parameters
-    AutomationActionExecutionDetailResponse:
+    AutomationActionExecutionParameters:
       type: object
       properties:
-        executionId:
-          type: string
-          format: uuid
-        automationAction:
-          type: object
-          properties:
-            id:
-              type: integer
-              format: int32
-            name:
-              type: string
-          required:
-            - id
-            - name
-        executions:
+        actionConfig:
+          anyOf:
+            - type: object
+              additionalProperties: {}
+            - type: array
+              items: {}
+            - type: string
+            - type: number
+            - type: boolean
+            - type: "null"
+          description: Redacted configuration snapshot for the executed action step.
+        submittedInput:
+          anyOf:
+            - type: object
+              additionalProperties: {}
+            - type: array
+              items: {}
+            - type: string
+            - type: number
+            - type: boolean
+            - type: "null"
+          description: Redacted user-submitted input for this action run, when available.
+      required:
+        - actionConfig
+        - submittedInput
+    ServicesListResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Total number of services matching the filters.
+          format: int32
+        hasMore:
+          type: boolean
+          description: Whether more services are available beyond the current page.
+        services:
           type: array
           items:
-            $ref: "#/components/schemas/AutomationActionExecutionDetail"
+            $ref: "#/components/schemas/ServiceCatalogPublicSummary"
       required:
-        - executionId
-        - automationAction
-        - executions
-    ServiceTeamResponder:
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-            - team
-        team:
-          type: object
-          properties:
-            id:
-              type: integer
-              format: int32
-            name:
-              type: string
-          required:
-            - id
-            - name
-      required:
-        - type
-        - team
-    ServiceUserResponder:
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-            - user
-        user:
-          type: object
-          properties:
-            id:
-              type: integer
-              format: int32
-            email:
-              type: string
-            fullName:
-              type:
-                - string
-                - "null"
-          required:
-            - id
-            - email
-            - fullName
-      required:
-        - type
-        - user
-    ServiceResponder:
-      oneOf:
-        - $ref: "#/components/schemas/ServiceTeamResponder"
-        - $ref: "#/components/schemas/ServiceUserResponder"
-      discriminator:
-        propertyName: type
-        mapping:
-          team: "#/components/schemas/ServiceTeamResponder"
-          user: "#/components/schemas/ServiceUserResponder"
-    ServiceStakeholder:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int32
-        email:
-          type: string
-        fullName:
-          type:
-            - string
-            - "null"
-      required:
-        - id
-        - email
-        - fullName
+        - total
+        - hasMore
+        - services
     ServiceCatalogPublicSummary:
       type: object
       properties:
@@ -2852,24 +2819,78 @@ components:
         - createdAt
         - updatedAt
         - deletedAt
-    ServicesListResponse:
+    ServiceResponder:
+      oneOf:
+        - $ref: "#/components/schemas/ServiceTeamResponder"
+        - $ref: "#/components/schemas/ServiceUserResponder"
+      discriminator:
+        propertyName: type
+        mapping:
+          team: "#/components/schemas/ServiceTeamResponder"
+          user: "#/components/schemas/ServiceUserResponder"
+    ServiceTeamResponder:
       type: object
       properties:
-        total:
-          type: integer
-          description: Total number of services matching the filters.
-          format: int32
-        hasMore:
-          type: boolean
-          description: Whether more services are available beyond the current page.
-        services:
-          type: array
-          items:
-            $ref: "#/components/schemas/ServiceCatalogPublicSummary"
+        type:
+          type: string
+          enum:
+            - team
+        team:
+          type: object
+          properties:
+            id:
+              type: integer
+              format: int32
+            name:
+              type: string
+          required:
+            - id
+            - name
       required:
-        - total
-        - hasMore
-        - services
+        - type
+        - team
+    ServiceUserResponder:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - user
+        user:
+          type: object
+          properties:
+            id:
+              type: integer
+              format: int32
+            email:
+              type: string
+            fullName:
+              type:
+                - string
+                - "null"
+          required:
+            - id
+            - email
+            - fullName
+      required:
+        - type
+        - user
+    ServiceStakeholder:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        email:
+          type: string
+        fullName:
+          type:
+            - string
+            - "null"
+      required:
+        - id
+        - email
+        - fullName
     ServiceResponse:
       type: object
       properties:
@@ -2913,24 +2934,6 @@ components:
         - total
         - hasMore
         - teams
-    ChatPlatform:
-      type: string
-      enum:
-        - slack
-        - microsoftTeams
-      description: "The chat platform the organization is connected to: `slack` or `microsoftTeams`."
-    ChatChannel:
-      type: object
-      properties:
-        id:
-          type: string
-          description: Platform channel ID, as accepted by `announcementChannels` on maintenance windows (Slack `C…` or Microsoft Teams `19:…@thread.tacv2`).
-        name:
-          type: string
-          description: Channel display name.
-      required:
-        - id
-        - name
     ChatChannelsListResponse:
       type: object
       properties:
@@ -2958,6 +2961,114 @@ components:
         - total
         - hasMore
         - channels
+    ChatPlatform:
+      type: string
+      enum:
+        - slack
+        - microsoftTeams
+      description: "The chat platform the organization is connected to: `slack` or `microsoftTeams`."
+    ChatChannel:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Platform channel ID, as accepted by `announcementChannels` on maintenance windows (Slack `C…` or Microsoft Teams `19:…@thread.tacv2`).
+        name:
+          type: string
+          description: Channel display name.
+      required:
+        - id
+        - name
+    MaintenanceWindowsListResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Total number of maintenance windows matching the filters.
+          format: int32
+        hasMore:
+          type: boolean
+          description: Whether more maintenance windows are available beyond the current page.
+        maintenanceWindows:
+          type: array
+          items:
+            $ref: "#/components/schemas/MaintenanceWindow"
+      required:
+        - total
+        - hasMore
+        - maintenanceWindows
+    MaintenanceWindow:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the maintenance window.
+          format: int32
+        name:
+          type: string
+          description: Display name.
+        description:
+          type:
+            - string
+            - "null"
+          description: Description.
+        teamId:
+          type:
+            - integer
+            - "null"
+          description: ID of the team the window is scoped to, or null for a global window.
+          format: int32
+        startAt:
+          type: string
+          format: date-time
+          description: ISO 8601 start instant.
+        endAt:
+          type: string
+          format: date-time
+          description: ISO 8601 end instant.
+        status:
+          $ref: "#/components/schemas/MaintenanceWindowStatus"
+        conditions:
+          type:
+            - array
+            - "null"
+          items:
+            $ref: "#/components/schemas/MaintenanceWindowCondition"
+          description: Conditions limiting which in-scope alerts the window applies to; null when it applies to all.
+        conditionsLogicalOperator:
+          type:
+            - string
+            - "null"
+          enum:
+            - AND
+            - OR
+          description: How the top-level conditions combine; null when there are no conditions.
+        announcementChannels:
+          type: array
+          items:
+            $ref: "#/components/schemas/MaintenanceWindowAnnouncementChannel"
+          description: Chat channels the window announces its start and end in; empty when it announces nowhere.
+        createdAt:
+          type: string
+          format: date-time
+          description: ISO 8601 creation timestamp.
+        updatedAt:
+          type: string
+          format: date-time
+          description: ISO 8601 last-update timestamp.
+      required:
+        - id
+        - name
+        - description
+        - teamId
+        - startAt
+        - endAt
+        - status
+        - conditions
+        - conditionsLogicalOperator
+        - announcementChannels
+        - createdAt
+        - updatedAt
     MaintenanceWindowStatus:
       type: string
       enum:
@@ -2965,182 +3076,6 @@ components:
         - active
         - ended
       description: Where the window sits relative to the current time.
-    MaintenanceWindowSeverityCondition:
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-            - severity
-        rule:
-          type: object
-          properties:
-            operator:
-              type: string
-              enum: &a4
-                - equal_to
-                - less_than
-                - greater_than
-                - less_than_or_equal
-                - greater_than_or_equal
-            severity:
-              type: string
-          required:
-            - operator
-            - severity
-      required:
-        - type
-        - rule
-      description: rule.severity accepts the canonical SEV0-SEV5 or SIGNAL, or an alias such as P1 or critical.
-    MaintenanceWindowFieldCondition:
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-            - field
-        rule:
-          type: object
-          properties:
-            fieldPath:
-              type: string
-              minLength: 1
-              description: Dot-path into the payload this rule is evaluated against. Alert routing, enrichment and maintenance-window rules evaluate the incoming payload, where the source's own fields are under `details`; automation rules evaluate the stored alert, where the same fields are under `metadata`. A path that matches nothing makes the rule silently never fire.
-            operator:
-              type: string
-              enum: &a5
-                - contains
-                - exact_match
-                - not_contains
-                - matches_regex
-            conditionValue:
-              type: string
-            isCaseSensitive:
-              type:
-                - boolean
-                - "null"
-          required:
-            - fieldPath
-            - operator
-            - conditionValue
-      required:
-        - type
-        - rule
-    MaintenanceWindowProviderCondition:
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-            - provider
-        rule:
-          type: object
-          properties:
-            operator:
-              type: string
-              enum:
-                - one_of
-            providers:
-              type: array
-              items:
-                type: string
-                enum: &a6
-                  - opsgenie
-                  - grafana
-                  - datadog
-                  - coralogix
-                  - newrelic
-                  - prometheus
-                  - cloudwatch
-                  - sns
-                  - heartbeat
-                  - email
-                  - sentry
-                  - embraceio
-                  - http
-                  - azuremonitor
-                  - cloudamqp
-              minItems: 1
-          required:
-            - operator
-            - providers
-      required:
-        - type
-        - rule
-    MaintenanceWindowTimeCondition:
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-            - time
-        rule:
-          type: object
-          properties:
-            timezone:
-              type: string
-              minLength: 1
-            operator:
-              type: string
-              enum: &a7
-                - day_in_between
-                - week_in_between
-            timeInterval:
-              anyOf:
-                - type: object
-                  properties:
-                    startHourOffset:
-                      type: string
-                      pattern: ^\d{2}:\d{2}$
-                    endHourOffset:
-                      type: string
-                      pattern: ^\d{2}:\d{2}$
-                  required:
-                    - startHourOffset
-                    - endHourOffset
-                - type: object
-                  properties:
-                    weekRanges:
-                      type: array
-                      items:
-                        type: object
-                        properties:
-                          startDay:
-                            type: integer
-                            minimum: 0
-                            maximum: 6
-                          endDay:
-                            type: integer
-                            minimum: 0
-                            maximum: 6
-                          startHourOffset:
-                            type: string
-                            pattern: ^\d{2}:\d{2}$
-                          endHourOffset:
-                            type: string
-                            pattern: ^\d{2}:\d{2}$
-                        required:
-                          - startDay
-                          - endDay
-                          - startHourOffset
-                          - endHourOffset
-                      minItems: 1
-                  required:
-                    - weekRanges
-          required:
-            - timezone
-            - operator
-            - timeInterval
-      required:
-        - type
-        - rule
-    MaintenanceWindowLeafCondition:
-      anyOf:
-        - $ref: "#/components/schemas/MaintenanceWindowSeverityCondition"
-        - $ref: "#/components/schemas/MaintenanceWindowFieldCondition"
-        - $ref: "#/components/schemas/MaintenanceWindowProviderCondition"
-        - $ref: "#/components/schemas/MaintenanceWindowTimeCondition"
-      description: One condition on the incoming alert payload. severity compares the alert severity; field matches a dot-path in the payload (source fields live under `details`); provider matches the source integration; time matches a recurring daily or weekly interval in the given timezone.
     MaintenanceWindowCondition:
       anyOf:
         - $ref: "#/components/schemas/MaintenanceWindowSeverityCondition"
@@ -3244,6 +3179,184 @@ components:
             - operator
             - conditions
       description: A leaf condition or a parenthesised group of conditions. Groups may nest up to 5 levels deep.
+    MaintenanceWindowSeverityCondition:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - severity
+        rule:
+          type: object
+          properties:
+            operator:
+              type: string
+              enum:
+                - equal_to
+                - less_than
+                - greater_than
+                - less_than_or_equal
+                - greater_than_or_equal
+            severity:
+              type: string
+          required:
+            - operator
+            - severity
+      required:
+        - type
+        - rule
+      description: rule.severity accepts the canonical SEV0-SEV5 or SIGNAL, or an alias such as P1 or critical.
+    MaintenanceWindowFieldCondition:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - field
+        rule:
+          type: object
+          properties:
+            fieldPath:
+              type: string
+              minLength: 1
+              description: Dot-path into the payload this rule is evaluated against. Alert routing, enrichment and maintenance-window rules evaluate the incoming payload, where the source's own fields are under `details`; automation rules evaluate the stored alert, where the same fields are under `metadata`. A path that matches nothing makes the rule silently never fire.
+            operator:
+              type: string
+              enum:
+                - contains
+                - exact_match
+                - not_contains
+                - matches_regex
+            conditionValue:
+              type: string
+            isCaseSensitive:
+              type:
+                - boolean
+                - "null"
+          required:
+            - fieldPath
+            - operator
+            - conditionValue
+      required:
+        - type
+        - rule
+    MaintenanceWindowProviderCondition:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - provider
+        rule:
+          type: object
+          properties:
+            operator:
+              type: string
+              enum:
+                - one_of
+            providers:
+              type: array
+              items:
+                type: string
+                enum:
+                  - jira
+                  - opsgenie
+                  - grafana
+                  - datadog
+                  - coralogix
+                  - newrelic
+                  - prometheus
+                  - cloudwatch
+                  - sns
+                  - heartbeat
+                  - email
+                  - sentry
+                  - embraceio
+                  - http
+                  - azuremonitor
+                  - cloudamqp
+                  - pagerduty
+              minItems: 1
+          required:
+            - operator
+            - providers
+      required:
+        - type
+        - rule
+    MaintenanceWindowTimeCondition:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - time
+        rule:
+          type: object
+          properties:
+            timezone:
+              type: string
+              minLength: 1
+            operator:
+              type: string
+              enum:
+                - day_in_between
+                - week_in_between
+            timeInterval:
+              anyOf:
+                - type: object
+                  properties:
+                    startHourOffset:
+                      type: string
+                      pattern: ^\d{2}:\d{2}$
+                    endHourOffset:
+                      type: string
+                      pattern: ^\d{2}:\d{2}$
+                  required:
+                    - startHourOffset
+                    - endHourOffset
+                - type: object
+                  properties:
+                    weekRanges:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          startDay:
+                            type: integer
+                            minimum: 0
+                            maximum: 6
+                          endDay:
+                            type: integer
+                            minimum: 0
+                            maximum: 6
+                          startHourOffset:
+                            type: string
+                            pattern: ^\d{2}:\d{2}$
+                          endHourOffset:
+                            type: string
+                            pattern: ^\d{2}:\d{2}$
+                        required:
+                          - startDay
+                          - endDay
+                          - startHourOffset
+                          - endHourOffset
+                      minItems: 1
+                  required:
+                    - weekRanges
+          required:
+            - timezone
+            - operator
+            - timeInterval
+      required:
+        - type
+        - rule
+    MaintenanceWindowLeafCondition:
+      anyOf:
+        - $ref: "#/components/schemas/MaintenanceWindowSeverityCondition"
+        - $ref: "#/components/schemas/MaintenanceWindowFieldCondition"
+        - $ref: "#/components/schemas/MaintenanceWindowProviderCondition"
+        - $ref: "#/components/schemas/MaintenanceWindowTimeCondition"
+      description: One condition on the incoming alert payload. severity compares the alert severity; field matches a dot-path in the payload (source fields live under `details`); provider matches the source integration; time matches a recurring daily or weekly interval in the given timezone.
     MaintenanceWindowAnnouncementChannel:
       type: object
       properties:
@@ -3256,96 +3369,6 @@ components:
       required:
         - id
         - name
-    MaintenanceWindow:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Unique identifier of the maintenance window.
-          format: int32
-        name:
-          type: string
-          description: Display name.
-        description:
-          type:
-            - string
-            - "null"
-          description: Description.
-        teamId:
-          type:
-            - integer
-            - "null"
-          description: ID of the team the window is scoped to, or null for a global window.
-          format: int32
-        startAt:
-          type: string
-          format: date-time
-          description: ISO 8601 start instant.
-        endAt:
-          type: string
-          format: date-time
-          description: ISO 8601 end instant.
-        status:
-          $ref: "#/components/schemas/MaintenanceWindowStatus"
-        conditions:
-          type:
-            - array
-            - "null"
-          items:
-            $ref: "#/components/schemas/MaintenanceWindowCondition"
-          description: Conditions limiting which in-scope alerts the window applies to; null when it applies to all.
-        conditionsLogicalOperator:
-          type:
-            - string
-            - "null"
-          enum:
-            - AND
-            - OR
-          description: How the top-level conditions combine; null when there are no conditions.
-        announcementChannels:
-          type: array
-          items:
-            $ref: "#/components/schemas/MaintenanceWindowAnnouncementChannel"
-          description: Chat channels the window announces its start and end in; empty when it announces nowhere.
-        createdAt:
-          type: string
-          format: date-time
-          description: ISO 8601 creation timestamp.
-        updatedAt:
-          type: string
-          format: date-time
-          description: ISO 8601 last-update timestamp.
-      required:
-        - id
-        - name
-        - description
-        - teamId
-        - startAt
-        - endAt
-        - status
-        - conditions
-        - conditionsLogicalOperator
-        - announcementChannels
-        - createdAt
-        - updatedAt
-    MaintenanceWindowsListResponse:
-      type: object
-      properties:
-        total:
-          type: integer
-          description: Total number of maintenance windows matching the filters.
-          format: int32
-        hasMore:
-          type: boolean
-          description: Whether more maintenance windows are available beyond the current page.
-        maintenanceWindows:
-          type: array
-          items:
-            $ref: "#/components/schemas/MaintenanceWindow"
-      required:
-        - total
-        - hasMore
-        - maintenanceWindows
     MaintenanceWindowResponse:
       type: object
       properties:
@@ -3394,7 +3417,7 @@ components:
           type:
             - string
             - "null"
-          enum: &a2
+          enum: &a1
             - AND
             - OR
           description: How the top-level conditions combine. Must be sent together with conditions.
@@ -3445,7 +3468,7 @@ components:
           type:
             - string
             - "null"
-          enum: *a2
+          enum: *a1
           description: How the top-level conditions combine. Must be sent together with conditions.
         announcementChannels:
           type:
@@ -3475,6 +3498,15 @@ components:
         - total
         - hasMore
         - alerts
+    AlertSourceListResponse:
+      type: object
+      properties:
+        alertSources:
+          type: array
+          items:
+            $ref: "#/components/schemas/AlertSource"
+      required:
+        - alertSources
     AlertSource:
       type: object
       properties:
@@ -3485,7 +3517,8 @@ components:
           type: string
         provider:
           type: string
-          enum: &a3
+          enum:
+            - jira
             - opsgenie
             - grafana
             - datadog
@@ -3500,6 +3533,7 @@ components:
             - http
             - azuremonitor
             - cloudamqp
+            - pagerduty
         teamId:
           type:
             - integer
@@ -3545,15 +3579,6 @@ components:
         - emailAddress
         - createdAt
         - updatedAt
-    AlertSourceListResponse:
-      type: object
-      properties:
-        alertSources:
-          type: array
-          items:
-            $ref: "#/components/schemas/AlertSource"
-      required:
-        - alertSources
     CreateAlertSourceRequest:
       type: object
       properties:
@@ -3564,7 +3589,23 @@ components:
           description: Unique within its scope and provider.
         provider:
           type: string
-          enum: *a3
+          enum:
+            - jira
+            - opsgenie
+            - grafana
+            - datadog
+            - coralogix
+            - newrelic
+            - prometheus
+            - cloudwatch
+            - sns
+            - email
+            - sentry
+            - embraceio
+            - http
+            - azuremonitor
+            - cloudamqp
+            - pagerduty
           description: The monitoring tool that delivers to this source. Cannot be changed later.
         teamId:
           type:
@@ -3602,183 +3643,81 @@ components:
           type: boolean
       additionalProperties: false
       minProperties: 1
-    AlertRoutingSeverityCondition:
+    AlertRoutingListResponse:
       type: object
       properties:
-        type:
-          type: string
-          enum:
-            - severity
-        rule:
-          type: object
-          properties:
-            operator:
-              type: string
-              enum: *a4
-            severity:
-              type: string
-          required:
-            - operator
-            - severity
+        alertRoutings:
+          type: array
+          items:
+            $ref: "#/components/schemas/AlertRouting"
       required:
-        - type
-        - rule
-      description: rule.severity accepts the canonical SEV0-SEV5 or SIGNAL, or an alias such as P1 or critical; an alias reads back as its canonical value.
-    AlertRoutingFieldCondition:
+        - alertRoutings
+    AlertRouting:
       type: object
       properties:
-        type:
+        id:
+          type: integer
+          exclusiveMinimum: 0
+        name:
           type: string
-          enum:
-            - field
-        rule:
-          type: object
-          properties:
-            fieldPath:
-              type: string
-              minLength: 1
-              description: Dot-path into the payload this rule is evaluated against. Alert routing, enrichment and maintenance-window rules evaluate the incoming payload, where the source's own fields are under `details`; automation rules evaluate the stored alert, where the same fields are under `metadata`. A path that matches nothing makes the rule silently never fire.
-            operator:
-              type: string
-              enum: *a5
-            conditionValue:
-              type: string
-            isCaseSensitive:
-              type:
-                - boolean
-                - "null"
-          required:
-            - fieldPath
-            - operator
-            - conditionValue
+        description:
+          type:
+            - string
+            - "null"
+        teamId:
+          type:
+            - integer
+            - "null"
+          exclusiveMinimum: 0
+        isEnabled:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        rules:
+          type: array
+          items:
+            $ref: "#/components/schemas/AlertRoutingRule"
+          description: Rules in evaluation order.
       required:
-        - type
-        - rule
-    AlertRoutingProviderCondition:
+        - id
+        - name
+        - description
+        - teamId
+        - isEnabled
+        - createdAt
+        - updatedAt
+        - rules
+    AlertRoutingRule:
       type: object
       properties:
-        type:
+        name:
+          type:
+            - string
+            - "null"
+        logicalOperator:
           type: string
           enum:
-            - provider
-        rule:
-          type: object
-          properties:
-            operator:
-              type: string
-              enum:
-                - one_of
-            providers:
-              type: array
-              items:
-                type: string
-                enum: *a6
-              minItems: 1
-          required:
-            - operator
-            - providers
+            - AND
+            - OR
+          description: How the top-level conditions combine.
+        conditions:
+          type: array
+          items:
+            $ref: "#/components/schemas/AlertRoutingCondition"
+          description: An empty list with logicalOperator AND is the fallback rule, which matches every alert.
+        action:
+          anyOf:
+            - $ref: "#/components/schemas/AlertRoutingEscalateAction"
+            - $ref: "#/components/schemas/AlertRoutingDoNothingAction"
       required:
-        - type
-        - rule
-    AlertRoutingCountCondition:
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-            - count
-        rule:
-          type: object
-          properties:
-            countThreshold:
-              type: integer
-              exclusiveMinimum: 0
-              minimum: 2
-            timeframe:
-              type: integer
-              exclusiveMinimum: 0
-              minimum: 60000
-              description: Milliseconds
-          required:
-            - countThreshold
-            - timeframe
-      required:
-        - type
-        - rule
-      description: Matches once countThreshold alerts arrived within timeframe milliseconds.
-    AlertRoutingTimeCondition:
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-            - time
-        rule:
-          type: object
-          properties:
-            timezone:
-              type: string
-              minLength: 1
-            operator:
-              type: string
-              enum: *a7
-            timeInterval:
-              anyOf:
-                - type: object
-                  properties:
-                    startHourOffset:
-                      type: string
-                      pattern: ^\d{2}:\d{2}$
-                    endHourOffset:
-                      type: string
-                      pattern: ^\d{2}:\d{2}$
-                  required:
-                    - startHourOffset
-                    - endHourOffset
-                - type: object
-                  properties:
-                    weekRanges:
-                      type: array
-                      items:
-                        type: object
-                        properties:
-                          startDay:
-                            type: integer
-                            minimum: 0
-                            maximum: 6
-                          endDay:
-                            type: integer
-                            minimum: 0
-                            maximum: 6
-                          startHourOffset:
-                            type: string
-                            pattern: ^\d{2}:\d{2}$
-                          endHourOffset:
-                            type: string
-                            pattern: ^\d{2}:\d{2}$
-                        required:
-                          - startDay
-                          - endDay
-                          - startHourOffset
-                          - endHourOffset
-                      minItems: 1
-                  required:
-                    - weekRanges
-          required:
-            - timezone
-            - operator
-            - timeInterval
-      required:
-        - type
-        - rule
-    AlertRoutingLeafCondition:
-      anyOf:
-        - $ref: "#/components/schemas/AlertRoutingSeverityCondition"
-        - $ref: "#/components/schemas/AlertRoutingFieldCondition"
-        - $ref: "#/components/schemas/AlertRoutingProviderCondition"
-        - $ref: "#/components/schemas/AlertRoutingCountCondition"
-        - $ref: "#/components/schemas/AlertRoutingTimeCondition"
-      description: One condition on the incoming alert payload. field matches a dot-path in the payload (source fields live under `details`).
+        - name
+        - logicalOperator
+        - conditions
+        - action
     AlertRoutingCondition:
       anyOf:
         - $ref: "#/components/schemas/AlertRoutingSeverityCondition"
@@ -3886,6 +3825,211 @@ components:
             - operator
             - conditions
       description: A leaf condition or a parenthesised group of conditions. Groups may nest up to 5 levels deep.
+    AlertRoutingSeverityCondition:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - severity
+        rule:
+          type: object
+          properties:
+            operator:
+              type: string
+              enum:
+                - equal_to
+                - less_than
+                - greater_than
+                - less_than_or_equal
+                - greater_than_or_equal
+            severity:
+              type: string
+          required:
+            - operator
+            - severity
+      required:
+        - type
+        - rule
+      description: rule.severity accepts the canonical SEV0-SEV5 or SIGNAL, or an alias such as P1 or critical; an alias reads back as its canonical value.
+    AlertRoutingFieldCondition:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - field
+        rule:
+          type: object
+          properties:
+            fieldPath:
+              type: string
+              minLength: 1
+              description: Dot-path into the payload this rule is evaluated against. Alert routing, enrichment and maintenance-window rules evaluate the incoming payload, where the source's own fields are under `details`; automation rules evaluate the stored alert, where the same fields are under `metadata`. A path that matches nothing makes the rule silently never fire.
+            operator:
+              type: string
+              enum:
+                - contains
+                - exact_match
+                - not_contains
+                - matches_regex
+            conditionValue:
+              type: string
+            isCaseSensitive:
+              type:
+                - boolean
+                - "null"
+          required:
+            - fieldPath
+            - operator
+            - conditionValue
+      required:
+        - type
+        - rule
+    AlertRoutingProviderCondition:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - provider
+        rule:
+          type: object
+          properties:
+            operator:
+              type: string
+              enum:
+                - one_of
+            providers:
+              type: array
+              items:
+                type: string
+                enum:
+                  - jira
+                  - opsgenie
+                  - grafana
+                  - datadog
+                  - coralogix
+                  - newrelic
+                  - prometheus
+                  - cloudwatch
+                  - sns
+                  - heartbeat
+                  - email
+                  - sentry
+                  - embraceio
+                  - http
+                  - azuremonitor
+                  - cloudamqp
+                  - pagerduty
+              minItems: 1
+          required:
+            - operator
+            - providers
+      required:
+        - type
+        - rule
+    AlertRoutingCountCondition:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - count
+        rule:
+          type: object
+          properties:
+            countThreshold:
+              type: integer
+              exclusiveMinimum: 0
+              minimum: 2
+            timeframe:
+              type: integer
+              exclusiveMinimum: 0
+              minimum: 60000
+              description: Milliseconds
+          required:
+            - countThreshold
+            - timeframe
+      required:
+        - type
+        - rule
+      description: Matches once countThreshold alerts arrived within timeframe milliseconds.
+    AlertRoutingTimeCondition:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - time
+        rule:
+          type: object
+          properties:
+            timezone:
+              type: string
+              minLength: 1
+            operator:
+              type: string
+              enum:
+                - day_in_between
+                - week_in_between
+            timeInterval:
+              anyOf:
+                - type: object
+                  properties:
+                    startHourOffset:
+                      type: string
+                      pattern: ^\d{2}:\d{2}$
+                    endHourOffset:
+                      type: string
+                      pattern: ^\d{2}:\d{2}$
+                  required:
+                    - startHourOffset
+                    - endHourOffset
+                - type: object
+                  properties:
+                    weekRanges:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          startDay:
+                            type: integer
+                            minimum: 0
+                            maximum: 6
+                          endDay:
+                            type: integer
+                            minimum: 0
+                            maximum: 6
+                          startHourOffset:
+                            type: string
+                            pattern: ^\d{2}:\d{2}$
+                          endHourOffset:
+                            type: string
+                            pattern: ^\d{2}:\d{2}$
+                        required:
+                          - startDay
+                          - endDay
+                          - startHourOffset
+                          - endHourOffset
+                      minItems: 1
+                  required:
+                    - weekRanges
+          required:
+            - timezone
+            - operator
+            - timeInterval
+      required:
+        - type
+        - rule
+    AlertRoutingLeafCondition:
+      anyOf:
+        - $ref: "#/components/schemas/AlertRoutingSeverityCondition"
+        - $ref: "#/components/schemas/AlertRoutingFieldCondition"
+        - $ref: "#/components/schemas/AlertRoutingProviderCondition"
+        - $ref: "#/components/schemas/AlertRoutingCountCondition"
+        - $ref: "#/components/schemas/AlertRoutingTimeCondition"
+      description: One condition on the incoming alert payload. field matches a dot-path in the payload (source fields live under `details`).
     AlertRoutingEscalateAction:
       type: object
       properties:
@@ -3945,108 +4089,6 @@ components:
         - type
       additionalProperties: false
       description: "Silence: create the alert without paging anyone."
-    AlertRoutingRule:
-      type: object
-      properties:
-        name:
-          type:
-            - string
-            - "null"
-        logicalOperator:
-          type: string
-          enum: &a8
-            - AND
-            - OR
-          description: How the top-level conditions combine.
-        conditions:
-          type: array
-          items:
-            $ref: "#/components/schemas/AlertRoutingCondition"
-          description: An empty list with logicalOperator AND is the fallback rule, which matches every alert.
-        action:
-          anyOf:
-            - $ref: "#/components/schemas/AlertRoutingEscalateAction"
-            - $ref: "#/components/schemas/AlertRoutingDoNothingAction"
-      required:
-        - name
-        - logicalOperator
-        - conditions
-        - action
-    AlertRouting:
-      type: object
-      properties:
-        id:
-          type: integer
-          exclusiveMinimum: 0
-        name:
-          type: string
-        description:
-          type:
-            - string
-            - "null"
-        teamId:
-          type:
-            - integer
-            - "null"
-          exclusiveMinimum: 0
-        isEnabled:
-          type: boolean
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
-        rules:
-          type: array
-          items:
-            $ref: "#/components/schemas/AlertRoutingRule"
-          description: Rules in evaluation order.
-      required:
-        - id
-        - name
-        - description
-        - teamId
-        - isEnabled
-        - createdAt
-        - updatedAt
-        - rules
-    AlertRoutingListResponse:
-      type: object
-      properties:
-        alertRoutings:
-          type: array
-          items:
-            $ref: "#/components/schemas/AlertRouting"
-      required:
-        - alertRoutings
-    AlertRoutingRuleInput:
-      type: object
-      properties:
-        name:
-          type:
-            - string
-            - "null"
-          minLength: 1
-          maxLength: 255
-        logicalOperator:
-          type: string
-          enum: *a8
-          description: How the top-level conditions combine.
-        conditions:
-          type: array
-          items:
-            $ref: "#/components/schemas/AlertRoutingCondition"
-          description: An empty list with logicalOperator AND is the fallback rule, which matches every alert.
-        action:
-          anyOf:
-            - $ref: "#/components/schemas/AlertRoutingEscalateAction"
-            - $ref: "#/components/schemas/AlertRoutingDoNothingAction"
-      required:
-        - logicalOperator
-        - conditions
-        - action
-      additionalProperties: false
     CreateAlertRoutingRequest:
       type: object
       properties:
@@ -4075,6 +4117,35 @@ components:
           description: Rules in evaluation order; the first rule that matches decides. The list replaces every rule of the routing and reads back in the order sent. At most one fallback rule, and only last.
       required:
         - name
+      additionalProperties: false
+    AlertRoutingRuleInput:
+      type: object
+      properties:
+        name:
+          type:
+            - string
+            - "null"
+          minLength: 1
+          maxLength: 255
+        logicalOperator:
+          type: string
+          enum:
+            - AND
+            - OR
+          description: How the top-level conditions combine.
+        conditions:
+          type: array
+          items:
+            $ref: "#/components/schemas/AlertRoutingCondition"
+          description: An empty list with logicalOperator AND is the fallback rule, which matches every alert.
+        action:
+          anyOf:
+            - $ref: "#/components/schemas/AlertRoutingEscalateAction"
+            - $ref: "#/components/schemas/AlertRoutingDoNothingAction"
+      required:
+        - logicalOperator
+        - conditions
+        - action
       additionalProperties: false
     UpdateAlertRoutingRequest:
       type: object
@@ -4117,6 +4188,7 @@ paths:
             description: Maximum number of items to return (default 20, max 100).
             format: int32
           required: false
+          description: Maximum number of items to return (default 20, max 100).
           name: limit
           in: query
         - schema:
@@ -4128,6 +4200,7 @@ paths:
             description: Number of items to skip before starting to collect the result set.
             format: int32
           required: false
+          description: Number of items to skip before starting to collect the result set.
           name: offset
           in: query
       responses:
@@ -4220,6 +4293,7 @@ paths:
             minLength: 1
             description: Short identifier of the team (e.g. VP-TEAM-ABC123), or its numeric ID.
           required: true
+          description: Short identifier of the team (e.g. VP-TEAM-ABC123), or its numeric ID.
           name: teamShortId
           in: path
       responses:
@@ -4267,6 +4341,7 @@ paths:
             minLength: 1
             description: Short identifier of the team (e.g. VP-TEAM-ABC123), or its numeric ID.
           required: true
+          description: Short identifier of the team (e.g. VP-TEAM-ABC123), or its numeric ID.
           name: teamShortId
           in: path
       requestBody:
@@ -4331,6 +4406,7 @@ paths:
             minLength: 1
             description: Short identifier of the team (e.g. VP-TEAM-ABC123), or its numeric ID.
           required: true
+          description: Short identifier of the team (e.g. VP-TEAM-ABC123), or its numeric ID.
           name: teamShortId
           in: path
       responses:
@@ -4391,6 +4467,7 @@ paths:
             minLength: 1
             description: Short identifier of the team (e.g. VP-TEAM-ABC123), or its numeric ID.
           required: true
+          description: Short identifier of the team (e.g. VP-TEAM-ABC123), or its numeric ID.
           name: teamShortId
           in: path
         - schema:
@@ -4400,6 +4477,7 @@ paths:
             description: Maximum number of members to return (max 100). Omitted, every member is returned.
             format: int32
           required: false
+          description: Maximum number of members to return (max 100). Omitted, every member is returned.
           name: limit
           in: query
         - schema:
@@ -4411,6 +4489,7 @@ paths:
             description: Number of items to skip before starting to collect the result set.
             format: int32
           required: false
+          description: Number of items to skip before starting to collect the result set.
           name: offset
           in: query
       responses:
@@ -4458,6 +4537,7 @@ paths:
             minLength: 1
             description: Short identifier of the team (e.g. VP-TEAM-ABC123), or its numeric ID.
           required: true
+          description: Short identifier of the team (e.g. VP-TEAM-ABC123), or its numeric ID.
           name: teamShortId
           in: path
       requestBody:
@@ -4517,6 +4597,7 @@ paths:
             minLength: 1
             description: Short identifier of the team (e.g. VP-TEAM-ABC123), or its numeric ID.
           required: true
+          description: Short identifier of the team (e.g. VP-TEAM-ABC123), or its numeric ID.
           name: teamShortId
           in: path
         - schema:
@@ -4525,6 +4606,7 @@ paths:
             description: ID of the user to unassign from the team.
             format: int32
           required: true
+          description: ID of the user to unassign from the team.
           name: userId
           in: path
       responses:
@@ -4585,6 +4667,7 @@ paths:
             minLength: 1
             description: Short identifier of the team (e.g. VP-TEAM-ABC123), or its numeric ID.
           required: true
+          description: Short identifier of the team (e.g. VP-TEAM-ABC123), or its numeric ID.
           name: teamShortId
           in: path
       responses:
@@ -4636,6 +4719,7 @@ paths:
             description: Maximum number of items to return (default 20, max 100).
             format: int32
           required: false
+          description: Maximum number of items to return (default 20, max 100).
           name: limit
           in: query
         - schema:
@@ -4647,6 +4731,7 @@ paths:
             description: Number of items to skip before starting to collect the result set.
             format: int32
           required: false
+          description: Number of items to skip before starting to collect the result set.
           name: offset
           in: query
         - schema:
@@ -4655,6 +4740,7 @@ paths:
             description: Return only schedules this team owns, including those it shares with other teams. Omit for every schedule, global ones included.
             format: int32
           required: false
+          description: Return only schedules this team owns, including those it shares with other teams. Omit for every schedule, global ones included.
           name: teamId
           in: query
       responses:
@@ -4756,6 +4842,7 @@ paths:
             description: Schedule ID.
             format: int32
           required: true
+          description: Schedule ID.
           name: id
           in: path
       requestBody:
@@ -4823,6 +4910,7 @@ paths:
             description: Schedule ID.
             format: int32
           required: true
+          description: Schedule ID.
           name: id
           in: path
       responses:
@@ -4881,6 +4969,7 @@ paths:
             description: Schedule ID.
             format: int32
           required: true
+          description: Schedule ID.
           name: id
           in: path
       responses:
@@ -4932,6 +5021,7 @@ paths:
             description: Schedule ID.
             format: int32
           required: true
+          description: Schedule ID.
           name: id
           in: path
       requestBody:
@@ -5000,6 +5090,7 @@ paths:
             description: Schedule ID.
             format: int32
           required: true
+          description: Schedule ID.
           name: id
           in: path
       requestBody:
@@ -5068,6 +5159,7 @@ paths:
             description: Schedule ID.
             format: int32
           required: true
+          description: Schedule ID.
           name: id
           in: path
         - schema:
@@ -5076,6 +5168,7 @@ paths:
             description: Rotation ID.
             format: int32
           required: true
+          description: Rotation ID.
           name: rotationId
           in: path
       requestBody:
@@ -5143,6 +5236,7 @@ paths:
             description: Schedule ID.
             format: int32
           required: true
+          description: Schedule ID.
           name: id
           in: path
         - schema:
@@ -5151,6 +5245,7 @@ paths:
             description: Rotation ID.
             format: int32
           required: true
+          description: Rotation ID.
           name: rotationId
           in: path
       responses:
@@ -5210,6 +5305,7 @@ paths:
             description: Schedule ID.
             format: int32
           required: true
+          description: Schedule ID.
           name: id
           in: path
       responses:
@@ -5259,6 +5355,7 @@ paths:
             description: Schedule ID.
             format: int32
           required: true
+          description: Schedule ID.
           name: id
           in: path
         - schema:
@@ -5267,6 +5364,7 @@ paths:
             description: Rotation ID.
             format: int32
           required: true
+          description: Rotation ID.
           name: rotationId
           in: path
         - schema:
@@ -5289,6 +5387,7 @@ paths:
             format: date-time
             description: ISO 8601 timestamp with an explicit offset. Include overrides ending at or after this instant, converted to the schedule clock before comparison.
           required: false
+          description: ISO 8601 timestamp with an explicit offset. Include overrides ending at or after this instant, converted to the schedule clock before comparison.
           name: from
           in: query
         - schema:
@@ -5296,6 +5395,7 @@ paths:
             format: date-time
             description: ISO 8601 timestamp with an explicit offset. Include overrides starting at or before this instant, converted to the schedule clock before comparison.
           required: false
+          description: ISO 8601 timestamp with an explicit offset. Include overrides starting at or before this instant, converted to the schedule clock before comparison.
           name: to
           in: query
       responses:
@@ -5346,6 +5446,7 @@ paths:
             description: Schedule ID.
             format: int32
           required: true
+          description: Schedule ID.
           name: id
           in: path
         - schema:
@@ -5354,6 +5455,7 @@ paths:
             description: Rotation ID.
             format: int32
           required: true
+          description: Rotation ID.
           name: rotationId
           in: path
       requestBody:
@@ -5416,6 +5518,7 @@ paths:
             description: Schedule ID.
             format: int32
           required: true
+          description: Schedule ID.
           name: id
           in: path
         - schema:
@@ -5424,6 +5527,7 @@ paths:
             description: Rotation ID.
             format: int32
           required: true
+          description: Rotation ID.
           name: rotationId
           in: path
         - schema:
@@ -5432,6 +5536,7 @@ paths:
             description: Override ID.
             format: int32
           required: true
+          description: Override ID.
           name: overrideId
           in: path
       requestBody:
@@ -5493,6 +5598,7 @@ paths:
             description: Schedule ID.
             format: int32
           required: true
+          description: Schedule ID.
           name: id
           in: path
         - schema:
@@ -5501,6 +5607,7 @@ paths:
             description: Rotation ID.
             format: int32
           required: true
+          description: Rotation ID.
           name: rotationId
           in: path
         - schema:
@@ -5509,6 +5616,7 @@ paths:
             description: Override ID.
             format: int32
           required: true
+          description: Override ID.
           name: overrideId
           in: path
       responses:
@@ -5564,6 +5672,7 @@ paths:
             description: Maximum number of items to return (default 20, max 100).
             format: int32
           required: false
+          description: Maximum number of items to return (default 20, max 100).
           name: limit
           in: query
         - schema:
@@ -5575,6 +5684,7 @@ paths:
             description: Number of items to skip before starting to collect the result set.
             format: int32
           required: false
+          description: Number of items to skip before starting to collect the result set.
           name: offset
           in: query
       responses:
@@ -5618,6 +5728,7 @@ paths:
             description: Inclusive start date for the reporting range in YYYY-MM-DD format.
             example: 2026-04-01
           required: true
+          description: Inclusive start date for the reporting range in YYYY-MM-DD format.
           name: startDate
           in: query
         - schema:
@@ -5626,6 +5737,7 @@ paths:
             description: Inclusive end date for the reporting range in YYYY-MM-DD format.
             example: 2026-04-07
           required: true
+          description: Inclusive end date for the reporting range in YYYY-MM-DD format.
           name: endDate
           in: query
         - schema:
@@ -5637,6 +5749,7 @@ paths:
               - VP-TEAM-ABC123
               - VP-TEAM-XYZ789
           required: false
+          description: Optional team short IDs to filter by.
           name: teamShortIds
           in: query
         - schema:
@@ -5649,6 +5762,7 @@ paths:
               - 101
               - 202
           required: false
+          description: Optional member user IDs to filter by.
           name: memberIds
           in: query
         - schema:
@@ -5658,6 +5772,7 @@ paths:
             description: "Optional hours-per-day divisor. When set, the response includes derived day totals: 24 for calendar-day, 8 for business-day, etc. Must be positive and ≤ 24."
             example: 24
           required: false
+          description: "Optional hours-per-day divisor. When set, the response includes derived day totals: 24 for calendar-day, 8 for business-day, etc. Must be positive and ≤ 24."
           name: hoursPerDay
           in: query
       responses:
@@ -5709,6 +5824,7 @@ paths:
             description: Maximum number of items to return (default 20, max 100).
             format: int32
           required: false
+          description: Maximum number of items to return (default 20, max 100).
           name: limit
           in: query
         - schema:
@@ -5720,6 +5836,7 @@ paths:
             description: Number of items to skip before starting to collect the result set.
             format: int32
           required: false
+          description: Number of items to skip before starting to collect the result set.
           name: offset
           in: query
         - schema:
@@ -5728,6 +5845,7 @@ paths:
             description: Return only policies belonging to this team ID. Omit for all policies.
             format: int32
           required: false
+          description: Return only policies belonging to this team ID. Omit for all policies.
           name: teamId
           in: query
       responses:
@@ -5830,6 +5948,7 @@ paths:
             description: Escalation policy ID.
             format: int32
           required: true
+          description: Escalation policy ID.
           name: id
           in: path
       responses:
@@ -5880,6 +5999,7 @@ paths:
             description: Escalation policy ID.
             format: int32
           required: true
+          description: Escalation policy ID.
           name: id
           in: path
       requestBody:
@@ -5947,6 +6067,7 @@ paths:
             description: Escalation policy ID.
             format: int32
           required: true
+          description: Escalation policy ID.
           name: id
           in: path
       responses:
@@ -6072,7 +6193,7 @@ paths:
       tags:
         - Incidents
       summary: Add a manual incident timeline entry
-      description: Creates a manual timeline entry with optional past event time. Requires incident.update. The API key is recorded as the submitting actor; metadata.isManual is true. Entries appear in event-time order and are preserved during AI timeline regeneration. General-content entries do not trigger dedicated responder notifications, but configured timeline-update automations and existing Vibe reactions still apply at submission time. There is no notify parameter. Adding an entry does not update the incident record updatedAt.
+      description: Creates a manual timeline entry with optional past event time. Requires incident.update. The API key is recorded as the submitting actor; metadata.isManual is true. Optionally supply author as an email, name, or description, using the same attribution rules as incident comments. Authorship is returned in metadata.author; the API key remains metadata.actor. Entries appear in event-time order and are preserved during AI timeline regeneration. General-content entries do not trigger dedicated responder notifications, but configured timeline-update automations and existing Vibe reactions still apply at submission time. There is no notify parameter. Adding an entry does not update the incident record updatedAt.
       operationId: addIncidentTimelineEntry
       security:
         - ApiKeyAuth: []
@@ -6083,6 +6204,7 @@ paths:
             description: ID of the incident.
             format: int32
           required: true
+          description: ID of the incident.
           name: id
           in: path
       requestBody:
@@ -6102,6 +6224,12 @@ paths:
                   format: date-time
                   description: ISO 8601 event time with a timezone. Must be at or before server time; times before the incident began are allowed. Omit to use the current time.
                   example: 2026-10-20T09:30:00+07:00
+                author:
+                  type: string
+                  minLength: 1
+                  maxLength: 255
+                  description: Author email, name, or description. Leading and trailing whitespace is trimmed; the result must be 1–255 characters or the request is rejected with 400. An email matching an active user in the API key's organization links that user; unmatched values and emails of pending or revoked users are stored as plain text. Omit to attribute the entry to the API key. The API key remains the submitting actor in all cases.
+                  example: alice@example.com
               required:
                 - content
               additionalProperties: false
@@ -6113,7 +6241,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/IncidentTimelineEntryResponse"
         "400":
-          description: Invalid content, invalid timestamp, future timestamp, or unsupported request fields.
+          description: Invalid content, author, timestamp, future timestamp, or unsupported request fields.
           content:
             application/json:
               schema:
@@ -6160,6 +6288,7 @@ paths:
             description: ID of the incident.
             format: int32
           required: true
+          description: ID of the incident.
           name: id
           in: path
       requestBody:
@@ -6215,7 +6344,7 @@ paths:
       security:
         - ApiKeyAuth: []
       summary: Create an incident
-      description: Creates an incident and initiates paging by default. Delivery continues asynchronously and is visible in the dashboard. Service assignment does not select service responders. Requires incident.create, plus incident.page when paging with responders. An optional Idempotency-Key replays the original response, including execution failures, for 24 hours. Keys are scoped to the organization and operation, including across API key rotation. Interrupted execution is never resumed. After expiry a key can create a new incident. This protects retries, not incident correlation or exactly-once notification delivery.
+      description: Creates an incident and initiates paging by default. Delivery continues asynchronously and is visible in the dashboard. Service assignment does not select service responders. Requires incident.create, plus incident.page when paging with responders. An optional Idempotency-Key replays the original response, including execution failures, for 24 hours. Keys are scoped to the organization and operation, including across API key rotation. Interrupted execution is never resumed. After expiry a key can create a new incident. This protects retries, not incident correlation or exactly-once notification delivery. Optional impactStartedAt and impactEndedAt record the impact window; they are stored separately from reportedAt and resolvedAt and do not affect status.
       parameters:
         - schema:
             type: string
@@ -6314,6 +6443,20 @@ paths:
                   example:
                     region: us-east-1
                     owner: null
+                impactStartedAt:
+                  type:
+                    - string
+                    - "null"
+                  format: date-time
+                  description: When impact began, as an ISO 8601 timestamp with a timezone. Stored separately from reportedAt, which is still set to the creation time. Null or omitted leaves it unset.
+                  example: 2026-11-18T01:12:00+09:00
+                impactEndedAt:
+                  type:
+                    - string
+                    - "null"
+                  format: date-time
+                  description: When impact ended, as an ISO 8601 timestamp with a timezone. Stored separately from resolvedAt and does not resolve the incident. Must be at or after impactStartedAt when both are set. Null or omitted leaves it unset.
+                  example: 2026-11-18T02:40:00+09:00
               required:
                 - title
                 - description
@@ -6395,6 +6538,7 @@ paths:
             description: Number of items to skip before starting to collect the result set.
             format: int32
           required: false
+          description: Number of items to skip before starting to collect the result set.
           name: offset
           in: query
         - schema:
@@ -6405,6 +6549,7 @@ paths:
             description: Maximum number of items to return (default 10, max 100).
             format: int32
           required: false
+          description: Maximum number of items to return (default 10, max 100).
           name: limit
           in: query
         - schema:
@@ -6412,6 +6557,7 @@ paths:
             format: date-time
             description: ISO 8601 start of date range filter.
           required: false
+          description: ISO 8601 start of date range filter.
           name: since
           in: query
         - schema:
@@ -6419,14 +6565,38 @@ paths:
             format: date-time
             description: ISO 8601 end of date range filter.
           required: false
+          description: ISO 8601 end of date range filter.
           name: until
           in: query
         - schema:
             type: string
             format: date-time
-            description: ISO 8601 timestamp — only return incidents whose record was updated at or after this time. Uses the incident record update time, independently of creation time and last activity.
+            description: ISO 8601 timestamp — only return incidents whose record was updated at or after this time. Covers incident field edits (title, description, severity, status, reportedAt, resolvedAt, impactStartedAt, impactEndedAt, customFields), service assignment, archiving, responder and label assignment changes, and manual timeline entries from the portal or API. Backdated manual entries use their submission time. Responder and label requests that leave assignments unchanged do not advance it. AI-generated and automatic timeline entries alone do not advance it. Uses the incident record update time, independently of creation time and last activity.
           required: false
+          description: ISO 8601 timestamp — only return incidents whose record was updated at or after this time. Covers incident field edits (title, description, severity, status, reportedAt, resolvedAt, impactStartedAt, impactEndedAt, customFields), service assignment, archiving, responder and label assignment changes, and manual timeline entries from the portal or API. Backdated manual entries use their submission time. Responder and label requests that leave assignments unchanged do not advance it. AI-generated and automatic timeline entries alone do not advance it. Uses the incident record update time, independently of creation time and last activity.
           name: updatedSince
+          in: query
+        - schema:
+            type: string
+            enum:
+              - createdAt
+              - updatedAt
+            description: Sort incidents by creation time or record update time. Defaults to createdAt (newest first). Explicit sorting takes precedence over search relevance. Equal timestamps are ordered by incident ID ascending.
+          required: false
+          description: Sort incidents by creation time or record update time. Defaults to createdAt (newest first). Explicit sorting takes precedence over search relevance. Equal timestamps are ordered by incident ID ascending.
+          name: sortBy
+          in: query
+        - schema:
+            type: string
+            enum:
+              - ASC
+              - DESC
+              - asc
+              - desc
+            description: Sort direction, accepting uppercase or lowercase values. Defaults to DESC. When sortBy is omitted, an explicit sortOrder applies to createdAt.
+          required: false
+          description: Sort direction, accepting uppercase or lowercase values. Defaults to DESC. When sortBy is omitted, an explicit sortOrder applies to createdAt.
+          name: sortOrder
           in: query
         - schema:
             type: array
@@ -6434,6 +6604,7 @@ paths:
               type: string
             description: Comma-separated severity values to filter by.
           required: false
+          description: Comma-separated severity values to filter by.
           name: severities
           in: query
         - schema:
@@ -6448,6 +6619,7 @@ paths:
                 - observation
             description: Comma-separated normalized status values to filter by (open, acknowledged, resolved, blocked, observation).
           required: false
+          description: Comma-separated normalized status values to filter by (open, acknowledged, resolved, blocked, observation).
           name: statuses
           in: query
         - schema:
@@ -6457,6 +6629,7 @@ paths:
               exclusiveMinimum: 0
             description: Comma-separated team IDs to filter by assigned responder teams.
           required: false
+          description: Comma-separated team IDs to filter by assigned responder teams.
           name: responderTeamIds
           in: query
         - schema:
@@ -6466,6 +6639,7 @@ paths:
               exclusiveMinimum: 0
             description: Comma-separated user IDs to filter by assigned responder users.
           required: false
+          description: Comma-separated user IDs to filter by assigned responder users.
           name: responderUserIds
           in: query
         - schema:
@@ -6474,6 +6648,7 @@ paths:
               type: string
             description: Comma-separated Slack/Teams channel IDs to filter by.
           required: false
+          description: Comma-separated Slack/Teams channel IDs to filter by.
           name: channels
           in: query
         - schema:
@@ -6483,6 +6658,7 @@ paths:
               exclusiveMinimum: 0
             description: Comma-separated label IDs to filter by.
           required: false
+          description: Comma-separated label IDs to filter by.
           name: labelIds
           in: query
         - schema:
@@ -6491,6 +6667,7 @@ paths:
               type: string
             description: Comma-separated service IDs to filter by assigned services. Matches incidents assigned any of the given services.
           required: false
+          description: Comma-separated service IDs to filter by assigned services. Matches incidents assigned any of the given services.
           name: serviceIds
           in: query
         - schema:
@@ -6498,12 +6675,14 @@ paths:
             format: date-time
             description: ISO 8601 timestamp — only return incidents whose last activity is before this time.
           required: false
+          description: ISO 8601 timestamp — only return incidents whose last activity is before this time.
           name: lastActivityBefore
           in: query
         - schema:
             type: string
             description: Free-text search term, matched by meaning against the incident analysis rather than literally against the title. Returns the closest matches rather than every match, and reaches only incidents whose analysis has been indexed.
           required: false
+          description: Free-text search term, matched by meaning against the incident analysis rather than literally against the title. Returns the closest matches rather than every match, and reaches only incidents whose analysis has been indexed.
           name: searchTerm
           in: query
         - schema:
@@ -6513,6 +6692,7 @@ paths:
             default: true
             description: Whether to include archived incidents (default true).
           required: false
+          description: Whether to include archived incidents (default true).
           name: includeArchived
           in: query
       responses:
@@ -6556,12 +6736,14 @@ paths:
             description: ID of the incident.
             format: int32
           required: true
+          description: ID of the incident.
           name: id
           in: path
         - schema:
             type: string
             description: "Comma-separated list of optional expansions: postmortems, conversations, meetingTranscripts, timeline."
           required: false
+          description: "Comma-separated list of optional expansions: postmortems, conversations, meetingTranscripts, timeline."
           name: include
           in: query
       responses:
@@ -6599,7 +6781,7 @@ paths:
       tags:
         - Incidents
       summary: Update incident fields
-      description: Updates scalar incident fields for the organization associated with the API key. Supports title, description, severity, normalized status, reportedAt, and resolvedAt. Timestamps cannot be cleared; resolvedAt requires resolved status (existing or in this request). Timestamp edits must leave resolvedAt at or after reportedAt. Accepted timestamps are returned in UTC. Returns the complete incident detail without optional expansions. For compatibility, status is canonical (open, acknowledged, resolved, blocked, observation), matching normalizedStatus, even when status is not edited. GET and create responses retain legacy status alongside normalizedStatus.
+      description: "Updates scalar incident fields for the organization associated with the API key. Supports title, description, severity, normalized status, reportedAt, resolvedAt, impactStartedAt, and impactEndedAt. reportedAt and resolvedAt cannot be cleared; resolvedAt requires resolved status (existing or in this request). Timestamp edits must leave resolvedAt at or after reportedAt. Accepted timestamps are returned in UTC. impactStartedAt and impactEndedAt are stored separately: setting them never changes reportedAt, resolvedAt or status, impactEndedAt can be set while the incident is open, and null clears either one. Edits must leave impactEndedAt at or after impactStartedAt. Returns the complete incident detail without optional expansions. For compatibility, status is canonical (open, acknowledged, resolved, blocked, observation), matching normalizedStatus, even when status is not edited. GET and create responses retain legacy status alongside normalizedStatus."
       operationId: updateIncident
       security:
         - ApiKeyAuth: []
@@ -6610,6 +6792,7 @@ paths:
             description: ID of the incident.
             format: int32
           required: true
+          description: ID of the incident.
           name: id
           in: path
       requestBody:
@@ -6652,6 +6835,20 @@ paths:
                   type: string
                   format: date-time
                   description: "Incident resolution time as an ISO 8601 timestamp with a timezone. Requires resolved status, or status: resolved in the same request. Must be at or after reportedAt. Cannot be cleared."
+                impactStartedAt:
+                  type:
+                    - string
+                    - "null"
+                  format: date-time
+                  description: "When impact began, as an ISO 8601 timestamp with a timezone. Stored separately from reportedAt: setting it does not change reportedAt, resolvedAt or status. Send null to clear it."
+                  example: 2026-11-18T01:12:00+09:00
+                impactEndedAt:
+                  type:
+                    - string
+                    - "null"
+                  format: date-time
+                  description: "When impact ended, as an ISO 8601 timestamp with a timezone. Stored separately from resolvedAt and can be set while the incident is still open: setting it does not change resolvedAt, reportedAt or status. Must be at or after impactStartedAt when both are set. Send null to clear it."
+                  example: 2026-11-18T02:40:00+09:00
               additionalProperties: false
       responses:
         "200":
@@ -6758,6 +6955,7 @@ paths:
             description: ID of the incident.
             format: int32
           required: true
+          description: ID of the incident.
           name: id
           in: path
       requestBody:
@@ -6831,6 +7029,7 @@ paths:
             description: ID of the incident.
             format: int32
           required: true
+          description: ID of the incident.
           name: id
           in: path
       requestBody:
@@ -6872,7 +7071,7 @@ paths:
                           - userId
                   minItems: 1
                   description: Responders to add to or remove from the incident.
-                  example: &a9
+                  example: &a2
                     - type: user
                       userId: 123
                     - type: team
@@ -6933,6 +7132,7 @@ paths:
             description: ID of the incident.
             format: int32
           required: true
+          description: ID of the incident.
           name: id
           in: path
       requestBody:
@@ -6974,7 +7174,7 @@ paths:
                           - userId
                   minItems: 1
                   description: Responders to add to or remove from the incident.
-                  example: *a9
+                  example: *a2
               required:
                 - responders
               additionalProperties: false
@@ -7031,6 +7231,7 @@ paths:
             description: ID of the incident.
             format: int32
           required: true
+          description: ID of the incident.
           name: id
           in: path
       requestBody:
@@ -7048,7 +7249,7 @@ paths:
                   minItems: 1
                   maxItems: 5
                   description: Label names to add or remove (1-5 items, 30 characters max per label).
-                  example: &a10
+                  example: &a3
                     - customer-impacting
                     - checkout
               required:
@@ -7107,6 +7308,7 @@ paths:
             description: ID of the incident.
             format: int32
           required: true
+          description: ID of the incident.
           name: id
           in: path
       requestBody:
@@ -7124,7 +7326,7 @@ paths:
                   minItems: 1
                   maxItems: 5
                   description: Label names to add or remove (1-5 items, 30 characters max per label).
-                  example: *a10
+                  example: *a3
               required:
                 - labels
               additionalProperties: false
@@ -7181,6 +7383,7 @@ paths:
             description: ID of the incident.
             format: int32
           required: true
+          description: ID of the incident.
           name: id
           in: path
       requestBody:
@@ -7202,7 +7405,8 @@ paths:
                 author:
                   type: string
                   minLength: 1
-                  description: Author email, name, or description. An email matching an active user in the API key's organization links that user; unmatched values and emails of pending or revoked users are stored as plain text. Omit to attribute the comment to the API key. The API key remains the submitting actor in all cases.
+                  maxLength: 255
+                  description: Author email, name, or description. Leading and trailing whitespace is trimmed; the result must be 1–255 characters or the request is rejected with 400. An email matching an active user in the API key's organization links that user; unmatched values and emails of pending or revoked users are stored as plain text. Omit to attribute the comment to the API key. The API key remains the submitting actor in all cases.
                   example: alice@example.com
               required:
                 - comment
@@ -7278,6 +7482,7 @@ paths:
             description: ID of the incident.
             format: int32
           required: true
+          description: ID of the incident.
           name: id
           in: path
         - schema:
@@ -7286,6 +7491,7 @@ paths:
             description: ID of the incident comment.
             format: int32
           required: true
+          description: ID of the incident comment.
           name: commentId
           in: path
       requestBody:
@@ -7353,6 +7559,7 @@ paths:
             description: ID of the incident.
             format: int32
           required: true
+          description: ID of the incident.
           name: id
           in: path
         - schema:
@@ -7361,6 +7568,7 @@ paths:
             description: ID of the incident comment.
             format: int32
           required: true
+          description: ID of the incident comment.
           name: commentId
           in: path
       responses:
@@ -7416,6 +7624,7 @@ paths:
             description: ID of the incident.
             format: int32
           required: true
+          description: ID of the incident.
           name: id
           in: path
       requestBody:
@@ -7489,6 +7698,7 @@ paths:
             description: ID of the incident.
             format: int32
           required: true
+          description: ID of the incident.
           name: id
           in: path
       requestBody:
@@ -7565,6 +7775,7 @@ paths:
             description: Number of items to skip before starting to collect the result set.
             format: int32
           required: false
+          description: Number of items to skip before starting to collect the result set.
           name: offset
           in: query
         - schema:
@@ -7575,6 +7786,7 @@ paths:
             description: Maximum number of items to return (default 10, max 100).
             format: int32
           required: false
+          description: Maximum number of items to return (default 10, max 100).
           name: limit
           in: query
         - schema:
@@ -7582,6 +7794,7 @@ paths:
             format: date-time
             description: ISO 8601 start of date range filter (by creation time).
           required: false
+          description: ISO 8601 start of date range filter (by creation time).
           name: createdAfter
           in: query
         - schema:
@@ -7589,6 +7802,7 @@ paths:
             format: date-time
             description: ISO 8601 end of date range filter (by creation time).
           required: false
+          description: ISO 8601 end of date range filter (by creation time).
           name: createdBefore
           in: query
         - schema:
@@ -7597,6 +7811,7 @@ paths:
               type: string
             description: Comma-separated severity values (SEV0-SEV5 or SIGNAL). Legacy semantic values and P0-P5 aliases are also accepted.
           required: false
+          description: Comma-separated severity values (SEV0-SEV5 or SIGNAL). Legacy semantic values and P0-P5 aliases are also accepted.
           name: severities
           in: query
         - schema:
@@ -7610,6 +7825,7 @@ paths:
                 - resolved
             description: Comma-separated status values to filter by (open, acknowledged, closed, resolved).
           required: false
+          description: Comma-separated status values to filter by (open, acknowledged, closed, resolved).
           name: statuses
           in: query
         - schema:
@@ -7618,6 +7834,7 @@ paths:
               type: string
             description: Comma-separated source integration / provider names to filter by.
           required: false
+          description: Comma-separated source integration / provider names to filter by.
           name: providers
           in: query
         - schema:
@@ -7627,6 +7844,7 @@ paths:
               exclusiveMinimum: 0
             description: Comma-separated team IDs to filter by owning team or paged responder team.
           required: false
+          description: Comma-separated team IDs to filter by owning team or paged responder team.
           name: teamIds
           in: query
         - schema:
@@ -7636,12 +7854,14 @@ paths:
               exclusiveMinimum: 0
             description: Comma-separated label IDs to filter by assigned alert labels.
           required: false
+          description: Comma-separated label IDs to filter by assigned alert labels.
           name: labelIds
           in: query
         - schema:
             type: string
             description: Free-text search term to match against alert title or description.
           required: false
+          description: Free-text search term to match against alert title or description.
           name: searchTerm
           in: query
       responses:
@@ -7685,6 +7905,7 @@ paths:
             description: ID of the alert.
             format: int32
           required: true
+          description: ID of the alert.
           name: id
           in: path
       responses:
@@ -7733,6 +7954,7 @@ paths:
             description: ID of the alert.
             format: int32
           required: true
+          description: ID of the alert.
           name: id
           in: path
       requestBody:
@@ -7811,6 +8033,7 @@ paths:
             description: ID of the alert.
             format: int32
           required: true
+          description: ID of the alert.
           name: id
           in: path
       responses:
@@ -7918,6 +8141,7 @@ paths:
             description: ID of the alert.
             format: int32
           required: true
+          description: ID of the alert.
           name: id
           in: path
       requestBody:
@@ -7987,6 +8211,7 @@ paths:
             description: ID of the alert.
             format: int32
           required: true
+          description: ID of the alert.
           name: id
           in: path
       requestBody:
@@ -8058,6 +8283,7 @@ paths:
             description: ID of the alert.
             format: int32
           required: true
+          description: ID of the alert.
           name: id
           in: path
       requestBody:
@@ -8131,6 +8357,7 @@ paths:
             description: ID of the alert.
             format: int32
           required: true
+          description: ID of the alert.
           name: id
           in: path
         - schema:
@@ -8139,6 +8366,7 @@ paths:
             description: ID of the alert note.
             format: int32
           required: true
+          description: ID of the alert note.
           name: noteId
           in: path
       requestBody:
@@ -8207,6 +8435,7 @@ paths:
             description: ID of the alert.
             format: int32
           required: true
+          description: ID of the alert.
           name: id
           in: path
         - schema:
@@ -8215,6 +8444,7 @@ paths:
             description: ID of the alert note.
             format: int32
           required: true
+          description: ID of the alert note.
           name: noteId
           in: path
       responses:
@@ -8270,6 +8500,7 @@ paths:
             description: ID of the alert.
             format: int32
           required: true
+          description: ID of the alert.
           name: id
           in: path
       requestBody:
@@ -8287,7 +8518,7 @@ paths:
                   minItems: 1
                   maxItems: 5
                   description: Label names to add or remove (1-5 items, 30 characters max per label).
-                  example: &a11
+                  example: &a4
                     - OverwriteQuietHours
                     - Critical
               required:
@@ -8345,6 +8576,7 @@ paths:
             description: ID of the alert.
             format: int32
           required: true
+          description: ID of the alert.
           name: id
           in: path
       requestBody:
@@ -8362,7 +8594,7 @@ paths:
                   minItems: 1
                   maxItems: 5
                   description: Label names to add or remove (1-5 items, 30 characters max per label).
-                  example: *a11
+                  example: *a4
               required:
                 - labels
       responses:
@@ -8448,6 +8680,7 @@ paths:
             description: Maximum number of items to return (default 20, max 100).
             format: int32
           required: false
+          description: Maximum number of items to return (default 20, max 100).
           name: limit
           in: query
         - schema:
@@ -8459,6 +8692,7 @@ paths:
             description: Number of items to skip before starting to collect the result set.
             format: int32
           required: false
+          description: Number of items to skip before starting to collect the result set.
           name: offset
           in: query
         - schema:
@@ -8466,6 +8700,7 @@ paths:
             minLength: 1
             description: Case-insensitive substring match against full name or email.
           required: false
+          description: Case-insensitive substring match against full name or email.
           name: search
           in: query
         - schema:
@@ -8478,6 +8713,7 @@ paths:
                 - revoked
             description: Account statuses to include (active, pending, revoked). Repeatable or comma-separated; a member matches when its status is any of the given values.
           required: false
+          description: Account statuses to include (active, pending, revoked). Repeatable or comma-separated; a member matches when its status is any of the given values.
           name: status
           in: query
         - schema:
@@ -8487,6 +8723,7 @@ paths:
               exclusiveMinimum: 0
             description: Organization role IDs to include. Repeatable or comma-separated; a member matches when its organization role is any of the given roles.
           required: false
+          description: Organization role IDs to include. Repeatable or comma-separated; a member matches when its organization role is any of the given roles.
           name: roleIds
           in: query
         - schema:
@@ -8496,6 +8733,7 @@ paths:
               exclusiveMinimum: 0
             description: Label IDs to include. Repeatable or comma-separated; a member matches when it carries any of the given labels. Use the labels endpoint to look up IDs.
           required: false
+          description: Label IDs to include. Repeatable or comma-separated; a member matches when it carries any of the given labels. Use the labels endpoint to look up IDs.
           name: labelIds
           in: query
       responses:
@@ -8539,6 +8777,7 @@ paths:
             description: ID of the member.
             format: int32
           required: true
+          description: ID of the member.
           name: userId
           in: path
       responses:
@@ -8590,6 +8829,7 @@ paths:
             description: Maximum number of items to return (default 20, max 100).
             format: int32
           required: false
+          description: Maximum number of items to return (default 20, max 100).
           name: limit
           in: query
         - schema:
@@ -8601,6 +8841,7 @@ paths:
             description: Number of items to skip before starting to collect the result set.
             format: int32
           required: false
+          description: Number of items to skip before starting to collect the result set.
           name: offset
           in: query
         - schema:
@@ -8609,6 +8850,7 @@ paths:
             description: Optional team ID used to return only automation actions scoped to that team.
             format: int32
           required: false
+          description: Optional team ID used to return only automation actions scoped to that team.
           name: teamId
           in: query
       responses:
@@ -8652,6 +8894,7 @@ paths:
             description: ID of the automation action.
             format: int32
           required: true
+          description: ID of the automation action.
           name: id
           in: path
         - schema:
@@ -8662,6 +8905,7 @@ paths:
             description: Maximum number of items to return (default 20, max 100).
             format: int32
           required: false
+          description: Maximum number of items to return (default 20, max 100).
           name: limit
           in: query
         - schema:
@@ -8673,6 +8917,7 @@ paths:
             description: Number of items to skip before starting to collect the result set.
             format: int32
           required: false
+          description: Number of items to skip before starting to collect the result set.
           name: offset
           in: query
         - schema:
@@ -8680,6 +8925,7 @@ paths:
             format: date-time
             description: Inclusive ISO 8601 lower bound for execution creation time.
           required: false
+          description: Inclusive ISO 8601 lower bound for execution creation time.
           name: from
           in: query
         - schema:
@@ -8687,6 +8933,7 @@ paths:
             format: date-time
             description: Inclusive ISO 8601 upper bound for execution creation time.
           required: false
+          description: Inclusive ISO 8601 upper bound for execution creation time.
           name: to
           in: query
       responses:
@@ -8736,6 +8983,7 @@ paths:
             description: ID of the automation action.
             format: int32
           required: true
+          description: ID of the automation action.
           name: id
           in: path
         - schema:
@@ -8746,6 +8994,7 @@ paths:
             description: Maximum number of items to return (default 20, max 100).
             format: int32
           required: false
+          description: Maximum number of items to return (default 20, max 100).
           name: limit
           in: query
         - schema:
@@ -8757,6 +9006,7 @@ paths:
             description: Number of items to skip before starting to collect the result set.
             format: int32
           required: false
+          description: Number of items to skip before starting to collect the result set.
           name: offset
           in: query
         - schema:
@@ -8764,6 +9014,7 @@ paths:
             format: date-time
             description: Inclusive ISO 8601 lower bound for execution creation time.
           required: false
+          description: Inclusive ISO 8601 lower bound for execution creation time.
           name: createdAtFrom
           in: query
         - schema:
@@ -8771,6 +9022,7 @@ paths:
             format: date-time
             description: Inclusive ISO 8601 upper bound for execution creation time.
           required: false
+          description: Inclusive ISO 8601 upper bound for execution creation time.
           name: createdAtTo
           in: query
       responses:
@@ -8820,6 +9072,7 @@ paths:
             description: ID of the automation action.
             format: int32
           required: true
+          description: ID of the automation action.
           name: id
           in: path
         - schema:
@@ -8827,6 +9080,7 @@ paths:
             format: uuid
             description: Execution ID shared by all step logs from the same automation run.
           required: true
+          description: Execution ID shared by all step logs from the same automation run.
           name: executionId
           in: path
       responses:
@@ -8878,6 +9132,7 @@ paths:
             description: Maximum number of items to return (default 20, max 100).
             format: int32
           required: false
+          description: Maximum number of items to return (default 20, max 100).
           name: limit
           in: query
         - schema:
@@ -8889,12 +9144,14 @@ paths:
             description: Number of items to skip before starting to collect the result set.
             format: int32
           required: false
+          description: Number of items to skip before starting to collect the result set.
           name: offset
           in: query
         - schema:
             type: string
             description: Case-insensitive service name search.
           required: false
+          description: Case-insensitive service name search.
           name: query
           in: query
         - schema:
@@ -8903,6 +9160,7 @@ paths:
             description: Filter services by owning team ID.
             format: int32
           required: false
+          description: Filter services by owning team ID.
           name: teamId
           in: query
         - schema:
@@ -8911,6 +9169,7 @@ paths:
             maxLength: 32
             description: Filter services by external source provider.
           required: false
+          description: Filter services by external source provider.
           name: externalProvider
           in: query
         - schema:
@@ -8919,6 +9178,7 @@ paths:
             maxLength: 128
             description: Filter services by external provider identifier.
           required: false
+          description: Filter services by external provider identifier.
           name: externalServiceId
           in: query
       responses:
@@ -9044,6 +9304,7 @@ paths:
             description: ID of the service catalog service.
             format: int32
           required: true
+          description: ID of the service catalog service.
           name: id
           in: path
       responses:
@@ -9091,6 +9352,7 @@ paths:
             description: ID of the service catalog service.
             format: int32
           required: true
+          description: ID of the service catalog service.
           name: id
           in: path
       requestBody:
@@ -9188,6 +9450,7 @@ paths:
             description: ID of the service catalog service.
             format: int32
           required: true
+          description: ID of the service catalog service.
           name: id
           in: path
       responses:
@@ -9239,6 +9502,7 @@ paths:
             description: ID of the service catalog service.
             format: int32
           required: true
+          description: ID of the service catalog service.
           name: id
           in: path
       requestBody:
@@ -9320,6 +9584,7 @@ paths:
             description: ID of the service catalog service.
             format: int32
           required: true
+          description: ID of the service catalog service.
           name: id
           in: path
       requestBody:
@@ -9400,6 +9665,7 @@ paths:
             description: ID of the service catalog service.
             format: int32
           required: true
+          description: ID of the service catalog service.
           name: id
           in: path
       requestBody:
@@ -9470,6 +9736,7 @@ paths:
             description: ID of the service catalog service.
             format: int32
           required: true
+          description: ID of the service catalog service.
           name: id
           in: path
       requestBody:
@@ -9543,6 +9810,7 @@ paths:
             description: Maximum number of items to return (default 20, max 100).
             format: int32
           required: false
+          description: Maximum number of items to return (default 20, max 100).
           name: limit
           in: query
         - schema:
@@ -9554,6 +9822,7 @@ paths:
             description: Number of items to skip before starting to collect the result set.
             format: int32
           required: false
+          description: Number of items to skip before starting to collect the result set.
           name: offset
           in: query
         - schema:
@@ -9561,6 +9830,7 @@ paths:
             minLength: 1
             description: Only teams whose name contains this text, case-insensitively.
           required: false
+          description: Only teams whose name contains this text, case-insensitively.
           name: search
           in: query
       responses:
@@ -9614,6 +9884,7 @@ paths:
             description: Maximum number of items to return (default 20, max 100).
             format: int32
           required: false
+          description: Maximum number of items to return (default 20, max 100).
           name: limit
           in: query
         - schema:
@@ -9625,6 +9896,7 @@ paths:
             description: Number of items to skip before starting to collect the result set.
             format: int32
           required: false
+          description: Number of items to skip before starting to collect the result set.
           name: offset
           in: query
         - schema:
@@ -9632,6 +9904,7 @@ paths:
             minLength: 1
             description: "Filter by channel name: on Slack, names containing this text (case-insensitive); on Microsoft Teams, names starting with it."
           required: false
+          description: "Filter by channel name: on Slack, names containing this text (case-insensitive); on Microsoft Teams, names starting with it."
           name: search
           in: query
         - schema:
@@ -9639,6 +9912,7 @@ paths:
             minLength: 1
             description: Microsoft Teams team whose channels to list, from GET /integrations/chat/microsoft-teams/teams. Required for organizations connected to Microsoft Teams; rejected for organizations connected to Slack.
           required: false
+          description: Microsoft Teams team whose channels to list, from GET /integrations/chat/microsoft-teams/teams. Required for organizations connected to Microsoft Teams; rejected for organizations connected to Slack.
           name: microsoftTeamsTeamId
           in: query
       responses:
@@ -9704,6 +9978,7 @@ paths:
             description: Maximum number of items to return (default 20, max 100).
             format: int32
           required: false
+          description: Maximum number of items to return (default 20, max 100).
           name: limit
           in: query
         - schema:
@@ -9715,6 +9990,7 @@ paths:
             description: Number of items to skip before starting to collect the result set.
             format: int32
           required: false
+          description: Number of items to skip before starting to collect the result set.
           name: offset
           in: query
         - schema:
@@ -9722,6 +9998,7 @@ paths:
             format: date-time
             description: Only windows covering this ISO 8601 instant. A window covers its start instant and has ended by its end instant.
           required: false
+          description: Only windows covering this ISO 8601 instant. A window covers its start instant and has ended by its end instant.
           name: activeAt
           in: query
         - schema:
@@ -9733,6 +10010,7 @@ paths:
                 exclusiveMinimum: 0
             description: Only windows scoped to this team. Send the literal `null` for global windows only; omit to list windows of every scope.
           required: false
+          description: Only windows scoped to this team. Send the literal `null` for global windows only; omit to list windows of every scope.
           name: teamId
           in: query
       responses:
@@ -9839,6 +10117,7 @@ paths:
             description: ID of the maintenance window.
             format: int32
           required: true
+          description: ID of the maintenance window.
           name: id
           in: path
       responses:
@@ -9887,6 +10166,7 @@ paths:
             description: ID of the maintenance window.
             format: int32
           required: true
+          description: ID of the maintenance window.
           name: id
           in: path
       requestBody:
@@ -9960,6 +10240,7 @@ paths:
             description: ID of the maintenance window.
             format: int32
           required: true
+          description: ID of the maintenance window.
           name: id
           in: path
       responses:
@@ -10011,6 +10292,7 @@ paths:
             description: ID of the maintenance window.
             format: int32
           required: true
+          description: ID of the maintenance window.
           name: id
           in: path
         - schema:
@@ -10021,6 +10303,7 @@ paths:
             description: Maximum number of items to return (default 20, max 100).
             format: int32
           required: false
+          description: Maximum number of items to return (default 20, max 100).
           name: limit
           in: query
         - schema:
@@ -10032,6 +10315,7 @@ paths:
             description: Number of items to skip before starting to collect the result set.
             format: int32
           required: false
+          description: Number of items to skip before starting to collect the result set.
           name: offset
           in: query
       responses:
@@ -10084,6 +10368,7 @@ paths:
                 exclusiveMinimum: 0
             description: Only this team's records. Send the literal `null` for organization-level records only; omit to list every scope.
           required: false
+          description: Only this team's records. Send the literal `null` for organization-level records only; omit to list every scope.
           name: teamId
           in: query
       responses:
@@ -10193,6 +10478,7 @@ paths:
             description: Alert source ID.
             format: int32
           required: true
+          description: Alert source ID.
           name: id
           in: path
       responses:
@@ -10249,6 +10535,7 @@ paths:
             description: Alert source ID.
             format: int32
           required: true
+          description: Alert source ID.
           name: id
           in: path
       requestBody:
@@ -10316,6 +10603,7 @@ paths:
             description: Alert source ID.
             format: int32
           required: true
+          description: Alert source ID.
           name: id
           in: path
       responses:
@@ -10371,6 +10659,7 @@ paths:
                 exclusiveMinimum: 0
             description: Only this team's records. Send the literal `null` for organization-level records only; omit to list every scope.
           required: false
+          description: Only this team's records. Send the literal `null` for organization-level records only; omit to list every scope.
           name: teamId
           in: query
       responses:
@@ -10473,6 +10762,7 @@ paths:
             description: Alert routing ID.
             format: int32
           required: true
+          description: Alert routing ID.
           name: id
           in: path
       responses:
@@ -10523,6 +10813,7 @@ paths:
             description: Alert routing ID.
             format: int32
           required: true
+          description: Alert routing ID.
           name: id
           in: path
       requestBody:
@@ -10590,6 +10881,7 @@ paths:
             description: Alert routing ID.
             format: int32
           required: true
+          description: Alert routing ID.
           name: id
           in: path
       responses:

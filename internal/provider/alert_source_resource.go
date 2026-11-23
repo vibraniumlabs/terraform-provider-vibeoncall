@@ -49,8 +49,9 @@ var alertSourceProviders = []string{
 	string(client.CreateAlertSourceRequestProviderDatadog), string(client.CreateAlertSourceRequestProviderEmail),
 	string(client.CreateAlertSourceRequestProviderEmbraceio), string(client.CreateAlertSourceRequestProviderGrafana),
 	string(client.CreateAlertSourceRequestProviderHttp), string(client.CreateAlertSourceRequestProviderNewrelic),
-	string(client.CreateAlertSourceRequestProviderOpsgenie), string(client.CreateAlertSourceRequestProviderPrometheus),
-	string(client.CreateAlertSourceRequestProviderSentry), string(client.CreateAlertSourceRequestProviderSns),
+	string(client.CreateAlertSourceRequestProviderOpsgenie), string(client.CreateAlertSourceRequestProviderPagerduty),
+	string(client.CreateAlertSourceRequestProviderPrometheus), string(client.CreateAlertSourceRequestProviderSentry),
+	string(client.CreateAlertSourceRequestProviderSns),
 }
 
 func (r *AlertSourceResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {

@@ -124,6 +124,23 @@ func TestAlertSourceResourceTypeChangeReplaces(t *testing.T) {
 	})
 }
 
+func TestAlertSourceResourcePagerDuty(t *testing.T) {
+	api, srv := newFakeAPI(t)
+
+	resource.UnitTest(t, resource.TestCase{
+		ProtoV6ProviderFactories: protoV6ProviderFactories(),
+		CheckDestroy:             api.checkNothingLeft,
+		Steps: []resource.TestStep{{
+			Config: alertSourceConfig(srv.URL, `name = "PagerDuty incidents"`+"\n"+`type = "pagerduty"`),
+			Check: resource.ComposeAggregateTestCheckFunc(
+				resource.TestCheckResourceAttr("vibeoncall_alert_source.datadog", "type", "pagerduty"),
+				resource.TestCheckResourceAttr("vibeoncall_alert_source.datadog", "webhook_url", "https://api.example.com/webhooks/pagerduty/token-1"),
+				resource.TestCheckNoResourceAttr("vibeoncall_alert_source.datadog", "email_address"),
+			),
+		}},
+	})
+}
+
 func TestAlertSourceResourceDisabledInAppIsReEnabled(t *testing.T) {
 	api, srv := newFakeAPI(t)
 	config := alertSourceConfig(srv.URL, `name = "Alerts"`+"\n"+`type = "grafana"`)
@@ -208,7 +225,7 @@ func TestAlertSourceResourceValidation(t *testing.T) {
 		attrs string
 		want  string
 	}{
-		"unknown type":              {`name = "X"` + "\n" + `type = "pagerduty"`, `value must be one of`},
+		"unknown type":              {`name = "X"` + "\n" + `type = "zabbix"`, `value must be one of`},
 		"heartbeat is not a source": {`name = "X"` + "\n" + `type = "heartbeat"`, `value must be one of`},
 		"padded name":               {`name = " X"` + "\n" + `type = "datadog"`, `must not be empty or start or end with whitespace`},
 		"routing beyond int32":      {`name = "X"` + "\n" + `type = "datadog"` + "\n" + `alert_routing_id = "2147483648"`, `at most 2147483647`},
