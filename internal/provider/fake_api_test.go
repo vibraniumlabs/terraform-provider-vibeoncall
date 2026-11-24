@@ -662,6 +662,9 @@ func (a *fakeAPI) serveSchedules(w http.ResponseWriter, r *http.Request, rest []
 			notFound(w)
 			return
 		}
+		if !checkHandOffTime(w, rot.RotationConfig) {
+			return
+		}
 		rot.ID = a.newRotationID()
 		s.Rotations = append(s.Rotations, rot)
 		writeJSON(w, http.StatusCreated, map[string]int{"id": rot.ID})
@@ -691,6 +694,9 @@ func (a *fakeAPI) serveRotation(w http.ResponseWriter, r *http.Request, s *fakeS
 		if !storeAsSent && onlyMembershipChanged(s.Rotations[index].Participants, rot.Participants) {
 			rot.Participants = append(rot.Participants[1:], rot.Participants[0])
 		}
+		if !checkHandOffTime(w, rot.RotationConfig) {
+			return
+		}
 		rot.ID = rotationID
 		s.Rotations[index] = rot
 		a.rotationPuts++
@@ -709,6 +715,53 @@ func (a *fakeAPI) serveRotation(w http.ResponseWriter, r *http.Request, s *fakeS
 	default:
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
+}
+
+type fakeHandOff struct {
+	Payload struct {
+		HandOffDay  *int    `json:"handOffDay"`
+		HandOffTime *string `json:"handOffTime"`
+	} `json:"payload"`
+}
+
+func parseHandOff(config json.RawMessage) fakeHandOff {
+	var h fakeHandOff
+	_ = json.Unmarshal(config, &h)
+	return h
+}
+
+// checkHandOffTime writes the API's validation error when handOffTime comes without handOffDay.
+func checkHandOffTime(w http.ResponseWriter, config json.RawMessage) bool {
+	if h := parseHandOff(config); h.Payload.HandOffTime != nil && h.Payload.HandOffDay == nil {
+		writeJSON(w, http.StatusBadRequest, map[string]any{"error": []map[string]any{{
+			"code": "custom", "message": "handOffTime requires handOffDay", "path": []string{"rotationConfig", "payload", "handOffTime"},
+		}}})
+		return false
+	}
+	return true
+}
+
+func withHandOffTime(config json.RawMessage, t string) json.RawMessage {
+	var c struct {
+		Type    string         `json:"type"`
+		Payload map[string]any `json:"payload"`
+	}
+	_ = json.Unmarshal(config, &c)
+	if t == "" {
+		delete(c.Payload, "handOffTime")
+	} else {
+		c.Payload["handOffTime"] = t
+	}
+	out, _ := json.Marshal(c)
+	return out
+}
+
+// setRotationHandOffTime changes a stored handOffTime the way the web app does. The web app omits handOffTime for 00:00, so "" removes it.
+func (a *fakeAPI) setRotationHandOffTime(index int, t string) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	rot := a.schedules[1].Rotations[index]
+	rot.RotationConfig = withHandOffTime(rot.RotationConfig, t)
 }
 
 // onlyMembershipChanged mirrors the API's membership-only classification, where it rotates the stored order to keep the current responder on call.
@@ -756,6 +809,9 @@ func (a *fakeAPI) createSchedule(w http.ResponseWriter, body map[string]json.Raw
 		rot := a.rotationFromBody(rb)
 		if rot == nil {
 			notFound(w)
+			return
+		}
+		if !checkHandOffTime(w, rot.RotationConfig) {
 			return
 		}
 		rot.ID = a.newRotationID()
