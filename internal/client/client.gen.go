@@ -1747,6 +1747,9 @@ type AlertSource struct {
 	AlertRoutingId nullable.Nullable[int] `json:"alertRoutingId"`
 	CreatedAt      time.Time              `json:"createdAt"`
 
+	// Deduplication Null uses the provider default; an empty string disables matching. Omission preserves the setting on update.
+	Deduplication nullable.Nullable[AlertSourceDeduplication] `json:"deduplication"`
+
 	// EmailAddress The inbound address of an email source; null otherwise.
 	EmailAddress nullable.Nullable[string] `json:"emailAddress"`
 	Id           int                       `json:"id"`
@@ -1765,6 +1768,9 @@ type AlertSource struct {
 
 // AlertSourceProvider defines model for AlertSource.Provider.
 type AlertSourceProvider string
+
+// AlertSourceDeduplication Email sources only. Null uses the provider default ({{subject}}); an empty string disables matching. Templates support {{subject}}, {{sender}} and {{body}}. Template and populated key are limited to 500 characters. Matching is scoped to this source. Omit on create for the default; omit on update to preserve the setting.
+type AlertSourceDeduplication = string
 
 // AlertSourceListResponse defines model for AlertSourceListResponse.
 type AlertSourceListResponse struct {
@@ -1917,6 +1923,9 @@ type CreateAlertRoutingRequest struct {
 type CreateAlertSourceRequest struct {
 	// AlertRoutingId The alert routing in the same scope that handles alerts arriving on this source.
 	AlertRoutingId nullable.Nullable[int] `json:"alertRoutingId,omitempty"`
+
+	// Deduplication Null uses the provider default; an empty string disables matching. Omission preserves the setting on update.
+	Deduplication nullable.Nullable[AlertSourceDeduplication] `json:"deduplication,omitempty"`
 
 	// IsEnabled A source that is off rejects what arrives on it. Defaults to true.
 	IsEnabled *bool `json:"isEnabled,omitempty"`
@@ -3074,8 +3083,11 @@ type UpdateAlertRoutingRequest struct {
 type UpdateAlertSourceRequest struct {
 	// AlertRoutingId The alert routing in the same scope that handles alerts arriving on this source.
 	AlertRoutingId nullable.Nullable[int] `json:"alertRoutingId,omitempty"`
-	IsEnabled      *bool                  `json:"isEnabled,omitempty"`
-	Name           *string                `json:"name,omitempty"`
+
+	// Deduplication Null uses the provider default; an empty string disables matching. Omission preserves the setting on update.
+	Deduplication nullable.Nullable[AlertSourceDeduplication] `json:"deduplication,omitempty"`
+	IsEnabled     *bool                                       `json:"isEnabled,omitempty"`
+	Name          *string                                     `json:"name,omitempty"`
 }
 
 // UpdateMaintenanceWindowRequest Partial update: only the fields sent are changed. The team scope is fixed at creation. To end an active window early, send endAt set to the current time. Ended windows cannot be updated; active windows cannot change startAt and must keep endAt at or after the current time.

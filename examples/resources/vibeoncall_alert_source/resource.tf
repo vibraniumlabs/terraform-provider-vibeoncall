@@ -15,6 +15,19 @@ resource "datadog_webhook" "vibeoncall" {
   encode_as = "json"
 }
 
+# Each email creates its own alert; normal alert routing still applies.
+resource "vibeoncall_alert_source" "email" {
+  name             = "Email alerts"
+  type             = "email"
+  team_id          = vibeoncall_team.payments.id
+  alert_routing_id = vibeoncall_alert_route.payments.id
+  deduplication    = ""
+}
+
+# Omit deduplication (or set null) to match by subject within this source.
+# To include the sender, use deduplication = "{{subject}}-{{sender}}".
+# Templates and populated matching keys are limited to 500 characters.
+
 # Configure this source's webhook_url in Jira Cloud's webhook settings.
 resource "vibeoncall_alert_source" "jira" {
   name    = "Jira issues"

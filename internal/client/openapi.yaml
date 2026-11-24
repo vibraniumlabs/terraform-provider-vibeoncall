@@ -195,6 +195,10 @@ components:
       required:
         - id
         - name
+    AlertSourceDeduplication:
+      type: string
+      maxLength: 500
+      description: Email sources only. Null uses the provider default ({{subject}}); an empty string disables matching. Templates support {{subject}}, {{sender}} and {{body}}. Template and populated key are limited to 500 characters. Matching is scoped to this source. Omit on create for the default; omit on update to preserve the setting.
     TeamsListResponse:
       type: object
       properties:
@@ -3548,6 +3552,11 @@ components:
             - integer
             - "null"
           exclusiveMinimum: 0
+        deduplication:
+          description: Null uses the provider default; an empty string disables matching. Omission preserves the setting on update.
+          anyOf: &a2
+            - $ref: "#/components/schemas/AlertSourceDeduplication"
+            - type: "null"
         isEnabled:
           type: boolean
         webhookUrl:
@@ -3577,6 +3586,7 @@ components:
         - provider
         - teamId
         - alertRoutingId
+        - deduplication
         - isEnabled
         - webhookUrl
         - webhookToken
@@ -3616,6 +3626,9 @@ components:
             - "null"
           exclusiveMinimum: 0
           description: Omit or send null for an organization-level source. Cannot be changed later.
+        deduplication:
+          description: Null uses the provider default; an empty string disables matching. Omission preserves the setting on update.
+          anyOf: *a2
         alertRoutingId:
           type:
             - integer
@@ -3636,6 +3649,9 @@ components:
           type: string
           minLength: 1
           maxLength: 255
+        deduplication:
+          description: Null uses the provider default; an empty string disables matching. Omission preserves the setting on update.
+          anyOf: *a2
         alertRoutingId:
           type:
             - integer
@@ -7073,7 +7089,7 @@ paths:
                           - userId
                   minItems: 1
                   description: Responders to add to or remove from the incident.
-                  example: &a2
+                  example: &a3
                     - type: user
                       userId: 123
                     - type: team
@@ -7176,7 +7192,7 @@ paths:
                           - userId
                   minItems: 1
                   description: Responders to add to or remove from the incident.
-                  example: *a2
+                  example: *a3
               required:
                 - responders
               additionalProperties: false
@@ -7251,7 +7267,7 @@ paths:
                   minItems: 1
                   maxItems: 5
                   description: Label names to add or remove (1-5 items, 30 characters max per label).
-                  example: &a3
+                  example: &a4
                     - customer-impacting
                     - checkout
               required:
@@ -7328,7 +7344,7 @@ paths:
                   minItems: 1
                   maxItems: 5
                   description: Label names to add or remove (1-5 items, 30 characters max per label).
-                  example: *a3
+                  example: *a4
               required:
                 - labels
               additionalProperties: false
@@ -8520,7 +8536,7 @@ paths:
                   minItems: 1
                   maxItems: 5
                   description: Label names to add or remove (1-5 items, 30 characters max per label).
-                  example: &a4
+                  example: &a5
                     - OverwriteQuietHours
                     - Critical
               required:
@@ -8596,7 +8612,7 @@ paths:
                   minItems: 1
                   maxItems: 5
                   description: Label names to add or remove (1-5 items, 30 characters max per label).
-                  example: *a4
+                  example: *a5
               required:
                 - labels
       responses:
