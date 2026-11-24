@@ -61,13 +61,16 @@ resource "vibeoncall_schedule" "sre" {
       }
     },
     {
+      # Hands off every Saturday at 09:00. The outgoing participant keeps Saturday until 09:00.
       name            = "Weekend"
       start_date      = "2026-09-05"
-      participant_ids = [vibeoncall_team_membership.alan.user_id]
+      participant_ids = [vibeoncall_team_membership.alan.user_id, vibeoncall_team_membership.ada.user_id]
       weekly_windows = {
         windows = [
           { start_day = "saturday", start_time = "00:00", end_day = "sunday", end_time = "23:00" },
         ]
+        hand_off_day  = "saturday"
+        hand_off_time = "09:00"
       }
     },
   ]
@@ -133,7 +136,8 @@ Optional:
 
 - `daily_end_time` (String) End of the daily hours. A 24-hour time in `HH:MM` format, such as `17:30`.
 - `daily_start_time` (String) Limits coverage within the range to these daily hours. A 24-hour time in `HH:MM` format, such as `17:30`.
-- `hand_off_day` (String) Hand off at 00:00 on this day instead of at the range start. A lowercase weekday name, such as `monday`.
+- `hand_off_day` (String) Hand off on this day, at `hand_off_time` or 00:00, instead of at the range start. A lowercase weekday name, such as `monday`.
+- `hand_off_time` (String) Time on `hand_off_day` the handoff happens. Requires `hand_off_day`. Omit it to hand off at 00:00. Coverage on `hand_off_day` before this time stays with the outgoing participant. A 24-hour time in `HH:MM` format, such as `09:00`.
 
 
 <a id="nestedatt--rotations--weekly_windows"></a>
@@ -145,7 +149,8 @@ Required:
 
 Optional:
 
-- `hand_off_day` (String) Hand off at 00:00 on this day instead of at the earliest window start. A lowercase weekday name, such as `monday`.
+- `hand_off_day` (String) Hand off on this day, at `hand_off_time` or 00:00, instead of at the earliest window start. A lowercase weekday name, such as `monday`.
+- `hand_off_time` (String) Time on `hand_off_day` the handoff happens. Requires `hand_off_day`. Omit it to hand off at 00:00. Coverage on `hand_off_day` before this time stays with the outgoing participant. A 24-hour time in `HH:MM` format, such as `09:00`.
 
 <a id="nestedatt--rotations--weekly_windows--windows"></a>
 ### Nested Schema for `rotations.weekly_windows.windows`

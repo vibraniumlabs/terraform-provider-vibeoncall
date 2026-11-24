@@ -102,11 +102,13 @@ type weeklyRangeModel struct {
 	DailyStartTime types.String `tfsdk:"daily_start_time"`
 	DailyEndTime   types.String `tfsdk:"daily_end_time"`
 	HandOffDay     types.String `tfsdk:"hand_off_day"`
+	HandOffTime    types.String `tfsdk:"hand_off_time"`
 }
 
 type weeklyWindowsModel struct {
-	Windows    []weeklyWindowModel `tfsdk:"windows"`
-	HandOffDay types.String        `tfsdk:"hand_off_day"`
+	Windows     []weeklyWindowModel `tfsdk:"windows"`
+	HandOffDay  types.String        `tfsdk:"hand_off_day"`
+	HandOffTime types.String        `tfsdk:"hand_off_time"`
 }
 
 type weeklyWindowModel struct {
@@ -135,6 +137,18 @@ func weekdayAttribute(description string, required bool) schema.StringAttribute 
 		Required:            required,
 		Optional:            !required,
 		Validators:          []validator.String{weekday},
+	}
+}
+
+func handOffTimeAttribute() schema.StringAttribute {
+	return schema.StringAttribute{
+		MarkdownDescription: "Time on `hand_off_day` the handoff happens. Requires `hand_off_day`. Omit it to hand off at 00:00. " +
+			"Coverage on `hand_off_day` before this time stays with the outgoing participant. A 24-hour time in `HH:MM` format, such as `09:00`.",
+		Optional: true,
+		Validators: []validator.String{
+			clockTime,
+			stringvalidator.AlsoRequires(path.MatchRelative().AtParent().AtName("hand_off_day")),
+		},
 	}
 }
 
@@ -217,7 +231,8 @@ func (r *ScheduleResource) Schema(ctx context.Context, req resource.SchemaReques
 								"end_time":         timeAttribute("Time on `end_day` the range ends.", true),
 								"daily_start_time": timeAttribute("Limits coverage within the range to these daily hours.", false),
 								"daily_end_time":   timeAttribute("End of the daily hours.", false),
-								"hand_off_day":     weekdayAttribute("Hand off at 00:00 on this day instead of at the range start.", false),
+								"hand_off_day":     weekdayAttribute("Hand off on this day, at `hand_off_time` or 00:00, instead of at the range start.", false),
+								"hand_off_time":    handOffTimeAttribute(),
 							},
 						},
 						"weekly_windows": schema.SingleNestedAttribute{
@@ -237,7 +252,8 @@ func (r *ScheduleResource) Schema(ctx context.Context, req resource.SchemaReques
 										},
 									},
 								},
-								"hand_off_day": weekdayAttribute("Hand off at 00:00 on this day instead of at the earliest window start.", false),
+								"hand_off_day":  weekdayAttribute("Hand off on this day, at `hand_off_time` or 00:00, instead of at the earliest window start.", false),
+								"hand_off_time": handOffTimeAttribute(),
 							},
 						},
 					},
@@ -673,6 +689,7 @@ type apiRotationPayload struct {
 	DailyEndTime   *string     `json:"dailyEndTime,omitempty"`
 	Windows        []apiWindow `json:"windows,omitempty"`
 	HandOffDay     *int        `json:"handOffDay,omitempty"`
+	HandOffTime    *string     `json:"handOffTime,omitempty"`
 }
 
 type apiRotationConfig struct {
@@ -706,6 +723,19 @@ func optionalWeekdayName(n *int) types.String {
 	return weekdayName(*n)
 }
 
+const midnight = "00:00"
+
+// handOffTimeFromAPI reads midnight as null, so configs without hand_off_time don't drift, unless the prior value spelled it out.
+func handOffTimeFromAPI(prior types.String, t *string) types.String {
+	if t == nil || *t == midnight {
+		if prior.ValueString() == midnight {
+			return prior
+		}
+		return types.StringNull()
+	}
+	return types.StringValue(*t)
+}
+
 func rotationConfigToAPI(rot scheduleRotationModel) apiRotationConfig {
 	switch {
 	case rot.Daily != nil:
@@ -724,6 +754,7 @@ func rotationConfigToAPI(rot scheduleRotationModel) apiRotationConfig {
 			DailyStartTime: w.DailyStartTime.ValueStringPointer(),
 			DailyEndTime:   w.DailyEndTime.ValueStringPointer(),
 			HandOffDay:     optionalWeekday(w.HandOffDay),
+			HandOffTime:    w.HandOffTime.ValueStringPointer(),
 		}}
 	default:
 		w := rot.WeeklyWindows
@@ -734,7 +765,9 @@ func rotationConfigToAPI(rot scheduleRotationModel) apiRotationConfig {
 				EndDay: weekdayNumber(win.EndDay), EndTime: win.EndTime.ValueString(),
 			}
 		}
-		return apiRotationConfig{Type: "weekly", Payload: apiRotationPayload{Windows: windows, HandOffDay: optionalWeekday(w.HandOffDay)}}
+		return apiRotationConfig{Type: "weekly", Payload: apiRotationPayload{
+			Windows: windows, HandOffDay: optionalWeekday(w.HandOffDay), HandOffTime: w.HandOffTime.ValueStringPointer(),
+		}}
 	}
 }
 
@@ -766,7 +799,7 @@ func rotationToAPI(ctx context.Context, rot scheduleRotationModel) (client.Publi
 	return in, diags
 }
 
-func rotationFromAPI(rot client.PublicScheduleRotationResponse) (scheduleRotationModel, diag.Diagnostics) {
+func rotationFromAPI(rot client.PublicScheduleRotationResponse, prior scheduleRotationModel) (scheduleRotationModel, diag.Diagnostics) {
 	var diags diag.Diagnostics
 	participants := make([]attr.Value, len(rot.Participants))
 	for i, p := range rot.Participants {
@@ -793,7 +826,10 @@ func rotationFromAPI(rot client.PublicScheduleRotationResponse) (scheduleRotatio
 	case cfg.Type == "daily" && p.StartTime != nil && p.EndTime != nil:
 		m.Daily = &dailyRotationModel{StartTime: types.StringPointerValue(p.StartTime), EndTime: types.StringPointerValue(p.EndTime)}
 	case cfg.Type == "weekly" && p.Windows != nil:
-		w := &weeklyWindowsModel{HandOffDay: optionalWeekdayName(p.HandOffDay)}
+		w := &weeklyWindowsModel{HandOffDay: optionalWeekdayName(p.HandOffDay), HandOffTime: types.StringNull()}
+		if p.HandOffDay != nil {
+			w.HandOffTime = handOffTimeFromAPI(priorHandOffTime(prior), p.HandOffTime)
+		}
 		for _, win := range p.Windows {
 			w.Windows = append(w.Windows, weeklyWindowModel{
 				StartDay: weekdayName(win.StartDay), StartTime: types.StringValue(win.StartTime),
@@ -808,11 +844,34 @@ func rotationFromAPI(rot client.PublicScheduleRotationResponse) (scheduleRotatio
 			DailyStartTime: types.StringPointerValue(p.DailyStartTime),
 			DailyEndTime:   types.StringPointerValue(p.DailyEndTime),
 			HandOffDay:     optionalWeekdayName(p.HandOffDay),
+			HandOffTime:    types.StringNull(),
+		}
+		if p.HandOffDay != nil {
+			m.Weekly.HandOffTime = handOffTimeFromAPI(priorHandOffTime(prior), p.HandOffTime)
 		}
 	default:
 		diags.AddError("Unsupported rotation config", fmt.Sprintf("Rotation %d has a %q config this provider cannot read: %s", rot.Id, cfg.Type, raw))
 	}
 	return m, diags
+}
+
+func priorHandOffTime(rot scheduleRotationModel) types.String {
+	switch {
+	case rot.Weekly != nil:
+		return rot.Weekly.HandOffTime
+	case rot.WeeklyWindows != nil:
+		return rot.WeeklyWindows.HandOffTime
+	default:
+		return types.StringNull()
+	}
+}
+
+// priorRotationAt pairs a returned rotation with the planned or stored one at its position. The API keeps rotation positions, and planned rotations not created yet have unknown IDs.
+func priorRotationAt(prior []scheduleRotationModel, i int, id int32) scheduleRotationModel {
+	if i >= len(prior) || (!prior[i].ID.IsUnknown() && prior[i].ID.ValueString() != fmt.Sprint(id)) {
+		return scheduleRotationModel{}
+	}
+	return prior[i]
 }
 
 func teamIDSet(ids []int32) types.Set {
@@ -832,9 +891,10 @@ func setScheduleState(m *ScheduleResourceModel, s *client.PublicScheduleResponse
 	m.Name = types.StringValue(s.Name)
 	m.TimeZone = types.StringValue(s.Timezone)
 	m.TeamIDs = teamIDSet(s.TeamIds)
+	prior := m.Rotations
 	m.Rotations = make([]scheduleRotationModel, 0, len(s.Rotations))
-	for _, rot := range s.Rotations {
-		model, d := rotationFromAPI(rot)
+	for i, rot := range s.Rotations {
+		model, d := rotationFromAPI(rot, priorRotationAt(prior, i, rot.Id))
 		diags.Append(d...)
 		m.Rotations = append(m.Rotations, model)
 	}

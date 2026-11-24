@@ -43,13 +43,16 @@ resource "vibeoncall_schedule" "sre" {
       }
     },
     {
+      # Hands off every Saturday at 09:00. The outgoing participant keeps Saturday until 09:00.
       name            = "Weekend"
       start_date      = "2026-09-05"
-      participant_ids = [vibeoncall_team_membership.alan.user_id]
+      participant_ids = [vibeoncall_team_membership.alan.user_id, vibeoncall_team_membership.ada.user_id]
       weekly_windows = {
         windows = [
           { start_day = "saturday", start_time = "00:00", end_day = "sunday", end_time = "23:00" },
         ]
+        hand_off_day  = "saturday"
+        hand_off_time = "09:00"
       }
     },
   ]
