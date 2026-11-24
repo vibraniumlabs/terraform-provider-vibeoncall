@@ -2646,7 +2646,7 @@ type PublicScheduleResponse struct {
 	Timezone string `json:"timezone"`
 }
 
-// PublicScheduleRotationConfig Public daily and weekly types use the custom coverage-window payloads. Daily requires startTime and endTime; weekly accepts a day/time range or windows. Without handOffDay, a weekly rotation hands off to the next participant at the range start, or at the earliest window start in the Sunday-to-Saturday week. A range whose start and end share the same weekday and time covers a full seven days: startDay 3, startTime 12:00, endDay 3, endTime 12:00 gives continuous coverage with a Wednesday-noon handoff. With handOffDay, the handoff happens at 00:00 on that weekday instead, independent of coverage. Handoffs keep their local clock time in the schedule timezone across daylight-saving changes. Times are 24-hour HH:MM; weekdays are 0 (Sunday) through 6 (Saturday).
+// PublicScheduleRotationConfig Public daily and weekly types use the custom coverage-window payloads. Daily requires startTime and endTime; weekly accepts a day/time range or windows. Without handOffDay, a weekly rotation hands off to the next participant at the range start, or at the earliest window start in the Sunday-to-Saturday week. A range whose start and end share the same weekday and time covers a full seven days: startDay 3, startTime 12:00, endDay 3, endTime 12:00 gives continuous coverage with a Wednesday-noon handoff. With handOffDay, the handoff happens on that weekday at handOffTime (default 00:00) instead, independent of coverage; a window that crosses the handoff is split between the outgoing and incoming participant. handOffTime requires handOffDay. Turns follow the midnight handoff and handOffTime only moves the boundary: coverage on the handoff day between 00:00 and handOffTime stays with the outgoing participant, and other coverage keeps its participant. Coverage between startAt and a first handoff after it joins the first turn. Handoffs keep their local clock time in the schedule timezone across daylight-saving changes. Times are 24-hour HH:MM; weekdays are 0 (Sunday) through 6 (Saturday).
 type PublicScheduleRotationConfig struct {
 	union json.RawMessage
 }
@@ -2676,17 +2676,23 @@ type PublicScheduleRotationConfig1Payload0 struct {
 	EndDay         int     `json:"endDay"`
 	EndTime        string  `json:"endTime"`
 
-	// HandOffDay Participant handoff weekday, 0 (Sunday) through 6 (Saturday), at 00:00 in the schedule timezone, independent of coverage. Omit it to hand off at the range start (startDay at startTime).
-	HandOffDay *int   `json:"handOffDay,omitempty"`
-	StartDay   int    `json:"startDay"`
-	StartTime  string `json:"startTime"`
+	// HandOffDay Participant handoff weekday, 0 (Sunday) through 6 (Saturday), at handOffTime (default 00:00) in the schedule timezone, independent of coverage. Omit it to hand off at the range start (startDay at startTime).
+	HandOffDay *int `json:"handOffDay,omitempty"`
+
+	// HandOffTime Participant handoff time on handOffDay, 24-hour HH:MM in the schedule timezone. Requires handOffDay. Defaults to 00:00.
+	HandOffTime *string `json:"handOffTime,omitempty"`
+	StartDay    int     `json:"startDay"`
+	StartTime   string  `json:"startTime"`
 }
 
 // PublicScheduleRotationConfig1Payload1 defines model for PublicScheduleRotationConfig.1.Payload.1.
 type PublicScheduleRotationConfig1Payload1 struct {
-	// HandOffDay Participant handoff weekday, 0 (Sunday) through 6 (Saturday), at 00:00 in the schedule timezone, independent of coverage. Omit it to hand off at the start of the earliest window in the Sunday-to-Saturday week.
+	// HandOffDay Participant handoff weekday, 0 (Sunday) through 6 (Saturday), at handOffTime (default 00:00) in the schedule timezone, independent of coverage. Omit it to hand off at the start of the earliest window in the Sunday-to-Saturday week.
 	HandOffDay *int `json:"handOffDay,omitempty"`
-	Windows    []struct {
+
+	// HandOffTime Participant handoff time on handOffDay, 24-hour HH:MM in the schedule timezone. Requires handOffDay. Defaults to 00:00.
+	HandOffTime *string `json:"handOffTime,omitempty"`
+	Windows     []struct {
 		EndDay    int    `json:"endDay"`
 		EndTime   string `json:"endTime"`
 		StartDay  int    `json:"startDay"`
@@ -2709,7 +2715,7 @@ type PublicScheduleRotationInput struct {
 	// Participants Ordered user IDs; each ID must appear only once.
 	Participants []int `json:"participants"`
 
-	// RotationConfig Public daily and weekly types use the custom coverage-window payloads. Daily requires startTime and endTime; weekly accepts a day/time range or windows. Without handOffDay, a weekly rotation hands off to the next participant at the range start, or at the earliest window start in the Sunday-to-Saturday week. A range whose start and end share the same weekday and time covers a full seven days: startDay 3, startTime 12:00, endDay 3, endTime 12:00 gives continuous coverage with a Wednesday-noon handoff. With handOffDay, the handoff happens at 00:00 on that weekday instead, independent of coverage. Handoffs keep their local clock time in the schedule timezone across daylight-saving changes. Times are 24-hour HH:MM; weekdays are 0 (Sunday) through 6 (Saturday).
+	// RotationConfig Public daily and weekly types use the custom coverage-window payloads. Daily requires startTime and endTime; weekly accepts a day/time range or windows. Without handOffDay, a weekly rotation hands off to the next participant at the range start, or at the earliest window start in the Sunday-to-Saturday week. A range whose start and end share the same weekday and time covers a full seven days: startDay 3, startTime 12:00, endDay 3, endTime 12:00 gives continuous coverage with a Wednesday-noon handoff. With handOffDay, the handoff happens on that weekday at handOffTime (default 00:00) instead, independent of coverage; a window that crosses the handoff is split between the outgoing and incoming participant. handOffTime requires handOffDay. Turns follow the midnight handoff and handOffTime only moves the boundary: coverage on the handoff day between 00:00 and handOffTime stays with the outgoing participant, and other coverage keeps its participant. Coverage between startAt and a first handoff after it joins the first turn. Handoffs keep their local clock time in the schedule timezone across daylight-saving changes. Times are 24-hour HH:MM; weekdays are 0 (Sunday) through 6 (Saturday).
 	RotationConfig PublicScheduleRotationConfig `json:"rotationConfig"`
 
 	// StartAt First date this rotation takes effect, in YYYY-MM-DD format.
@@ -2725,7 +2731,7 @@ type PublicScheduleRotationResponse struct {
 	// Participants Ordered user IDs; each ID must appear only once.
 	Participants []int `json:"participants"`
 
-	// RotationConfig Public daily and weekly types use the custom coverage-window payloads. Daily requires startTime and endTime; weekly accepts a day/time range or windows. Without handOffDay, a weekly rotation hands off to the next participant at the range start, or at the earliest window start in the Sunday-to-Saturday week. A range whose start and end share the same weekday and time covers a full seven days: startDay 3, startTime 12:00, endDay 3, endTime 12:00 gives continuous coverage with a Wednesday-noon handoff. With handOffDay, the handoff happens at 00:00 on that weekday instead, independent of coverage. Handoffs keep their local clock time in the schedule timezone across daylight-saving changes. Times are 24-hour HH:MM; weekdays are 0 (Sunday) through 6 (Saturday).
+	// RotationConfig Public daily and weekly types use the custom coverage-window payloads. Daily requires startTime and endTime; weekly accepts a day/time range or windows. Without handOffDay, a weekly rotation hands off to the next participant at the range start, or at the earliest window start in the Sunday-to-Saturday week. A range whose start and end share the same weekday and time covers a full seven days: startDay 3, startTime 12:00, endDay 3, endTime 12:00 gives continuous coverage with a Wednesday-noon handoff. With handOffDay, the handoff happens on that weekday at handOffTime (default 00:00) instead, independent of coverage; a window that crosses the handoff is split between the outgoing and incoming participant. handOffTime requires handOffDay. Turns follow the midnight handoff and handOffTime only moves the boundary: coverage on the handoff day between 00:00 and handOffTime stays with the outgoing participant, and other coverage keeps its participant. Coverage between startAt and a first handoff after it joins the first turn. Handoffs keep their local clock time in the schedule timezone across daylight-saving changes. Times are 24-hour HH:MM; weekdays are 0 (Sunday) through 6 (Saturday).
 	RotationConfig PublicScheduleRotationConfig `json:"rotationConfig"`
 
 	// StartAt First date this rotation takes effect, in YYYY-MM-DD format.
@@ -2739,7 +2745,7 @@ type PublicScheduleRotationUpdateInput struct {
 	// Participants Ordered user IDs; each ID must appear only once.
 	Participants []int `json:"participants"`
 
-	// RotationConfig Public daily and weekly types use the custom coverage-window payloads. Daily requires startTime and endTime; weekly accepts a day/time range or windows. Without handOffDay, a weekly rotation hands off to the next participant at the range start, or at the earliest window start in the Sunday-to-Saturday week. A range whose start and end share the same weekday and time covers a full seven days: startDay 3, startTime 12:00, endDay 3, endTime 12:00 gives continuous coverage with a Wednesday-noon handoff. With handOffDay, the handoff happens at 00:00 on that weekday instead, independent of coverage. Handoffs keep their local clock time in the schedule timezone across daylight-saving changes. Times are 24-hour HH:MM; weekdays are 0 (Sunday) through 6 (Saturday).
+	// RotationConfig Public daily and weekly types use the custom coverage-window payloads. Daily requires startTime and endTime; weekly accepts a day/time range or windows. Without handOffDay, a weekly rotation hands off to the next participant at the range start, or at the earliest window start in the Sunday-to-Saturday week. A range whose start and end share the same weekday and time covers a full seven days: startDay 3, startTime 12:00, endDay 3, endTime 12:00 gives continuous coverage with a Wednesday-noon handoff. With handOffDay, the handoff happens on that weekday at handOffTime (default 00:00) instead, independent of coverage; a window that crosses the handoff is split between the outgoing and incoming participant. handOffTime requires handOffDay. Turns follow the midnight handoff and handOffTime only moves the boundary: coverage on the handoff day between 00:00 and handOffTime stays with the outgoing participant, and other coverage keeps its participant. Coverage between startAt and a first handoff after it joins the first turn. Handoffs keep their local clock time in the schedule timezone across daylight-saving changes. Times are 24-hour HH:MM; weekdays are 0 (Sunday) through 6 (Saturday).
 	RotationConfig PublicScheduleRotationConfig `json:"rotationConfig"`
 
 	// StartAt First date this rotation takes effect, in YYYY-MM-DD format.

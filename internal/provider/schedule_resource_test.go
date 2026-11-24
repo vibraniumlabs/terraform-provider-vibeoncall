@@ -229,6 +229,165 @@ func TestScheduleResourceStoresEachRotationShape(t *testing.T) {
 	})
 }
 
+func handOffRotations(rangeTime, windowsTime string) string {
+	attr := func(t string) string {
+		if t == "" {
+			return ""
+		}
+		return fmt.Sprintf("\n        hand_off_time = %q", t)
+	}
+	return fmt.Sprintf(`
+  name      = "Hand off"
+  time_zone = "Asia/Taipei"
+  rotations = [
+    {
+      name            = "Weekdays"
+      start_date      = "2026-09-01"
+      participant_ids = ["7", "8"]
+      weekly = {
+        start_day     = "monday"
+        start_time    = "09:00"
+        end_day       = "friday"
+        end_time      = "17:00"
+        hand_off_day  = "wednesday"%s
+      }
+    },
+    {
+      name            = "Weekends"
+      start_date      = "2026-09-05"
+      participant_ids = ["9", "7"]
+      weekly_windows = {
+        windows = [
+          { start_day = "saturday", start_time = "00:00", end_day = "sunday", end_time = "23:00" },
+        ]
+        hand_off_day = "saturday"%s
+      }
+    },
+  ]`, attr(rangeTime), attr(windowsTime))
+}
+
+func TestScheduleResourceHandOffTime(t *testing.T) {
+	api, srv := newFakeAPI(t, scheduleUsers...)
+	config := func(rangeTime, windowsTime string) string {
+		return scheduleConfig(srv.URL, handOffRotations(rangeTime, windowsTime))
+	}
+	// "" means the request carried no handOffTime.
+	withTime := func(handOffTime string) string {
+		if handOffTime == "" {
+			return ""
+		}
+		return fmt.Sprintf(`,"handOffTime":%q`, handOffTime)
+	}
+	rangeConfig := func(handOffTime string) string {
+		return `{"type":"weekly","payload":{"startDay":1,"startTime":"09:00","endDay":5,"endTime":"17:00","handOffDay":3` + withTime(handOffTime) + `}}`
+	}
+	windowsConfig := func(handOffTime string) string {
+		return `{"type":"weekly","payload":{"windows":[{"startDay":6,"startTime":"00:00","endDay":0,"endTime":"23:00"}],"handOffDay":6` + withTime(handOffTime) + `}}`
+	}
+	const (
+		rangeTimeAttr   = "rotations.0.weekly.hand_off_time"
+		windowsTimeAttr = "rotations.1.weekly_windows.hand_off_time"
+	)
+
+	resource.UnitTest(t, resource.TestCase{
+		ProtoV6ProviderFactories: protoV6ProviderFactories(),
+		CheckDestroy:             api.checkNothingLeft,
+		Steps: []resource.TestStep{
+			{
+				Config: config("09:00", "18:30"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("vibeoncall_schedule.test", rangeTimeAttr, "09:00"),
+					resource.TestCheckResourceAttr("vibeoncall_schedule.test", windowsTimeAttr, "18:30"),
+					api.checkRotationConfig(0, rangeConfig("09:00")),
+					api.checkRotationConfig(1, windowsConfig("18:30")),
+				),
+			},
+			{
+				ResourceName:      "vibeoncall_schedule.test",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+			{
+				Config:           config("17:30", "18:30"),
+				ConfigPlanChecks: expectUpdate(),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("vibeoncall_schedule.test", rangeTimeAttr, "17:30"),
+					api.checkRotationConfig(0, rangeConfig("17:30")),
+					api.checkRotationConfig(1, windowsConfig("18:30")),
+				),
+			},
+			{
+				// A PUT replaces the whole rotation, so leaving handOffTime out hands off at 00:00 again.
+				Config:           config("", ""),
+				ConfigPlanChecks: expectUpdate(),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckNoResourceAttr("vibeoncall_schedule.test", rangeTimeAttr),
+					resource.TestCheckNoResourceAttr("vibeoncall_schedule.test", windowsTimeAttr),
+					api.checkRotationConfig(0, rangeConfig("")),
+					api.checkRotationConfig(1, windowsConfig("")),
+				),
+			},
+			{
+				PreConfig:          func() { api.setRotationHandOffTime(0, "10:00") },
+				Config:             config("", ""),
+				PlanOnly:           true,
+				ExpectNonEmptyPlan: true,
+			},
+			{
+				Config: config("", ""),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckNoResourceAttr("vibeoncall_schedule.test", rangeTimeAttr),
+					api.checkRotationConfig(0, rangeConfig("")),
+				),
+			},
+			{
+				Config: config("00:00", ""),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("vibeoncall_schedule.test", rangeTimeAttr, "00:00"),
+					api.checkRotationConfig(0, rangeConfig("00:00")),
+				),
+			},
+			{
+				// Saving the rotation in the web app drops a stored 00:00, which still matches an explicit "00:00".
+				PreConfig: func() { api.setRotationHandOffTime(0, "") },
+				Config:    config("00:00", ""),
+				PlanOnly:  true,
+			},
+		},
+	})
+}
+
+func TestScheduleResourceReadsMidnightHandOffAsUnset(t *testing.T) {
+	api, srv := newFakeAPI(t, scheduleUsers...)
+	config := providerConfig(srv.URL) + "\nresource \"vibeoncall_schedule\" \"test\" {" + handOffRotations("", "") + "\n}\n"
+
+	resource.UnitTest(t, resource.TestCase{
+		ProtoV6ProviderFactories: protoV6ProviderFactories(),
+		CheckDestroy:             api.checkNothingLeft,
+		Steps: []resource.TestStep{
+			{
+				// A rotation saved before handOffTime existed has no time stored.
+				PreConfig: func() {
+					api.schedules[1] = &fakeSchedule{ID: 1, Name: "Hand off", Timezone: "Asia/Taipei", TeamIDs: []int{}, Rotations: []*fakeRotation{
+						{ID: 1, Name: "Weekdays", StartAt: "2026-09-01", Participants: []int{7, 8}, RotationConfig: json.RawMessage(`{"type":"weekly","payload":{"startDay":1,"startTime":"09:00","endDay":5,"endTime":"17:00","handOffDay":3}}`)},
+						{ID: 2, Name: "Weekends", StartAt: "2026-09-05", Participants: []int{9, 7}, RotationConfig: json.RawMessage(`{"type":"weekly","payload":{"windows":[{"startDay":6,"startTime":"00:00","endDay":0,"endTime":"23:00"}],"handOffDay":6}}`)},
+					}}
+					api.nextSchedID, api.nextRotID = 2, 3
+				},
+				Config:             config,
+				ResourceName:       "vibeoncall_schedule.test",
+				ImportState:        true,
+				ImportStateId:      "1",
+				ImportStatePersist: true,
+			},
+			{
+				Config:   config,
+				PlanOnly: true,
+			},
+		},
+	})
+}
+
 func TestScheduleResourceUpdatesDetailsAndTeamsInPlace(t *testing.T) {
 	api, srv := newFakeAPI(t, scheduleUsers...)
 	rotations := rotationsAttr(weeklyRotation("Primary", "7", "8"))
@@ -459,15 +618,18 @@ func TestScheduleResourceRejectsInvalidConfigAtPlanTime(t *testing.T) {
 	for name, tc := range map[string]struct {
 		field, value, want string
 	}{
-		"no rotation shape":     {"shape", ``, `No attribute specified when one \(and only one\)`},
-		"two rotation shapes":   {"shape", `daily = { start_time = "09:00", end_time = "17:00" }` + "\n" + `weekly = { start_day = "monday", start_time = "09:00", end_day = "monday", end_time = "09:00" }`, `2 attributes specified when one \(and only one\)`},
-		"minute out of range":   {"shape", `daily = { start_time = "09:60", end_time = "17:00" }`, `must be a 24-hour time`},
-		"hour out of range":     {"shape", `daily = { start_time = "24:00", end_time = "17:00" }`, `must be a 24-hour time`},
-		"unknown weekday":       {"shape", `weekly = { start_day = "mon", start_time = "09:00", end_day = "monday", end_time = "09:00" }`, `value must be one of`},
-		"duplicate participant": {"participant_ids", `"7", "7"`, `duplicate`},
-		"malformed start date":  {"start_date", `"2026/09/01"`, `must be a date in YYYY-MM-DD format`},
-		"impossible start date": {"start_date", `"2026-02-30"`, `must be a date in YYYY-MM-DD format`},
-		"empty team list":       {"team_ids", ``, `at least 1`},
+		"no rotation shape":                 {"shape", ``, `No attribute specified when one \(and only one\)`},
+		"two rotation shapes":               {"shape", `daily = { start_time = "09:00", end_time = "17:00" }` + "\n" + `weekly = { start_day = "monday", start_time = "09:00", end_day = "monday", end_time = "09:00" }`, `2 attributes specified when one \(and only one\)`},
+		"minute out of range":               {"shape", `daily = { start_time = "09:60", end_time = "17:00" }`, `must be a 24-hour time`},
+		"hour out of range":                 {"shape", `daily = { start_time = "24:00", end_time = "17:00" }`, `must be a 24-hour time`},
+		"unknown weekday":                   {"shape", `weekly = { start_day = "mon", start_time = "09:00", end_day = "monday", end_time = "09:00" }`, `value must be one of`},
+		"duplicate participant":             {"participant_ids", `"7", "7"`, `duplicate`},
+		"malformed start date":              {"start_date", `"2026/09/01"`, `must be a date in YYYY-MM-DD format`},
+		"impossible start date":             {"start_date", `"2026-02-30"`, `must be a date in YYYY-MM-DD format`},
+		"empty team list":                   {"team_ids", ``, `at least 1`},
+		"hand off time without day":         {"shape", `weekly = { start_day = "monday", start_time = "09:00", end_day = "monday", end_time = "09:00", hand_off_time = "09:00" }`, `hand_off_day" must be specified when`},
+		"windows hand off time without day": {"shape", `weekly_windows = { windows = [{ start_day = "monday", start_time = "09:00", end_day = "monday", end_time = "17:00" }], hand_off_time = "09:00" }`, `hand_off_day" must be specified when`},
+		"malformed hand off time":           {"shape", `weekly = { start_day = "monday", start_time = "09:00", end_day = "monday", end_time = "09:00", hand_off_day = "monday", hand_off_time = "9:00" }`, `must be a 24-hour time`},
 	} {
 		t.Run(name, func(t *testing.T) {
 			attrs := map[string]string{}

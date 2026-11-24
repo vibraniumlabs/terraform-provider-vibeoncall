@@ -701,7 +701,11 @@ components:
                       type: integer
                       minimum: 0
                       maximum: 6
-                      description: Participant handoff weekday, 0 (Sunday) through 6 (Saturday), at 00:00 in the schedule timezone, independent of coverage. Omit it to hand off at the range start (startDay at startTime).
+                      description: Participant handoff weekday, 0 (Sunday) through 6 (Saturday), at handOffTime (default 00:00) in the schedule timezone, independent of coverage. Omit it to hand off at the range start (startDay at startTime).
+                    handOffTime:
+                      type: string
+                      pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+                      description: Participant handoff time on handOffDay, 24-hour HH:MM in the schedule timezone. Requires handOffDay. Defaults to 00:00.
                   required:
                     - startTime
                     - endTime
@@ -741,7 +745,11 @@ components:
                       type: integer
                       minimum: 0
                       maximum: 6
-                      description: Participant handoff weekday, 0 (Sunday) through 6 (Saturday), at 00:00 in the schedule timezone, independent of coverage. Omit it to hand off at the start of the earliest window in the Sunday-to-Saturday week.
+                      description: Participant handoff weekday, 0 (Sunday) through 6 (Saturday), at handOffTime (default 00:00) in the schedule timezone, independent of coverage. Omit it to hand off at the start of the earliest window in the Sunday-to-Saturday week.
+                    handOffTime:
+                      type: string
+                      pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+                      description: Participant handoff time on handOffDay, 24-hour HH:MM in the schedule timezone. Requires handOffDay. Defaults to 00:00.
                   required:
                     - windows
                   additionalProperties: false
@@ -751,7 +759,7 @@ components:
             - payload
           additionalProperties: false
           title: Weekly rotation
-      description: "Public daily and weekly types use the custom coverage-window payloads. Daily requires startTime and endTime; weekly accepts a day/time range or windows. Without handOffDay, a weekly rotation hands off to the next participant at the range start, or at the earliest window start in the Sunday-to-Saturday week. A range whose start and end share the same weekday and time covers a full seven days: startDay 3, startTime 12:00, endDay 3, endTime 12:00 gives continuous coverage with a Wednesday-noon handoff. With handOffDay, the handoff happens at 00:00 on that weekday instead, independent of coverage. Handoffs keep their local clock time in the schedule timezone across daylight-saving changes. Times are 24-hour HH:MM; weekdays are 0 (Sunday) through 6 (Saturday)."
+      description: "Public daily and weekly types use the custom coverage-window payloads. Daily requires startTime and endTime; weekly accepts a day/time range or windows. Without handOffDay, a weekly rotation hands off to the next participant at the range start, or at the earliest window start in the Sunday-to-Saturday week. A range whose start and end share the same weekday and time covers a full seven days: startDay 3, startTime 12:00, endDay 3, endTime 12:00 gives continuous coverage with a Wednesday-noon handoff. With handOffDay, the handoff happens on that weekday at handOffTime (default 00:00) instead, independent of coverage; a window that crosses the handoff is split between the outgoing and incoming participant. handOffTime requires handOffDay. Turns follow the midnight handoff and handOffTime only moves the boundary: coverage on the handoff day between 00:00 and handOffTime stays with the outgoing participant, and other coverage keeps its participant. Coverage between startAt and a first handoff after it joins the first turn. Handoffs keep their local clock time in the schedule timezone across daylight-saving changes. Times are 24-hour HH:MM; weekdays are 0 (Sunday) through 6 (Saturday)."
     CreatePublicScheduleRequest:
       type: object
       properties:
@@ -2418,7 +2426,6 @@ components:
             - RUN_ASSISTANT_AGENT
             - VARIABLES_INPUT
             - SEND_EMAIL
-            - SET_LINKED_INCIDENT_STATUS
           description: Type of action this step executes.
       required:
         - id
@@ -2489,7 +2496,6 @@ components:
             - RUN_ASSISTANT_AGENT
             - VARIABLES_INPUT
             - SEND_EMAIL
-            - SET_LINKED_INCIDENT_STATUS
           description: Action type executed by this step.
         status:
           type: string
