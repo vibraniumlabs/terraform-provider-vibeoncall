@@ -35,6 +35,19 @@ resource "datadog_webhook" "vibeoncall" {
   encode_as = "json"
 }
 
+# Each email creates its own alert; normal alert routing still applies.
+resource "vibeoncall_alert_source" "email" {
+  name             = "Email alerts"
+  type             = "email"
+  team_id          = vibeoncall_team.payments.id
+  alert_routing_id = vibeoncall_alert_route.payments.id
+  deduplication    = ""
+}
+
+# Omit deduplication (or set null) to match by subject within this source.
+# To include the sender, use deduplication = "{{subject}}-{{sender}}".
+# Templates and populated matching keys are limited to 500 characters.
+
 # Configure this source's webhook_url in Jira Cloud's webhook settings.
 resource "vibeoncall_alert_source" "jira" {
   name    = "Jira issues"
@@ -58,6 +71,7 @@ resource "vibeoncall_alert_source" "jira" {
 ### Optional
 
 - `alert_routing_id` (String) Numeric ID of the alert routing that handles alerts arriving on this source. It must belong to the same team as the source, or be organization-level for an organization-level source.
+- `deduplication` (String) Email sources only. Omit or set null for the provider default (`{{subject}}`); an empty string disables matching. Custom templates allow literal text and `{{subject}}`, `{{sender}}`, `{{body}}` variables. Templates and populated keys are limited to 500 characters. Matching stays within this source. Missing values become empty text; an empty result creates a separate alert. Removing a configured value restores the default. Identical first 500 characters or different templates that populate to the same text can match.
 - `enabled` (Boolean) Whether the source accepts alerts. A disabled source rejects what arrives on it. Defaults to `true`.
 - `team_id` (String) Numeric ID of the team the source belongs to. Omit for an organization-level source. Changing it replaces the source, which gives it a new webhook URL.
 

@@ -13,7 +13,16 @@ Pushing a `v*` tag runs the `Release` workflow. It waits for a second maintainer
 
    If the build or tests fail, the provider depends on something production doesn't serve yet; wait for the next ai-server promotion.
 
-2. **The release build works against production.** Build the provider from step 1 and run Terraform against it as in [Development](README.md#development), so the check doesn't download a released version from the Registry. Leave `VIBEONCALL_BASE_URL` unset, so it calls production. In `examples/complete`, fill in `terraform.tfvars` and skip `terraform init`. `terraform apply`, then `terraform plan` shows no changes. A spec on `main` doesn't prove a feature is on in production, so also try each resource or attribute in this release's changelog entry that the example doesn't use. Destroy everything afterwards.
+2. **The release build works against production.** Build the provider from step 1 and run Terraform against it as in [Development](README.md#development), so the check doesn't download a released version from the Registry. Leave `VIBEONCALL_BASE_URL` unset, so it calls production. In `examples/complete`, fill in `terraform.tfvars` with users that exist in production and skip `terraform init`. `terraform apply` must warn that provider development overrides are in effect; otherwise it's running a released version. Then `terraform plan` shows no changes. A spec on `main` doesn't prove a feature is on in production, so also try each resource or attribute in this release's changelog entry that the example doesn't use. Destroy everything afterwards.
+
+   ```shell
+   go build -o bin/terraform-provider-vibeoncall .
+   printf 'provider_installation {\n  dev_overrides {\n    "vibraniumlabs/vibeoncall" = "%s/bin"\n  }\n  direct {}\n}\n' "$PWD" > bin/dev.tfrc
+   export TF_CLI_CONFIG_FILE="$PWD/bin/dev.tfrc"
+   export VIBEONCALL_API_KEY=...
+   unset VIBEONCALL_BASE_URL
+   cd examples/complete && terraform apply
+   ```
 
 3. **The changelog is final.** Its entry becomes the release notes, so write it for users. Open a PR that replaces `(Unreleased)` in `CHANGELOG.md` with the release date, for example `## 0.1.0 (November 20, 2026)`, and includes any `internal/client` change from step 1. Merge it. The workflow fails if the entry is missing or still says `(Unreleased)`.
 

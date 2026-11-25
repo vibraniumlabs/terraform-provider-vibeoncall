@@ -1,7 +1,8 @@
-## 0.1.1 (Unreleased)
+## 0.1.1 (November 24, 2026)
 
 ENHANCEMENTS:
 
+* resource/vibeoncall_alert_source: Configure email deduplication with a string template using subject, sender, and body variables. Omit or use null for the provider default; an empty string disables matching. Removing a template restores the default.
 * resource/vibeoncall_alert_source: Accept `type = "jira"` for Jira Cloud webhook sources. Upgrade the provider to this version or later to configure Jira sources.
 * resource/vibeoncall_alert_route, resource/vibeoncall_maintenance_window: Accept `jira` in provider conditions.
 * resource/vibeoncall_schedule: Add `hand_off_time` to `weekly` and `weekly_windows` to hand off at a set time on `hand_off_day` instead of at 00:00.

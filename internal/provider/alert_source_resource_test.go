@@ -3,6 +3,7 @@ package provider
 import (
 	"fmt"
 	"regexp"
+	"strings"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -275,6 +276,82 @@ func TestAlertSourceResourceValidation(t *testing.T) {
 					Config:      providerConfig(srv.URL) + "resource \"vibeoncall_alert_source\" \"x\" {\n" + tc.attrs + "\n}",
 					PlanOnly:    true,
 					ExpectError: regexp.MustCompile(tc.want),
+				}},
+			})
+		})
+	}
+}
+
+func TestAlertSourceResourceEmailDeduplication(t *testing.T) {
+	api, srv := newFakeAPI(t)
+	config := func(setting string) string {
+		return providerConfig(srv.URL) + fmt.Sprintf(`
+resource "vibeoncall_alert_source" "email" {
+  name = "Email alerts"
+  type = "email"
+  %s
+}
+`, setting)
+	}
+	resource.UnitTest(t, resource.TestCase{
+		ProtoV6ProviderFactories: protoV6ProviderFactories(),
+		CheckDestroy:             api.checkNothingLeft,
+		Steps: []resource.TestStep{
+			{Config: config(""), Check: resource.TestCheckNoResourceAttr("vibeoncall_alert_source.email", "deduplication")},
+			{Config: config(`deduplication = ""`), Check: resource.TestCheckResourceAttr("vibeoncall_alert_source.email", "deduplication", "")},
+			{ResourceName: "vibeoncall_alert_source.email", ImportState: true, ImportStateVerify: true},
+			{Config: config(`deduplication = "{{subject}}-{{sender}}"`), Check: resource.TestCheckResourceAttr("vibeoncall_alert_source.email", "deduplication", "{{subject}}-{{sender}}")},
+			{ResourceName: "vibeoncall_alert_source.email", ImportState: true, ImportStateVerify: true},
+			{Config: config(""), Check: resource.TestCheckNoResourceAttr("vibeoncall_alert_source.email", "deduplication")},
+			{Config: config(""), PlanOnly: true, ExpectNonEmptyPlan: false},
+			{Config: config(`deduplication = "literal"`), Check: resource.TestCheckResourceAttr("vibeoncall_alert_source.email", "deduplication", "literal")},
+			{Config: config(`deduplication = null`), Check: resource.TestCheckNoResourceAttr("vibeoncall_alert_source.email", "deduplication")},
+			{ResourceName: "vibeoncall_alert_source.email", ImportState: true, ImportStateVerify: true},
+		},
+	})
+}
+
+func TestAlertSourceResourceDefaultDeduplicationImport(t *testing.T) {
+	api, srv := newFakeAPI(t)
+	api.sources[77] = &fakeSource{ID: 77, Name: "Existing email", Provider: "email", IsEnabled: true}
+	config := func(name string) string {
+		return providerConfig(srv.URL) + fmt.Sprintf(`
+resource "vibeoncall_alert_source" "email" {
+  name = %q
+  type = "email"
+}
+`, name)
+	}
+	resource.UnitTest(t, resource.TestCase{
+		ProtoV6ProviderFactories: protoV6ProviderFactories(),
+		CheckDestroy:             api.checkNothingLeft,
+		Steps: []resource.TestStep{
+			{Config: config("Existing email"), ResourceName: "vibeoncall_alert_source.email", ImportState: true, ImportStateId: "77", ImportStatePersist: true},
+			{Config: config("Existing email"), PlanOnly: true, ExpectNonEmptyPlan: false},
+			{Config: config("Renamed email"), Check: resource.TestCheckNoResourceAttr("vibeoncall_alert_source.email", "deduplication")},
+		},
+	})
+}
+
+func TestAlertSourceResourceRejectsInvalidDeduplication(t *testing.T) {
+	_, srv := newFakeAPI(t)
+	for _, tc := range []struct{ provider, setting, error string }{
+		{"datadog", `deduplication = ""`, "email sources only"},
+		{"email", `deduplication = "` + strings.Repeat("a", 501) + `"`, "500"},
+		{"email", `deduplication = "` + strings.Repeat("😀", 251) + `"`, "500"},
+	} {
+		t.Run(tc.provider+tc.setting, func(t *testing.T) {
+			resource.UnitTest(t, resource.TestCase{
+				ProtoV6ProviderFactories: protoV6ProviderFactories(),
+				Steps: []resource.TestStep{{
+					Config: providerConfig(srv.URL) + fmt.Sprintf(`
+resource "vibeoncall_alert_source" "source" {
+  name = "Alert source"
+  type = %q
+  %s
+}
+`, tc.provider, tc.setting),
+					ExpectError: regexp.MustCompile(tc.error),
 				}},
 			})
 		})
