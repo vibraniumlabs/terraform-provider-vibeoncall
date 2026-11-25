@@ -1636,12 +1636,29 @@ components:
         externalLinks:
           description: External links associated with the incident (Slack, PagerDuty, Jira, etc.).
         customFields:
-          type: object
-          additionalProperties:
-            type:
-              - string
-              - "null"
-          description: Incident custom fields as key-value pairs. Values may be null. Empty object when no custom fields are set.
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                minLength: 1
+              name:
+                type: string
+              value:
+                type:
+                  - string
+                  - "null"
+            required:
+              - id
+              - name
+              - value
+            additionalProperties: false
+          description: Per-incident custom fields with permanent opaque IDs. IDs survive name/value edits and differ across incidents.
+          example:
+            - id: cf_8b2c69f0-7466-49b8-8fe8-39d477f502cd
+              name: region
+              value: us-east-1
         responders:
           type: array
           items:
@@ -1895,11 +1912,24 @@ components:
       type: object
       properties:
         customFields:
-          type: object
-          additionalProperties:
-            type:
-              - string
-              - "null"
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                minLength: 1
+              name:
+                type: string
+              value:
+                type:
+                  - string
+                  - "null"
+            required:
+              - id
+              - name
+              - value
+            additionalProperties: false
       required:
         - customFields
     AlertsListResponse:
@@ -6452,15 +6482,26 @@ paths:
                   type: boolean
                   default: true
                 customFields:
-                  type: object
-                  additionalProperties:
-                    type:
-                      - string
-                      - "null"
-                  description: Initial top-level incident custom fields. Values may be strings or null.
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      value:
+                        type:
+                          - string
+                          - "null"
+                    required:
+                      - name
+                      - value
+                    additionalProperties: false
+                  description: Initial per-incident custom fields. The server assigns permanent opaque IDs; names are exact and case-sensitive.
                   example:
-                    region: us-east-1
-                    owner: null
+                    - name: region
+                      value: us-east-1
+                    - name: owner
+                      value: null
                 impactStartedAt:
                   type:
                     - string
@@ -6589,9 +6630,9 @@ paths:
         - schema:
             type: string
             format: date-time
-            description: ISO 8601 timestamp — only return incidents whose record was updated at or after this time. Covers incident field edits (title, description, severity, status, reportedAt, resolvedAt, impactStartedAt, impactEndedAt, customFields), service assignment, archiving, responder and label assignment changes, and manual timeline entries from the portal or API. Backdated manual entries use their submission time. Responder and label requests that leave assignments unchanged do not advance it. AI-generated and automatic timeline entries alone do not advance it. Uses the incident record update time, independently of creation time and last activity.
+            description: ISO 8601 timestamp — only return incidents whose record was updated at or after this time. Covers incident field edits (title, description, severity, status, reportedAt, resolvedAt, impactStartedAt, impactEndedAt, custom fields), service assignment, archiving, responder and label assignment changes, and manual timeline entries from the portal or API. Backdated manual entries use their submission time. Responder and label requests that leave assignments unchanged do not advance it. AI-generated and automatic timeline entries alone do not advance it. Uses the incident record update time, independently of creation time and last activity.
           required: false
-          description: ISO 8601 timestamp — only return incidents whose record was updated at or after this time. Covers incident field edits (title, description, severity, status, reportedAt, resolvedAt, impactStartedAt, impactEndedAt, customFields), service assignment, archiving, responder and label assignment changes, and manual timeline entries from the portal or API. Backdated manual entries use their submission time. Responder and label requests that leave assignments unchanged do not advance it. AI-generated and automatic timeline entries alone do not advance it. Uses the incident record update time, independently of creation time and last activity.
+          description: ISO 8601 timestamp — only return incidents whose record was updated at or after this time. Covers incident field edits (title, description, severity, status, reportedAt, resolvedAt, impactStartedAt, impactEndedAt, custom fields), service assignment, archiving, responder and label assignment changes, and manual timeline entries from the portal or API. Backdated manual entries use their submission time. Responder and label requests that leave assignments unchanged do not advance it. AI-generated and automatic timeline entries alone do not advance it. Uses the incident record update time, independently of creation time and last activity.
           name: updatedSince
           in: query
         - schema:
@@ -7631,7 +7672,7 @@ paths:
       tags:
         - Incidents
       summary: Add or replace incident custom fields
-      description: Adds or replaces top-level custom fields on the incident.
+      description: Upserts custom fields by exact current name, preserving matching IDs and omitted entries. Accepts ID-free customFields arrays. Caller IDs and renames are not accepted.
       operationId: addIncidentCustomFields
       security:
         - ApiKeyAuth: []
@@ -7652,17 +7693,27 @@ paths:
               type: object
               properties:
                 customFields:
-                  type: object
-                  additionalProperties:
-                    type:
-                      - string
-                      - "null"
-                  description: Top-level incident custom field entries to add or replace.
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      value:
+                        type:
+                          - string
+                          - "null"
+                    required:
+                      - name
+                      - value
+                    additionalProperties: false
+                  description: Exact-name upserts. Matching names retain their IDs; omitted fields remain. Caller IDs and renames are not accepted.
                   example:
-                    service: checkout-api
-                    region: us-east-1
+                    - name: region
+                      value: us-east-1
               required:
                 - customFields
+              additionalProperties: false
       responses:
         "200":
           description: Updated incident custom fields.
@@ -7705,7 +7756,7 @@ paths:
       tags:
         - Incidents
       summary: Remove incident custom fields
-      description: Removes top-level custom field keys from the incident. Missing keys are ignored.
+      description: Removes custom fields by customFieldIds. Missing IDs or names are ignored.
       operationId: removeIncidentCustomFields
       security:
         - ApiKeyAuth: []
@@ -7725,18 +7776,18 @@ paths:
             schema:
               type: object
               properties:
-                customFieldKeys:
+                customFieldIds:
                   type: array
                   items:
                     type: string
                     minLength: 1
                   minItems: 1
-                  description: Top-level incident custom field keys to remove.
+                  description: Per-incident field IDs to remove. Missing IDs are ignored.
                   example:
-                    - service
-                    - region
+                    - cf_8b2c69f0-7466-49b8-8fe8-39d477f502cd
               required:
-                - customFieldKeys
+                - customFieldIds
+              additionalProperties: false
       responses:
         "200":
           description: Updated incident custom fields.
