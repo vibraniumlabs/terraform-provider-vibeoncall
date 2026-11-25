@@ -51,8 +51,8 @@ var alertSourceProviders = []string{
 	string(client.CreateAlertSourceRequestProviderDatadog), string(client.CreateAlertSourceRequestProviderEmail),
 	string(client.CreateAlertSourceRequestProviderEmbraceio), string(client.CreateAlertSourceRequestProviderGrafana),
 	string(client.CreateAlertSourceRequestProviderHttp), string(client.CreateAlertSourceRequestProviderJira),
-	string(client.CreateAlertSourceRequestProviderNewrelic),
-	string(client.CreateAlertSourceRequestProviderOpsgenie), string(client.CreateAlertSourceRequestProviderPrometheus),
+	string(client.CreateAlertSourceRequestProviderNewrelic), string(client.CreateAlertSourceRequestProviderOpsgenie),
+	string(client.CreateAlertSourceRequestProviderPagerduty), string(client.CreateAlertSourceRequestProviderPrometheus),
 	string(client.CreateAlertSourceRequestProviderSentry), string(client.CreateAlertSourceRequestProviderSns),
 }
 

@@ -308,6 +308,7 @@ const (
 	AlertRoutingProviderConditionRuleProvidersJira         AlertRoutingProviderConditionRuleProviders = "jira"
 	AlertRoutingProviderConditionRuleProvidersNewrelic     AlertRoutingProviderConditionRuleProviders = "newrelic"
 	AlertRoutingProviderConditionRuleProvidersOpsgenie     AlertRoutingProviderConditionRuleProviders = "opsgenie"
+	AlertRoutingProviderConditionRuleProvidersPagerduty    AlertRoutingProviderConditionRuleProviders = "pagerduty"
 	AlertRoutingProviderConditionRuleProvidersPrometheus   AlertRoutingProviderConditionRuleProviders = "prometheus"
 	AlertRoutingProviderConditionRuleProvidersSentry       AlertRoutingProviderConditionRuleProviders = "sentry"
 	AlertRoutingProviderConditionRuleProvidersSns          AlertRoutingProviderConditionRuleProviders = "sns"
@@ -341,6 +342,8 @@ func (e AlertRoutingProviderConditionRuleProviders) Valid() bool {
 	case AlertRoutingProviderConditionRuleProvidersNewrelic:
 		return true
 	case AlertRoutingProviderConditionRuleProvidersOpsgenie:
+		return true
+	case AlertRoutingProviderConditionRuleProvidersPagerduty:
 		return true
 	case AlertRoutingProviderConditionRuleProvidersPrometheus:
 		return true
@@ -493,6 +496,7 @@ const (
 	AlertSourceProviderJira         AlertSourceProvider = "jira"
 	AlertSourceProviderNewrelic     AlertSourceProvider = "newrelic"
 	AlertSourceProviderOpsgenie     AlertSourceProvider = "opsgenie"
+	AlertSourceProviderPagerduty    AlertSourceProvider = "pagerduty"
 	AlertSourceProviderPrometheus   AlertSourceProvider = "prometheus"
 	AlertSourceProviderSentry       AlertSourceProvider = "sentry"
 	AlertSourceProviderSns          AlertSourceProvider = "sns"
@@ -524,6 +528,8 @@ func (e AlertSourceProvider) Valid() bool {
 	case AlertSourceProviderNewrelic:
 		return true
 	case AlertSourceProviderOpsgenie:
+		return true
+	case AlertSourceProviderPagerduty:
 		return true
 	case AlertSourceProviderPrometheus:
 		return true
@@ -679,6 +685,7 @@ const (
 	CreateAlertSourceRequestProviderJira         CreateAlertSourceRequestProvider = "jira"
 	CreateAlertSourceRequestProviderNewrelic     CreateAlertSourceRequestProvider = "newrelic"
 	CreateAlertSourceRequestProviderOpsgenie     CreateAlertSourceRequestProvider = "opsgenie"
+	CreateAlertSourceRequestProviderPagerduty    CreateAlertSourceRequestProvider = "pagerduty"
 	CreateAlertSourceRequestProviderPrometheus   CreateAlertSourceRequestProvider = "prometheus"
 	CreateAlertSourceRequestProviderSentry       CreateAlertSourceRequestProvider = "sentry"
 	CreateAlertSourceRequestProviderSns          CreateAlertSourceRequestProvider = "sns"
@@ -710,6 +717,8 @@ func (e CreateAlertSourceRequestProvider) Valid() bool {
 	case CreateAlertSourceRequestProviderNewrelic:
 		return true
 	case CreateAlertSourceRequestProviderOpsgenie:
+		return true
+	case CreateAlertSourceRequestProviderPagerduty:
 		return true
 	case CreateAlertSourceRequestProviderPrometheus:
 		return true
@@ -959,6 +968,7 @@ const (
 	MaintenanceWindowProviderConditionRuleProvidersJira         MaintenanceWindowProviderConditionRuleProviders = "jira"
 	MaintenanceWindowProviderConditionRuleProvidersNewrelic     MaintenanceWindowProviderConditionRuleProviders = "newrelic"
 	MaintenanceWindowProviderConditionRuleProvidersOpsgenie     MaintenanceWindowProviderConditionRuleProviders = "opsgenie"
+	MaintenanceWindowProviderConditionRuleProvidersPagerduty    MaintenanceWindowProviderConditionRuleProviders = "pagerduty"
 	MaintenanceWindowProviderConditionRuleProvidersPrometheus   MaintenanceWindowProviderConditionRuleProviders = "prometheus"
 	MaintenanceWindowProviderConditionRuleProvidersSentry       MaintenanceWindowProviderConditionRuleProviders = "sentry"
 	MaintenanceWindowProviderConditionRuleProvidersSns          MaintenanceWindowProviderConditionRuleProviders = "sns"
@@ -992,6 +1002,8 @@ func (e MaintenanceWindowProviderConditionRuleProviders) Valid() bool {
 	case MaintenanceWindowProviderConditionRuleProvidersNewrelic:
 		return true
 	case MaintenanceWindowProviderConditionRuleProvidersOpsgenie:
+		return true
+	case MaintenanceWindowProviderConditionRuleProvidersPagerduty:
 		return true
 	case MaintenanceWindowProviderConditionRuleProvidersPrometheus:
 		return true

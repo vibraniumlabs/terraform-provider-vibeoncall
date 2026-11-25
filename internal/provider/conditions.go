@@ -71,7 +71,7 @@ const (
 
 var alertProviders = []string{
 	"opsgenie", "grafana", "datadog", "coralogix", "newrelic", "prometheus", "cloudwatch", "sns",
-	"heartbeat", "email", "sentry", "embraceio", "http", "azuremonitor", "cloudamqp", "jira",
+	"heartbeat", "email", "sentry", "embraceio", "http", "azuremonitor", "cloudamqp", "jira", "pagerduty",
 }
 
 func conditionGroupsAttribute(description string, conditionKinds map[string]schema.SingleNestedAttribute) schema.ListNestedAttribute {

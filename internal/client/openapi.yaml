@@ -3315,6 +3315,7 @@ components:
                   - http
                   - azuremonitor
                   - cloudamqp
+                  - pagerduty
               minItems: 1
           required:
             - operator
@@ -3572,6 +3573,7 @@ components:
             - http
             - azuremonitor
             - cloudamqp
+            - pagerduty
         teamId:
           type:
             - integer
@@ -3649,6 +3651,7 @@ components:
             - http
             - azuremonitor
             - cloudamqp
+            - pagerduty
           description: The monitoring tool that delivers to this source. Cannot be changed later.
         teamId:
           type:
@@ -3970,6 +3973,7 @@ components:
                   - http
                   - azuremonitor
                   - cloudamqp
+                  - pagerduty
               minItems: 1
           required:
             - operator

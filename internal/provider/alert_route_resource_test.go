@@ -313,7 +313,7 @@ func TestAlertRouteResourceValidation(t *testing.T) {
 		"escalate without targets":   {`escalate = { urgency = "HIGH" }`, `Missing escalation target`},
 		"empty target set":           {`escalate = { user_ids = [] }`, `set must contain at least 1 elements`},
 		"severity alias":             {`do_nothing = true` + "\n" + fmt.Sprintf(severity, "P1"), `must be one of`},
-		"unknown provider":           {`do_nothing = true` + "\n" + `condition_groups = [{ operator = "AND", conditions = [{ provider = { providers = ["pagerduty"] } }] }]`, `must be\s+one of`},
+		"unknown provider":           {`do_nothing = true` + "\n" + `condition_groups = [{ operator = "AND", conditions = [{ provider = { providers = ["zabbix"] } }] }]`, `must be\s+one of`},
 		"count threshold below two":  {`do_nothing = true` + "\n" + `condition_groups = [{ operator = "AND", conditions = [{ count = { threshold = 1, timeframe_seconds = 300 } }] }]`, `must be at least 2`},
 		"two kinds in one condition": {`do_nothing = true` + "\n" + `condition_groups = [{ operator = "AND", conditions = [{ count = { threshold = 2, timeframe_seconds = 300 }, severity = { operator = "equal_to", severity = "SEV1" } }] }]`, `2 attributes specified when one \(and only one\)`},
 		"delay beyond a day":         {`escalate = { user_ids = ["1"], delay_seconds = 86401 }`, `between 60 and 86400`},
