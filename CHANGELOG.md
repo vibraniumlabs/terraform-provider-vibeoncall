@@ -1,3 +1,9 @@
+## 0.1.2 (November 25, 2026)
+
+NOTES:
+
+* Sync the bundled OpenAPI specification with the production API's incident custom-field schema. Terraform resources and data sources behave the same as in `0.1.1`.
+
 ## 0.1.1 (November 24, 2026)
 
 ENHANCEMENTS:
